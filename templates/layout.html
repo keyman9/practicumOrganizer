@@ -1,0 +1,47 @@
+<html ng-app="POBoxApp">
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="viewport" content="width=device-width">
+
+<title>Practicum Organizer</title>
+
+<link rel="stylesheet" type="text/css" href="static/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css"> 
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-theme.css') }}">
+<meta name="viewport" content="width=device-width">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+<script src="https://code.angularjs.org/1.4.9/angular.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.js"></script>
+<script type="text/javascript" src="static/node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
+<script type="text/javascript" src="static/node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js"></script>
+<script src="static/node_modules/angular-strap/dist/angular-strap.min.js"></script>
+<script src="static/node_modules/angular-strap/dist/angular-strap.tpl.min.js"></script>
+<script type="text/javascript" src="static/js/studentFormController.js"></script>
+<script type="text/javascript" src="static/js/datadefinitions.js"></script>
+<script type="text/javascript" src="static/js/validation.js"></script>
+
+
+<!--<script src="{{ url_for('static', filename='js/controller.js') }}" charset="utf-8"></script>-->
+
+
+<head>
+</head>
+
+<body>
+    
+    {% block content %}
+    {% endblock %}
+    
+    
+    
+
+
+
+    <script src="{{ url_for('static', filename='js/npm.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</body>
+
+<footer>
+
+</footer>
