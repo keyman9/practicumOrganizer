@@ -110,6 +110,20 @@ GRANT SELECT, INSERT ON availableTimes TO practicum_admin;
 GRANT ALL ON availableTimes_meetingid_seq TO practicum_normal;
 GRANT ALL ON availableTimes_meetingid_seq TO practicum_admin;
 
+--Practicum Bearing Courses--
+DROP TABLE IF EXISTS practicumCourses;
+CREATE TABLE practicumCourses(
+  courseId serial NOT NULL,
+  courseName varchar(10) NOT NULL default '',
+  PRIMARY KEY(courseId)
+);
+
+GRANT SELECT ON practicumCourses to practicum_normal;
+GRANT SELECT,INSERT ON practicumCourses to practicum_admin;
+
+GRANT ALL ON practicumCourses_courseid_seq TO practicum_normal;
+GRANT ALL ON practicumCourses_courseid_seq TO practicum_admin;
+
 
 ---School Division---
 DROP TABLE IF EXISTS schoolDivisions;
@@ -654,6 +668,48 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Friends of the Rappahannock'
 INSERT INTO schools(schoolName,divisionId) VALUES ('Other',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 
+--Practicum Bearing Courses--
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 303');
+INSERT INTO practicumCourses(courseName) VALUES ('EDUC 203');
+INSERT INTO practicumCourses(courseName) VALUES ('EDUC 204');
+INSERT INTO practicumCourses(courseName) VALUES ('EDUC 305');
+INSERT INTO practicumCourses(courseName) VALUES ('EDUC 351A');
+INSERT INTO practicumCourses(courseName) VALUES ('EDUC 371');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 373');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 385');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 388');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 453');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 454');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 455');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 456');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 457');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 458');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 459');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 510');
+INSERT INTO practicumCourses(courseName) VALUES ('MATH 204');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 501');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 502');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 507');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 509');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 515');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 519');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 521');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 523');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 538');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 552');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 553');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 554');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 555');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 556');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 557');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 558');
+INSERT INTO practicumCourses(courseName) VALUES ('EDCI 559');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 512');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 519');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 521');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 539');
+INSERT INTO practicumCourses(courseName) VALUES ('EDSE 541');
+INSERT INTO practicumCourses(courseName) VALUES ('TESL 515');
 
 
 
