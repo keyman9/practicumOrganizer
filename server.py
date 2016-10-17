@@ -24,7 +24,8 @@ globalDict = {'accessCode': ''}
 
 
 #Queries
-loginQuery = 'SELECT password FROM login WHERE password = crypt(%s, password)'
+loginQuery = "SELECT password FROM login WHERE password = crypt(%s, password)"
+updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE passwordid = 1"
     
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
@@ -83,13 +84,17 @@ def assignPractica():
 def forgotPassword():
     
     chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-    accessCode = ''.join(random.choice(chars) for _ in range(10))
+    accessCode = ''.join(random.SystemRandom().choice(chars) for _ in range(10))
     globalDict['accessCode'] = accessCode
     print accessCode
-    
-    emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
-    msg = MIMEText(emailMSG)
-    msg['Subject'] = 'Reset password'
+    message = "A password reset has been requested for the Practicum Organizer application.\n\n" + \
+    "If you did not make this request, you can ignore this email. This password reset can only be made by those who have access to the login site." + \
+    "It does not indicate that the application is in any danger of being accessed by someone else.\n\n" + \
+    "The access code to reset your password is: " + accessCode + "\n\nThank you."
+    # emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
+    print(message)
+    msg = MIMEText(message)
+    msg['Subject'] = '[Practicum Organizer] Reset password'
     msg['From'] = 'buymybooks350@gmail.com'
     msg['To'] = 'bmnosar@gmail.com' #Just to test
     
@@ -169,24 +174,38 @@ def forgotPassword():
 @socketio.on('resetPassword', namespace='/login') 
 def resetPassword(payload):
     print("Payload: %s", payload['accessCode'])
+    print(payload)
     print("Access Code: " + globalDict['accessCode'])
-    if str(payload['accessCode']) == globalDict['accessCode']:
+    
+    if payload['accessCode'] == globalDict['accessCode']:
         globalDict['accessCode'] = ''
-        emit('resetPassword')
+        message = {'success' : 'The access code inputted is accepted!\n'}
+        emit('resetPassword', message)
+        
+    else:    
+        message = {'error' : 'The access code inputted is denied!\n'}
+        emit('resetPassword', message)
     
-    message = {'error' : 'The access code inputted is denied!\n'}
-    emit('resetPassword', message)
-    
+
 @socketio.on('updatePassword', namespace='/login') 
 def updatePassword(payload):
     print("Payload: %s", payload)
+    newpass = payload['password']
     
-    if payload['accessCode'] == globalDict['accessCode']:
-        accessCode = ''
-        emit('resetPassword')
+    db = connect_to_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
-    message = {'error' : 'The access code inputted is denied!\n'}
-    emit('resetPassword', message)
+    try:
+        query = cur.mogrify(updatePasswordQuery, (newpass, )) 
+        print query
+        cur.execute(query)
+        db.commit()
+        print "Password changed"
+    except Exception as e:
+        print("Error: Invalid UPDATE in 'login' table: %s" % e)
+        db.rollback()
+    
+    emit('updatePassword')
     
 # @app.route('/resetpassword', methods=['GET', 'POST'])
 # def resetPassword():

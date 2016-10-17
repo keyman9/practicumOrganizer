@@ -2,6 +2,14 @@ DROP DATABASE IF EXISTS practicum;
 CREATE DATABASE practicum;
 \c practicum;
 
+DROP ROLE IF EXISTS practicum_normal;
+DROP ROLE IF EXISTS practicum_admin;
+
+CREATE ROLE practicum_normal WITH PASSWORD 'password' LOGIN;
+CREATE ROLE practicum_admin WITH PASSWORD 'password' LOGIN;
+
+CREATE EXTENSION pgcrypto;
+
 ---Student Table---
 
 DROP TABLE IF EXISTS students;
@@ -16,12 +24,18 @@ CREATE TABLE students (
   UNIQUE(email)
 );
 
+GRANT SELECT, INSERT ON students TO practicum_normal;
+GRANT SELECT, INSERT ON students TO practicum_admin;
+
 ---Transportation Arrangements---
 DROP TABLE IF EXISTS transportation;
 CREATE TABLE transportation(
   driverEmail varchar(60) references students(email) NOT NULL,
   passengerEmail varchar(60) references students(email) NOT NULL
 );
+
+GRANT SELECT, INSERT ON transportation TO practicum_normal;
+GRANT SELECT, INSERT ON transportation TO practicum_admin;
 
 ---Previous Practica---
 DROP TABLE IF EXISTS previousPractica;
@@ -33,6 +47,9 @@ CREATE TABLE previousPractica(
   FOREIGN KEY (studentEmail) references students(email)
 );
 
+GRANT SELECT, INSERT ON previousPractica TO practicum_normal;
+GRANT SELECT, INSERT ON previousPractica TO practicum_admin;
+
 ---Enrolled Courses---
 DROP TABLE IF EXISTS enrolledCourses;
 CREATE TABLE enrolledCourses(
@@ -40,6 +57,9 @@ CREATE TABLE enrolledCourses(
   studentEmail varchar(60) NOT NULL references students(email),
   PRIMARY KEY (courseName)
 );
+
+GRANT SELECT, INSERT ON enrolledCourses TO practicum_normal;
+GRANT SELECT, INSERT ON enrolledCourses TO practicum_admin;
 
 ---Endorsements---
 DROP TABLE IF EXISTS endorsement;
@@ -49,6 +69,9 @@ CREATE TABLE endorsements(
   PRIMARY KEY (endorsementName),
   FOREIGN KEY (studentEmail) references students(email)
 );
+
+GRANT SELECT, INSERT ON endorsements TO practicum_normal;
+GRANT SELECT, INSERT ON endorsements TO practicum_admin;
 
 ---Meeting Days---
 DROP TABLE IF EXISTS meetingDays;
@@ -62,6 +85,12 @@ CREATE TABLE meetingDays(
   UNIQUE (meetingID)
 );
 
+GRANT SELECT, INSERT ON meetingDays TO practicum_normal;
+GRANT SELECT, INSERT ON meetingDays TO practicum_admin;
+
+GRANT ALL ON meetingdays_meetingid_seq TO practicum_normal;
+GRANT ALL ON meetingdays_meetingid_seq TO practicum_admin;
+
 ---Available Times---
 DROP TABLE IF EXISTS availableTimes;
 CREATE TABLE availableTimes(
@@ -73,6 +102,13 @@ CREATE TABLE availableTimes(
   FOREIGN KEY(studentEmail) references students(email)
 );
 
+GRANT SELECT, INSERT ON availableTimes TO practicum_normal;
+GRANT SELECT, INSERT ON availableTimes TO practicum_admin;
+
+GRANT ALL ON availableTimes_meetingid_seq TO practicum_normal;
+GRANT ALL ON availableTimes_meetingid_seq TO practicum_admin;
+
+
 ---School Division---
 DROP TABLE IF EXISTS schoolDivisions;
 CREATE TABLE schoolDivisions(
@@ -80,6 +116,12 @@ CREATE TABLE schoolDivisions(
   divisionName varchar(60) NOT NULL default '',
   PRIMARY KEY(divisionID)
 );
+
+GRANT SELECT, INSERT ON schoolDivisions TO practicum_normal;
+GRANT SELECT, INSERT ON schoolDivisions TO practicum_admin;
+
+GRANT ALL ON schooldivisions_divisionid_seq TO practicum_normal;
+GRANT ALL ON schooldivisions_divisionid_seq TO practicum_admin;
 
 ---Schools---
 DROP TABLE IF EXISTS schools;
@@ -90,6 +132,15 @@ CREATE TABLE schools(
   PRIMARY KEY(schoolID),
   FOREIGN KEY(divisionID) references schoolDivisions(divisionID)
 );
+
+GRANT SELECT, INSERT ON schools TO practicum_normal;
+GRANT SELECT, INSERT ON schools TO practicum_admin;
+
+GRANT ALL ON schools_divisionid_seq TO practicum_normal;
+GRANT ALL ON schools_divisionid_seq TO practicum_admin;
+
+GRANT ALL ON schools_schoolid_seq TO practicum_normal;
+GRANT ALL ON schools_schoolid_seq TO practicum_admin;
 
 ---Teachers---
 DROP TABLE IF EXISTS teachers;
@@ -110,6 +161,18 @@ CREATE TABLE teachers(
   FOREIGN KEY(divisionID) references schoolDivisions(divisionID)
 );
   
+GRANT SELECT, INSERT ON teachers TO practicum_normal;
+GRANT SELECT, INSERT ON teachers TO practicum_admin;
+
+GRANT ALL ON teachers_divisionid_seq TO practicum_normal;
+GRANT ALL ON teachers_divisionid_seq TO practicum_admin;
+
+GRANT ALL ON teachers_schoolid_seq TO practicum_normal;
+GRANT ALL ON teachers_schoolid_seq TO practicum_admin;
+
+GRANT ALL ON teachers_teacherid_seq TO practicum_normal;
+GRANT ALL ON teachers_teacherid_seq TO practicum_admin;
+
 ---Elementary Schedule---
 DROP TABLE IF EXISTS elementarySchedule;
 CREATE TABLE elementarySchedule(
@@ -121,6 +184,15 @@ CREATE TABLE elementarySchedule(
   FOREIGN KEY(teacherID) references teachers(teacherID),
   FOREIGN KEY(schoolID) references schools(schoolID)
 );
+
+GRANT SELECT, INSERT ON elementarySchedule TO practicum_normal;
+GRANT SELECT, INSERT ON elementarySchedule TO practicum_admin;
+
+GRANT ALL ON elementaryschedule_schoolid_seq TO practicum_normal;
+GRANT ALL ON elementaryschedule_schoolid_seq TO practicum_admin;
+
+GRANT ALL ON elementaryschedule_teacherid_seq TO practicum_normal;
+GRANT ALL ON elementaryschedule_teacherid_seq TO practicum_admin;
 
 ---Middle School Schedule---
 DROP TABLE IF EXISTS middleSchoolSchedule;
@@ -136,6 +208,15 @@ CREATE TABLE middleSchoolSchedule(
   FOREIGN KEY(schoolID) references schools(schoolID)
 );
 
+GRANT SELECT, INSERT ON middleSchoolSchedule TO practicum_normal;
+GRANT SELECT, INSERT ON middleSchoolSchedule TO practicum_admin;
+
+GRANT ALL ON middleschoolschedule_schoolid_seq TO practicum_normal;
+GRANT ALL ON middleschoolschedule_schoolid_seq TO practicum_admin;
+
+GRANT ALL ON middleschoolschedule_teacherid_seq TO practicum_normal;
+GRANT ALL ON middleschoolschedule_teacherid_seq TO practicum_admin;
+
 ---Practicum Arrangement---
 DROP TABLE IF EXISTS practicumArrangement;
 CREATE TABLE practicumArrangement(
@@ -149,8 +230,28 @@ CREATE TABLE practicumArrangement(
   FOREIGN KEY(teacherID) references teachers(teacherID)
 );
 
+GRANT SELECT, INSERT ON practicumArrangement TO practicum_normal;
+GRANT SELECT, INSERT ON practicumArrangement TO practicum_admin;
+
+GRANT ALL ON practicumarrangement_practicum_seq TO practicum_normal;
+GRANT ALL ON practicumarrangement_practicum_seq TO practicum_admin;
+
+GRANT ALL ON practicumarrangement_teacherid_seq TO practicum_normal;
+GRANT ALL ON practicumarrangement_teacherid_seq TO practicum_admin;
+
 ---Login---
 DROP TABLE IF EXISTS login;
 CREATE TABLE login(
-   password varchar(30) NOT NULL
+  passwordID serial,
+  password varchar(255) NOT NULL,
+  PRIMARY KEY(passwordID)
 );
+
+GRANT SELECT, INSERT, UPDATE ON login TO practicum_normal;
+GRANT SELECT, INSERT, UPDATE ON login TO practicum_admin;
+
+GRANT ALL ON availableTimes_meetingid_seq TO practicum_normal;
+GRANT ALL ON availableTimes_meetingid_seq TO practicum_admin;
+
+---Insert Default Password---
+INSERT INTO login VALUES (default, crypt('password', gen_salt('bf')));

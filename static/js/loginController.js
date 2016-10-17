@@ -19,8 +19,9 @@ POBoxApp.controller('LoginController', function($scope, $window){
     
     });
     
-    $scope.resetPassword = function resetPassword(accessCode){
-        console.log('Access Code inserted' + accessCode);
+    $scope.resetPassword = function resetPassword(){
+        var accessCode = $("#accessCode").val();
+        console.log('Access Code inserted: ' + accessCode);
         var payload = {'accessCode' : accessCode};
         socket.emit('resetPassword', payload);
     }
@@ -33,15 +34,19 @@ POBoxApp.controller('LoginController', function($scope, $window){
     
     });
     
-    $scope.updatePassword = function updatePassword(password1, password2){
+    $scope.updatePassword = function updatePassword(){
+        var password1 = $("#resetPassword1").val();
+        var password2 = $("#resetPassword2").val();
+        
         console.log('Password 1: ' + password1);
         console.log('Password 2: ' + password2);
         
         if(password1 == password2){
-            var payload = {'password1' : password1, 'password2' : password2};
+            var payload = {'password' : password1};
             socket.emit('updatePassword', payload);
         } else {
             //error passwords have to match
+            console.log('ERROR PASSWORDS DONT MATCH');
         }
     }
     
