@@ -70,8 +70,8 @@ CREATE TABLE endorsements(
   FOREIGN KEY (studentEmail) references students(email)
 );
 
-GRANT SELECT, INSERT ON endorsement TO practicum_normal;
-GRANT SELECT, INSERT ON endorsement TO practicum_admin;
+GRANT SELECT, INSERT ON endorsements TO practicum_normal;
+GRANT SELECT, INSERT ON endorsements TO practicum_admin;
 
 ---Meeting Days---
 DROP TABLE IF EXISTS meetingDays;
