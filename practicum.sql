@@ -255,3 +255,405 @@ GRANT ALL ON availableTimes_meetingid_seq TO practicum_admin;
 
 ---Insert Default Password---
 INSERT INTO login VALUES (default, crypt('password', gen_salt('bf')));
+
+--School Divisions--
+INSERT INTO schoolDivisions(divisionName) VALUES ('Fredericksburg');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Spotsylvania');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Stafford');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Fauquier');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Prince William');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Faith Based');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Montessori');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Other');
+
+--Schools--
+--Fredericksburg--
+INSERT INTO schools(schoolName,divisionId) VALUES ('Hugh Mercer Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Lafayette Upper Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Walker-Grant Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('James Monroe High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
+
+--Spotsylvania--
+INSERT INTO schools(schoolName,divisionId) VALUES ('Battlefield Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania'));                                                   
+INSERT INTO schools(schoolName,divisionId) VALUES ('Berkeley Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Brock Road Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Cedar Forest Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Chancellor Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Courthouse Road Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Courtland Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Harrison Road Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Lee Hill Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Livingston Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Parkside Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Riverview Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Robert E. Lee Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Salem Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Smith Station Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Spotswood Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Wilderness Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Battlefield Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Chancellor Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Freedom Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Ni River Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Post Oak Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Spotsylvania Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Thornburg Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Chancellor High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Courtland High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Massaponax High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Riverbend High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Spotsylvania High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+    
+--Stafford--
+INSERT INTO schools(schoolName,divisionId) VALUES ('Anne E. Moncure Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Anthony Burns Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Conway Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Falmouth Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Ferry Farm Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Garrisonville Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Grafton Village Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Hampton Oaks Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Hartwood Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Kate Waller Barrett Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Margaret Brent Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Park Ridge Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Rockhill Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Rocky Run Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Stafford Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Widewater Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('A. G. Wright Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Brooke Point High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Dixon-Smith Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Colonial Forge High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Edward E. Drew Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('H. H. Poole Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Mountain View High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('North Stafford High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Rodney Thompson Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Shirley C. Heim Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Stafford High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Stafford Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('T. Benton Gayle Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+    
+--Fauquier--
+INSERT INTO schools(schoolName,divisionId) VALUES ('Bradley Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+ INSERT INTO schools(schoolName,divisionId) VALUES ('Brumfield Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Coleman Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Greenville Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Miller Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Pearson Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Pierce Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Ritchie Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Smith Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Thompson Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Walter Elementary School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Auburn Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Cedar Lee Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Fauquier High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Kettle Run High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Liberty High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Marshall Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Liberty High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Southeastern Alternative Middle & High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Taylor Middle School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Warrenton Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+
+--Prince William--
+INSERT INTO schools(schoolName,divisionId) VALUES ('Alvey Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Antietam Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Ashland Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Bel Air Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Belmont Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Bennett Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Bristow Run Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Buckland Mills Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Cedar Point Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Chris Yung Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Coles Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Dale City Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Dumfries Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Ellis Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Enterprise Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Featherstone Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Fitzgerald Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Glenkirk Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Gravely Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Haymarket Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Henderson Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Kerrydale Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Kilby Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('King Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Kyle R. Wilson Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Lake Ridge Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Leesylvania Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Loch Lomond Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Marshall Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Marumsco Hills Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('McAuliffe Elementary School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Minnieville Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Montclair Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Mountain View Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Neabsco Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('The Nokesville School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Occoquan Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Old Bridge Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Pattie Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Penn Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Piney Branch Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Potomac View Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('River Oaks Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Rockledge Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Rosa Parks Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Signal Hill Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Sinclair Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Springwoods Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Sudley Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Swans Creek Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('T. Clay Wood Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Triangle Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Tyler Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Vaughan Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Victory Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('West Gate Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Westridge Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Williams Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Yorkshire Elementary  School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Battlefield High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Benton Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Beville Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Brentsville District High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Bull Run Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Colgan High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Forest Park High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Fred M. Lynn Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Freedom High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Gainesville Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Gar-Field High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Graham Park Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Hampton Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Hylton High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Lake Ridge Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Marsteller Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Osbourn Park High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('PACE West',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Parkside Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Patriot High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Pennington Traditional School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Porter Traditional School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Potomac High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Potomac Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Reagan Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Rippon Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Saunders Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Stonewall Jackson High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Stonewall Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Woodbridge High School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Woodbridge Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+ 
+    
+--Faith Based--    
+INSERT INTO schools(schoolName,divisionId) VALUES ('Holy Cross Academy',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('St. Patrick''s School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Grace Preparatory',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Temple Baptist',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Faith Baptist',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+    
+--Montessori--    
+INSERT INTO schools(schoolName,divisionId) VALUES ('Children''s House of Old Town',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Montessori'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Lighthouse Academy of Fredericksburg',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Montessori'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Odyssey Montessori',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Montessori'));
+    
+--Other--
+INSERT INTO schools(schoolName,divisionId) VALUES ('Head Start',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Friends of the Rappahannock',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Other',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
+
+
+
+
+
+
