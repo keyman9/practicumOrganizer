@@ -92,3 +92,11 @@ function PreviousPractica(){
         delete this.otherSchool;
     }
 }
+
+
+function PracticumAssignment(){
+    this.student = undefined;
+    this.teacher = undefined;
+    this.course = undefined;
+    this.availability = new Availability();
+}

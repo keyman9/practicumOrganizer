@@ -17,8 +17,6 @@
     }
     
     .list-group-item{
-        /*background-color: #ebebeb;*/
-        /*color:#0b0a0a  !important;*/
         border: 1px solid #ebebeb;
     }
     
@@ -34,6 +32,9 @@
         font-size: 1.25em;
     }
     .well{
+        color: black !important;
+    }
+    .panel-heading{
         color: black !important;
     }
 </style>
@@ -116,10 +117,11 @@
                 </div>
                 <div class="col-md-6">
                     <div slim-scroll height="350px">
-                        <ul class="list-group">
-                            <button class="list-group-item btn" ng-repeat="student in students" ng-class="{active : currentStudent === student}" 
+                        <ul class="list-group" dnd-list="lists[0].students">
+                            <button class="list-group-item btn" ng-repeat="student in lists[0].students" ng-class="{active : currentStudent === student}" 
                             ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" auto-close="true" 
-                            data-html="true" ng-click="setCurrentStudent(student)" bs-popover>
+                            data-html="true" ng-click="setCurrentStudent(student)" bs-popover 
+                            dnd-draggable="student" dnd-effect-allowed="move">
                                 <span ng-bind="student.firstName"></span>&nbsp;
                                 <span ng-bind="student.lastName"></span>
                             </button>
@@ -130,6 +132,44 @@
         </div>
         <div class="col-md-6">
             <h4>Teachers</h4>
+        </div>
+    </div>
+    <br /><br /><br /><hr/>
+    <div class="row">
+        <h4 class="text-center">Assignments</h4>
+        <hr/>
+        <div class="col-md-2">
+            <ul class="nav nav-pills nav-stacked">
+              <li ng-class="{active : practicumMode}"><a href="#" ng-click="togglePracticumMode()">Practicum</a></li>
+              <li ng-class="{active : transportationMode}"><a href="#" ng-click="toggleTransportationMode()">Transportation</a></li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+             <div class="panel panel-default">
+              <div class="panel-heading">
+                  <div class="row">
+                      <div class="col-md-4">
+                        <h5>Student</h5>
+                      </div>
+                      <div class="col-md-4">
+                        <h5>Teacher</h5>
+                      </div>
+                      <div class="col-md-4">
+                        <h5>Day/Time</h5>
+                      </div>
+                  </div>
+              </div>
+              <div class="panel-body">
+                    <div class="row">
+                      <div class="col-md-4">
+                      </div>
+                      <div class="col-md-4">
+                      </div>
+                      <div class="col-md-4">
+                      </div>
+                  </div>
+              </div>
+            </div>
         </div>
     </div>
 
