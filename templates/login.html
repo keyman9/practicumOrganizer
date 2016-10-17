@@ -75,7 +75,7 @@
                     <h3 class="text text-center"><strong>An access code was sent to your email. Please input the code to reset your password. </strong></h3>
                     <br>
 
-                    <form id="resetform" class="form-horizontal" role="form" ng-submit="resetPassword(accessCode)">
+                    <form id="resetform" class="form-horizontal" role="form" ng-submit="resetPassword()">
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetUsernameDiv">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
@@ -84,7 +84,7 @@
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
                             <span class="input-group-addon" style="background-color:#2b3e50"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="accessCode" type="password" class="form-control" name="accessCode" placeholder="password" ng-model="accessCode">
+                            <input id="accessCode" type="text" class="form-control" name="accessCode" placeholder="Access Code">
                         </div>
 
                         <div style="margin-top:10px" class="form-group">
@@ -115,7 +115,7 @@
                     <h3 class="text text-center"><strong>Please enter in a new password twice.</strong></h3>
                     <br>
 
-                    <form id="resetform" class="form-horizontal" role="form" method="POST" action="/resetpassword">
+                    <form id="updateform" class="form-horizontal" role="form" ng-submit="updatePassword()">
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetUsernameDiv">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
@@ -124,12 +124,12 @@
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
                             <span class="input-group-addon" style="background-color:#2b3e50"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="resetpassword1" type="password" class="form-control" name="resetpassword1" placeholder="password">
+                            <input id="resetPassword1" type="password" class="form-control" name="resetPassword1" placeholder="password">
                         </div>
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
                             <span class="input-group-addon" style="background-color:#2b3e50"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="resetpassword2" type="password" class="form-control" name="resetpassword2" placeholder="password">
+                            <input id="resetPassword2" type="password" class="form-control" name="resetPassword2" placeholder="password">
                         </div>
 
                         <div style="margin-top:10px" class="form-group">
