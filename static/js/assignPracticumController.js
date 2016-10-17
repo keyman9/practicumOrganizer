@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize'])
-=======
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap'])
->>>>>>> cad8fac4b9cb56ef8eebd162812721d2e138dac0
 
 POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
@@ -10,8 +6,8 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     var student = {'passengers': 0, 
         'firstName': 'Harry', 
         'lastName': 'Potter', 
-        'enrolledClasses': ['EDUC 204'], 
-        'endorsements': ['English'], 
+        'enrolledClasses': ['EDUC 204', 'EDUC 205'], 
+        'endorsements': ['English', 'Chemistry'], 
         'availability': [
             {'monday': false, 'tuesday': false, 'friday': true, 'wednesday': false, 'thursday': false, 'startTime': '7:30AM', 'endTime': '3:30PM'}, 
             {'monday': false, 'tuesday': true, 'friday': false, 'wednesday': false, 'thursday': true, 'startTime': '12:30PM', 'endTime': '2:30PM'}, 

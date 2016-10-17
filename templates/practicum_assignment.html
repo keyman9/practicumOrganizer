@@ -10,9 +10,16 @@
         color: red;
         white-space: pre;
     }
-    .list-group-item[active]{
-        background-color: #ebebeb;
-        color:#0b0a0a  !important;
+    .list-group-item{
+        /*background-color: #ebebeb;*/
+        /*color:#0b0a0a  !important;*/
+        border: 1px solid #ebebeb;
+    }
+    
+    .list-group-item{
+        /*background-color: #ebebeb;*/
+        /*color:#0b0a0a  !important;*/
+        border: 1px solid #ebebeb;
     }
     
     #studentSide{
@@ -23,20 +30,23 @@
         height: 200px;
         overflow-y: scroll;
     }
+    .popover-heading{
+        font-size: 1.25em;
+    }
+    .well{
+        color: black !important;
+    }
 </style>
 <script type="text/javascript" src="static/js/assignPracticumController.js"></script>
 
 <script type="text/ng-template" id="popover.student.tpl.html">
     <div class="popover" tabindex="-1">
         <div class="arrow"></div>
-            <h3 class="popover-title" ng-bind-html="title" ng-show="title"></h3>
+            <h3 class="popover-title text-center" ng-bind="student.firstName + '  ' + student.lastName" ></h3>
         <div class="popover-content">
-            <div class="table-responsive">
-                <table class="table text-center">
+            <div class="">
+                <table class="table table-responsive text-center">
                     <tbody>
-                      <tr>
-                        <td><h4 ng-bind="student.firstName + '  ' + student.lastName"></h4></td
-                      </tr>
                       <tr>
                         <td ng-bind="student.email"></td>
                       </tr>
@@ -44,27 +54,27 @@
                         <td ng-bind="getTransportationString(student)"></td>
                       </tr>
                       <tr>
-                        <td>Enrolled In:</td>
+                        <td><span class="popover-heading">Enrolled In:</span></td>
+                      </tr>
+                      <tr class="well" ng-repeat="en in student.enrolledClasses">
+                        <td ng-bind="en"></td>
                       </tr>
                       <tr>
-                        <td ng-bind="student.enrolledClasses"></td>
+                        <td><span class="popover-heading">Endorsements:</span></td>
+                      </tr>
+                      <tr class="well" ng-repeat="en in student.endorsements">
+                        <td ng-bind="en"></td>
                       </tr>
                       <tr>
-                        <td>Endorsements:</td>
+                        <td><span class="popover-heading">Availability:</span></td>
                       </tr>
-                      <tr>
-                        <td ng-bind="student.endorsements"></td>
-                      </tr>
-                      <tr>
-                        <td><h5>Availability:</h5></td>
-                      </tr>
-                      <tr ng-repeat="av in student.availability">
+                      <tr class="well" ng-repeat="av in student.availability">
                         <td ng-bind="getAvailabilityString(av)"></td>
                       </tr>
                       <tr>
-                        <td><h5>Previous Practica:</h5></td>
+                        <td><span class="popover-heading">Previous Practica:</span></td>
                       </tr>
-                      <tr ng-repeat="prac in student.previousPractica">
+                      <tr class="well" ng-repeat="prac in student.previousPractica">
                         <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
                       </tr>
                     </tbody>
@@ -107,7 +117,7 @@
                 <div class="col-md-6">
                     <div slim-scroll height="350px">
                         <ul class="list-group">
-                            <button class="list-group-item" ng-repeat="student in students"  
+                            <button class="list-group-item btn" ng-repeat="student in students" ng-class="{active : currentStudent === student}" 
                             ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" auto-close="true" 
                             data-html="true" ng-click="setCurrentStudent(student)" bs-popover>
                                 <span ng-bind="student.firstName"></span>&nbsp;
