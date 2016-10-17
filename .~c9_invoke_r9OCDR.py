@@ -1,6 +1,3 @@
-import sys
-reload(sys)
-sys.setdefaultencoding("UTF8")
 import os
 from flask import *
 from flask_socketio import SocketIO, emit
@@ -10,21 +7,12 @@ from collections import OrderedDict
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from db import *
-import uuid
-import string
-import random
-
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-
-
-globalDict = {'accessCode': ''}
-
-
+#Quer
 #Queries
-loginQuery = 'SELECT password FROM login WHERE password = crypt(%s, password)'
+loginQuery = 'S'
     
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
@@ -48,64 +36,11 @@ def login():
     
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    
     if request.method == "POST":
-        
-        print(request.form) #DEBUG
-        
-        pd = request.form['password']
-        
-        db = connect_to_db()
-        cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        query = cur.mogrify(loginQuery, (pw,))
-        try:
-            cur.execute(query)
-            results = cur.fetchone()
-        except Exception as e:
-            print("Error: SEARCH in 'login' table: %s" % e)
-            db.rollback()
-        
-        cur.close()
-        db.close()
-        
-        if not results: # user does not exist
-            error += 'Incorrect username or password.\n'
-        else:
-            session['user'] = uuid.uuid1()
-            
+        print(request.form)
     return render_template('dashboard.html')
-    
-@app.route('/practica', methods=['GET', 'POST'])
-def assignPractica():
-    return render_template('practicum_assignment.html')
 
-@socketio.on('forgotPassword', namespace='/login') 
-def forgotPassword():
     
-    chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-    accessCode = ''.join(random.choice(chars) for _ in range(10))
-    globalDict['accessCode'] = accessCode
-    print accessCode
-    
-    emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
-    msg = MIMEText(emailMSG)
-    msg['Subject'] = 'Reset password'
-    msg['From'] = 'buymybooks350@gmail.com'
-    msg['To'] = 'bmnosar@gmail.com' #Just to test
-    
-    
-    try:
-        smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
-        #server.set_debuglevel(1)
-        smtpObj.ehlo()
-        smtpObj.starttls()
-        smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
-        smtpObj.sendmail(sender, receiver, msg.as_string())         
-        print "Successfully sent email"
-    except Exception as e:
-        print(e)
-            
-    emit('forgotPassword')
     
 
 # @app.route('/forgotpassword', methods=['GET', 'POST'])
@@ -119,10 +54,10 @@ def forgotPassword():
 #         sender = ['buymybooks350@gmail.com']
         
 #         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-#         accessCode = ''.join(random.choice(chars) for _ in range(8))
-#         print accessCode
+#         randomPass = ''.join(random.choice(chars) for _ in range(8))
+#         print randomPass
         
-#         emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
+#         emailMSG = "Your new password is:  " + randomPass + "\n\nThank you, \nBuyMyBooks"
 #         msg = MIMEText(emailMSG)
 #         msg['Subject'] = 'Reset password'
 #         msg['From'] = 'buymybooks350@gmail.com'
@@ -138,7 +73,7 @@ def forgotPassword():
 #         print results
 #         if results != []:
 #             try:
-#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (accessCode, request.form['email'])) 
+#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (randomPass, request.form['email'])) 
 #                 print query
 #                 cur.execute(query)
 #                 conn.commit()
@@ -165,29 +100,6 @@ def forgotPassword():
 #     wrongUsername=wrongUsername)
     
 
-
-@socketio.on('resetPassword', namespace='/login') 
-def resetPassword(payload):
-    print("Payload: %s", payload['accessCode'])
-    print("Access Code: " + globalDict['accessCode'])
-    if str(payload['accessCode']) == globalDict['accessCode']:
-        globalDict['accessCode'] = ''
-        emit('resetPassword')
-    
-    message = {'error' : 'The access code inputted is denied!\n'}
-    emit('resetPassword', message)
-    
-@socketio.on('updatePassword', namespace='/login') 
-def updatePassword(payload):
-    print("Payload: %s", payload)
-    
-    if payload['accessCode'] == globalDict['accessCode']:
-        accessCode = ''
-        emit('resetPassword')
-    
-    message = {'error' : 'The access code inputted is denied!\n'}
-    emit('resetPassword', message)
-    
 # @app.route('/resetpassword', methods=['GET', 'POST'])
 # def resetPassword():
 #     loggedIn = False

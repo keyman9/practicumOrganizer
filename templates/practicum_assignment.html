@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style type="text/css">
+    .btn-default{
+        color:#0b0a0a  !important;
+        text-shadow: none;
+    }
+    .error{
+        color: red;
+        white-space: pre;
+    }
+    .list-group-item[active]{
+        background-color: #ebebeb;
+        color:#0b0a0a  !important;
+    }
+</style>
+<script type="text/javascript" src="static/js/assignPracticumController.js"></script>
+
+
+<div class="container" ng-controller="AssignPracticumController">
+    <br /> 
+    <div class="row">
+        <div class="col-md-6 col-md-offset-4">
+            <!--<h3>Practicum Assignment</h3>-->
+        </div>
+        <br /><br /><br />
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Students</h4>
+            <br/>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <button class="list-group-item" ng-repeat="student in students">
+                            <span ng-bind="student.firstName"></span>&nbsp;
+                            <span ng-bind="student.lastName"></span>
+                        </button>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4>Teachers</h4>
+        </div>
+    </div>
+
+</div><br />
+
+{% endblock %}

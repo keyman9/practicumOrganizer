@@ -8,6 +8,7 @@
     }
     .error{
         color: red;
+        white-space: pre;
     }
 </style>
 <script type="text/javascript" src="static/js/studentFormController.js"></script>
@@ -96,8 +97,6 @@
         <div class="col-md-2 col-md-offset-5">
             <br />
             <h4>Availability<span ng-if="invalidAvailability"><small class="error">&nbsp;&nbsp;*</small></span></h4>
-            <span class="error">{{availabilityErrorMsg}}</span>
-            <br />
         </div>
     </div>
     <div class="row">
@@ -112,37 +111,37 @@
                     </div>
                     <div class="col-md-3">
                         <span>From</span>
-                        <input type="text" class="form-control" name="start" id="start" ng-model="item.start" data-time-format="h:mm a"  required bs-timepicker 
-                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="30" data-autoclose="1" ng-change="checkTime(item)" 
+                        <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.start" data-time-format="h:mm a"  required bs-timepicker 
+                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="30" data-autoclose="1" ng-change="validateTimes(availability.indexOf(item), true)" 
                         bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                     </div>
                     <div class="col-md-3">
                         <span>To</span>
-                        <input type="text" class="form-control" name="end" id="end" ng-model="item.end" data-time-format="h:mm a"  required bs-timepicker  
-                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="30" data-autoclose="1" ng-change="checkTime(item)" 
+                        <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.end" data-time-format="h:mm a"  required bs-timepicker  
+                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="30" data-autoclose="1" ng-change="validateTimes(availability.indexOf(item), true)"  
                          bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                     </div>
                     <div class="col-md-4">
                         <div class="row">
                             <div class="col-md-1">
                                 <span>M</span><br />
-                                <input type="checkbox" value="true" ng-model="item.monday">  
+                                <input type="checkbox" value="true" ng-model="item.monday" ng-click="validateDays(availability.indexOf(item), true)">  
                             </div>
                             <div class="col-md-1">
                                 <span>T</span><br />
-                                <input type="checkbox" value="true" ng-model="item.tuesday">  
+                                <input type="checkbox" value="true" ng-model="item.tuesday" ng-click="validateDays(availability.indexOf(item), true)">  
                             </div>
                             <div class="col-md-1">
                                 <span>W</span><br />
-                                <input type="checkbox" value="true" ng-model="item.wednesday">  
+                                <input type="checkbox" value="true" ng-model="item.wednesday" ng-click="validateDays(availability.indexOf(item), true)">  
                             </div>
                             <div class="col-md-1">
                                 <span>Th</span><br />
-                                <input type="checkbox" value="true" ng-model="item.thursday">  
+                                <input type="checkbox" value="true" ng-model="item.thursday" ng-click="validateDays(availability.indexOf(item), true)">  
                             </div>
                             <div class="col-md-1">
                                 <span>F</span><br />
-                                <input type="checkbox" value="true" ng-model="item.friday">  
+                                <input type="checkbox" value="true" ng-model="item.friday" ng-click="validateDays(availability.indexOf(item), true)">  
                             </div>
                             <div class="col-md-1">
                                 <br />
@@ -152,6 +151,9 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-7" ng-class="{'col-md-offset-2' : availability.length === 3 || availability.indexOf(item)!=availability.length-1, 'col-md-offset-1' : availability.length < 3 && availability.indexOf(item)===availability.length-1}">
+                        <span class="error" ng-bind="availabilityErrorMsg[availability.indexOf(item)]"></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -160,7 +162,6 @@
         <div class="col-md-2 col-md-offset-5">
             <br />
             <h4>Previous Practica<span ng-if="invalidPractica"><small class="error">&nbsp;&nbsp;*</small></span></h4>
-            <span class="error">{{practicaErrorMsg}}</span>
             <br />
         </div>
     </div>
@@ -175,6 +176,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="form-group" ng-repeat="item in previousPractica">
+                <hr ng-if="previousPractica.indexOf(item) > 0" />
                 <div class="row">
                     <div class="col-md-1">
                         <div class="form-group" ng-if="previousPractica.indexOf(item)===previousPractica.length-1">
@@ -184,13 +186,13 @@
                     </div>
                     <div class="col-md-3">
                         <span>School Division</span>
-                        <select class="form-control" id="division" name="division" ng-model="item.schoolDivision" required>
+                        <select class="form-control" id="division" name="division" ng-model="item.schoolDivision" ng-change="changeSchoolDivision(item)" required>
                             <option ng-repeat="s in schools">{{ '{{s.division}}' }}</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <span>School</span>
-                        <select class="form-control" id="school" name="school" ng-model="item.school" required>
+                        <select class="form-control" id="school" name="school" ng-model="item.school" ng-change="changeSchool(item)" required>
                             <option ng-repeat="school in getDivision(previousPractica.indexOf(item))">{{ '{{school}}' }}</option>
                         </select>
                     </div>
@@ -198,7 +200,7 @@
                         <br/>
                         <div class="form-group">
                              <span>Enter School Name</span>
-                            <input type="text" class="form-control" name="otherSchool" id="otherSchool" ng-model="item.otherSchool" required>
+                            <input type="text" class="form-control" name="otherSchool" id="otherSchool" ng-model="item.otherSchool" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
                         </div>
                     </div>
                     <div class="col-md-3" ng-if="item.school && isElementary(item.school)">
@@ -214,18 +216,23 @@
                             <option>Other</option>
                         </select>
                     </div>
-                    <div class="col-md-1" ng-if="previousPractica.indexOf(item) > 0">
+                    <div ng-if="item.course === 'Other'" ng-class="{'col-md-9' : item.school!='Other', 'col-md-8' : item.school==='Other', 'col-md-7' : previousPractica.indexOf(item) > 0}">  
+                        <br ng-if="item.school!='Other'"/>
+                        <div class="form-group">
+                            <span>Enter course name:</span>
+                            <input type="text" class="form-control" name="other" id="other" ng-model="item.other" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
+                        </div>
+                    </div>
+                     <div class="col-md-1" ng-if="previousPractica.indexOf(item) > 0">
                         <br />
                         <div>
                             <button class="btn btn-danger" ng-click="deletePractica(item)">-</button>
                         </div>
                     </div>
-                    <div ng-if="item.course === 'Other'" ng-class="{'col-md-9' : item.school!='Other', 'col-md-8' : item.school==='Other'}">  
-                        <br ng-if="item.school!='Other'"/>
-                        <div class="form-group">
-                            <span>Enter course name:</span>
-                            <input type="text" class="form-control" name="other" id="other" ng-model="item.other" required>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-7 col-md-offset-1" ng-class="">
+                        <span class="error" ng-bind="practicaErrorMsg[previousPractica.indexOf(item)]"></span>
                     </div>
                 </div>
             </div>
@@ -240,11 +247,6 @@
         </div>
     </div>
     </form>
-    </div>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <span id="errorinfo"></span>
-        </div>
     </div>
 </div><br />
 

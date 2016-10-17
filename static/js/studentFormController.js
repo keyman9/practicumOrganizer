@@ -1,4 +1,4 @@
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap'])
+var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ui.slimscroll'])
 
 POBoxApp.controller('StudentFormController', function($scope, $window){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/student')
@@ -122,10 +122,10 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.invalidEndorsement = false;
     $scope.invalidEnrolledClass= false;
     $scope.invalidTransportation= false;
-    $scope.invalidAvailability= false;
-    $scope.invalidPractica= false;
-    $scope.availabilityErrorMsg = "";
-    $scope.practicaErrorMsg = "";
+    $scope.invalidAvailability = true;
+    $scope.invalidPractica = true;
+    $scope.availabilityErrorMsg = ["", "", ""];
+    $scope.practicaErrorMsg = [];
         
     //returns schools in selected division (of previous practica)
     $scope.getDivision = function(id){
@@ -140,16 +140,17 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         var av = new Availability();
         av.start = new Date();
         av.start.setHours(7);
-        av.start.setMinutes(0);
+        av.start.setMinutes(30);
         av.end = new Date();
-        av.end.setHours(16);
-        av.end.setMinutes(0);
+        av.end.setHours(15);
+        av.end.setMinutes(30);
         $scope.availability.push(av);
     };
     
     $scope.deleteAvailability = function(av){
         for (var i = 0; i < $scope.availability.length; i++){
             if ($scope.availability[i] === av){
+                $scope.availabilityErrorMsg[i] = ""
                 $scope.availability.splice(i,1);
             }
         }
@@ -157,6 +158,7 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     
     $scope.addPractica = function(){
         var prac = new PreviousPractica();
+        $scope.practicaErrorMsg.push("");
         $scope.previousPractica.push(prac);
     };
     
@@ -164,6 +166,7 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         for (var i = 0; i < $scope.previousPractica.length; i++){
             if ($scope.previousPractica[i] === prac){
                 $scope.previousPractica.splice(i,1);
+                $scope.practicaErrorMsg.splice(i,1);
             }
         }
     };
@@ -171,9 +174,11 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.updatePractica = function(){
        if ($scope.noPreviousPractica){
            $scope.previousPractica = [];
+           $scope.practicaErrorMsg = [];
        } else{
             var prac = new PreviousPractica();
             $scope.previousPractica.push(prac);
+            $scope.practicaErrorMsg.push("");
        }
     };
     
@@ -188,38 +193,29 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     
     $scope.changeGrade = function(item){
         item.course = undefined;
+        item.other = undefined;
     }
     
     $scope.changeCourse = function(item){
         item.grade = undefined;
+        item.other = undefined;
     }
     
-    $scope.print = function(item){
-        console.log(item);
-    };
+    $scope.changeSchool = function(item){
+        item.otherSchool = undefined;
+        item.other = undefined;
+        $scope.changeCourse(item);
+        $scope.changeGrade(item);
+    }
     
-    $scope.checkTime = function(item){
-        if (item.start && item.end){
-            var startHrs = item.start.getHours();
-            var endHrs = item.end.getHours();
-            if (startHrs > 17 || startHrs < 7){
-                item.start.setHours(7);
-            }
-            if (endHrs > 17 || endHrs < 7){
-                item.end.setHours(4);
-            }
-            if (startHrs != endHrs){
-            } else {
-            }
-        }
-    };
-    
-    $scope.checkDays = function(av){
-        if (av.monday == false && av.tuesday == false && av.wednesday == false && av.thursday == false 
-        && av.friday == false){
-            $scope.studentForm["av "+ availability.indexOf(av)].$setValidity("noDays", false);
-        }
-    };
+    $scope.changeSchoolDivision = function(item){
+        $scope.changeSchool(item);
+        item.school = undefined;
+    }
+
+    // $scope.print = function(item){
+    //     console.log(item);
+    // };
     
     $scope.submit = function(){
         var stu = new Student();
@@ -346,20 +342,136 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         }
     }
     
-    $scope.validateAvailability = function(){
-        $scope.invalidAvailability = true;
+    
+    $scope.validateDays = function(index, updateMsg){
+        var av = $scope.availability[index];
+        var invalid = false;
+        
+        if (!av.monday && !av.tuesday && !av.wednesday && !av.thursday && !av.friday){
+            invalid = true;
+            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("You must select at least 1 day of the week for each available time!\n") === -1){
+                $scope.availabilityErrorMsg[index] += "You must select at least 1 day of the week for each available time!\n";
+            }
+        } else {
+            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("You must select at least 1 day of the week for each available time!\n") != -1){
+                var msg = $scope.availabilityErrorMsg[index];
+                msg = msg.replace("You must select at least 1 day of the week for each available time!\n", "");
+                $scope.availabilityErrorMsg[index] = msg;
+            }
+        }
+        
+        return invalid;
     }
     
-    $scope.validatePractica = function(){
-        $scope.invalidPractica = true;
+    $scope.validateTimes = function(index, updateMsg){
+        var av = $scope.availability[index];
+        var invalid = false;
+        
+        //start time is before 7:30AM
+        if (av.start.getHours() < 7){
+            invalid = true;
+            if (updateMsg && $scope.availabilityErrorMsg.indexOf("The start time must be after 7:00AM!\n") === -1){
+                $scope.availabilityErrorMsg[index] += "The start time must be after 7:00AM!\n";
+            }
+        } else {
+            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("The start time must be after 7:00AM!\n") != -1){
+                var msg = $scope.availabilityErrorMsg[index];
+                msg = msg.replace("The start time must be after 7:00AM!\n", "");
+                $scope.availabilityErrorMsg[index] = msg;
+            }
+        }
+        
+        //end time is after 3:30PM
+        if (av.end.getHours() >= 16){
+            invalid = true;
+            if (updateMsg && $scope.availabilityErrorMsg.indexOf("The end time must be before 4:00PM!") === -1){
+                $scope.availabilityErrorMsg[index] += "The end time must be before 4:00PM!\n";
+            }
+        } else {
+            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("The end time must be before 4:00PM!\n") != -1){
+                var msg = $scope.availabilityErrorMsg[index];
+                msg = msg.replace("The end time must be before 4:00PM!\n", "");
+                $scope.availabilityErrorMsg[index] = msg;
+            }
+        }
+        
+        //end time is not at least 2 hours after start time
+        var diff = av.end.getTime() - av.start.getTime();
+        var diffMins = (diff/1000)/60;
+        if (diffMins < 120){
+            invalid = true;
+            if (updateMsg && $scope.availabilityErrorMsg.indexOf("Timeslots must be at least 2 hours long!") === -1){
+                $scope.availabilityErrorMsg[index] += "Timeslots must be at least 2 hours long!\n";
+            }
+        } else {
+            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("Timeslots must be at least 2 hours long!\n") != -1){
+                var msg = $scope.availabilityErrorMsg[index];
+                msg = msg.replace("Timeslots must be at least 2 hours long!\n", "");
+                $scope.availabilityErrorMsg[index] = msg;
+            }    
+        }
+        
+        return invalid;
+        
+    }
+    $scope.validateAvailability = function(){
+        var invalid = false;
+        for (var i = 0; i < $scope.availability.length; i++){
+            invalid = invalid || $scope.validateDays(i, false) || $scope.validateTimes(i, false);
+        }
+        $scope.invalidAvailability = invalid;
+    }
+    
+    $scope.validatePracticum = function(index, updateMsg){
+        var prac = $scope.previousPractica[index];
+        var invalid = false;
+  
+        if (prac.school && prac.school === "Other" && prac.otherSchool === undefined){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must enter a school!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must enter a school!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
+            }
+
+        }
+        if (prac.course && prac.course === "Other" && prac.other === undefined){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must enter a course!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must enter a course!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
+            }
+        }
+        return invalid;
+    }
+    
+    $scope.validateAllPractica = function(){
+        var invalid = false;
+        if (!$scope.noPreviousPractica){
+            for (var i = 0; i < $scope.previousPractica.length; i++){
+                var prac = $scope.previousPractica[i];
+                invalid = invalid || prac.schoolDivision === undefined || prac.school === undefined || prac.schoolDivision === undefined 
+                || (prac.grade === undefined && prac.course === undefined) || $scope.validatePracticum(i, false);
+            }
+        }
+        $scope.invalidPractica = invalid;
     }
     
     $scope.formIsInvalid = function(){
         $scope.validateTransportation();
         $scope.validateEndorsement();
         $scope.validateEnrolledClass();
-        $scope.validateAvailability();
-        $scope.validatePractica();
+        $scope.validateAvailability(); 
+        $scope.validateAllPractica();
         return ($scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
         $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
         $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);

@@ -94,19 +94,7 @@ function checkTransportation(){
     }
 }
 
-function checkAvailability(){
-	var av = document.getElementById("availability");
-	console.log(av);
-	document.getElementById("errorinfo").innerHTML = av;
-	return false;
-	// if (transport.value != "none" && transport.value != "self" && transport.value != "others"){
-	// 	document.getElementById("errorinfo").innerHTML = "You must make a selection that reflects your transportation situation.";
-	// 	// $('#validationfailed').modal();
-	// 	return false;
-	// } else {
- //       return true;
- //   }
-}
+
 
 
 
