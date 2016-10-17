@@ -53,7 +53,7 @@
             <div class="form-group">
                 <span>Currently Enrolled In (Select all that apply):</span><span ng-if="invalidEnrolledClass"><small class="error">&nbsp;&nbsp;*</small></span>
                 <select multiple class="form-control" id="practicumBearing" name="practicumBearing" ng-model="$parent.enrolledClasses" 
-                required bs-tooltip="{'title': 'Hold down control or command to select multiple options'}" data-placement="left">
+                required bs-tooltip="{'title': 'Hold down control or command to select multiple options'}" container="body" data-placement="left">
                     <option ng-repeat="item in practicumBearingClasses">{{ '{{item}}' }}</option>
                 </select>
             </div>
@@ -62,7 +62,7 @@
             <div class="form-group">
                 <span>Endorsement (Select all that apply):</span><span ng-if="invalidEndorsement"><small class="error">&nbsp;&nbsp;*</small></span>
                 <select multiple class="form-control" id="endorsement" name="endorsement" ng-model="$parent.endorsementSought" 
-                required bs-tooltip="{'title': 'Hold down control or command to select multiple options'}" data-placement="right">
+                required bs-tooltip="{'title': 'Hold down control or command to select multiple options'}" container="body" data-placement="right">
                     <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>
                 </select>
             </div>
