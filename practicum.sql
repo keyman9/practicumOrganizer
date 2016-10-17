@@ -40,10 +40,12 @@ GRANT SELECT, INSERT ON transportation TO practicum_admin;
 ---Previous Practica---
 DROP TABLE IF EXISTS previousPractica;
 CREATE TABLE previousPractica(
+  id serial,
   school varchar(60) NOT NULL default '',
   grade integer NOT NULL,
   course varchar(60) NOT NULL default '',
   studentEmail varchar(60) NOT NULL default '',
+  PRIMARY KEY (id),
   FOREIGN KEY (studentEmail) references students(email)
 );
 

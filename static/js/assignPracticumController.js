@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize'])
-=======
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap'])
->>>>>>> cad8fac4b9cb56ef8eebd162812721d2e138dac0
 
 POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
@@ -39,9 +36,14 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     "Special Education K-12: General Curriculum", "Theater Arts preK-12", "Visual Art preK-12"];
     
     $scope.students = [];
+    $scope.studentsFromDB = [];
     $scope.currentStudent = {};
         
     $scope.initializeStudents = function(){
+        
+        socket.emit('loadStudents');
+        
+        
         for (var i = 0; i < 10; i++){
             var stu = new Student();
             stu.initialize(student);
