@@ -264,6 +264,15 @@ def getSchoolDivisions():
     emit("retrievedDivisions", schoolDivisions)
 
 @socketio.on('getPracticumBearing', namespace='/student')
+def getPracticumBearingForStudent():
+    courses = getPracticumBearing()
+    emit("retrievedPracticumBearing", courses)
+    
+@socketio.on('getPracticumBearing', namespace='/practica')
+def getPracticumBearingForAssignment():
+    courses = getPracticumBearing()
+    emit("retrievedPracticumBearing", courses)
+
 def getPracticumBearing():
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -278,9 +287,8 @@ def getPracticumBearing():
     except Exception as e:
         print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
         db.rollback()
-    emit("retrievedPracticumBearing", courses)
-
-
+    return courses
+    
     
 selectStudents = "SELECT * FROM students"
 selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"

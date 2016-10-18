@@ -448,8 +448,6 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Liberty High School',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Marshall Middle School', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
-INSERT INTO schools(schoolName,divisionId) VALUES ('Liberty High School', 
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Southeastern Alternative Middle & High School', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Taylor Middle School', 

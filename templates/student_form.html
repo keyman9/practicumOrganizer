@@ -54,7 +54,7 @@
                 <span>Currently Enrolled In (Select all that apply):</span><span ng-if="invalidEnrolledClass"><small class="error">&nbsp;&nbsp;*</small></span>
                 <select multiple class="form-control" id="practicumBearing" name="practicumBearing" ng-model="$parent.enrolledClasses" 
                 required bs-tooltip="{'title': 'Hold down control or command to select multiple options'}" container="body" data-placement="left">
-                    <option ng-repeat="item in practicumBearingClasses">{{ '{{item}}' }}</option>
+                    <option ng-repeat="item in practicumBearingClasses | orderBy: item">{{ '{{item}}' }}</option>
                 </select>
             </div>
         </div>
@@ -193,7 +193,7 @@
                     <div class="col-md-3">
                         <span>School</span>
                         <select class="form-control" id="school" name="school" ng-model="item.school" ng-change="changeSchool(item)" required>
-                            <option ng-repeat="school in getSchools(previousPractica.indexOf(item))">{{ '{{school}}' }}</option>
+                            <option ng-repeat="school in getSchools(previousPractica.indexOf(item)) | orderBy:school">{{ '{{school}}' }}</option>
                             <option>Other</option>
                         </select>
                     </div>

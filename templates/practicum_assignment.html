@@ -11,8 +11,6 @@
         white-space: pre;
     }
     .list-group-item{
-        /*background-color: #ebebeb;*/
-        /*color:#0b0a0a  !important;*/
         border: 1px solid #ebebeb;
     }
     
@@ -37,6 +35,7 @@
     .panel-heading{
         color: black !important;
     }
+
 </style>
 <script type="text/javascript" src="static/js/assignPracticumController.js"></script>
 
@@ -97,7 +96,7 @@
     
     <div class="row">
         <div class="col-md-6 right-border">
-            <h4>Students</h4>
+            <h4 class="text-center">Students</h4>
             <br/>
             <div class="row">
                 <div class="col-md-6">
@@ -105,12 +104,14 @@
                     <div class="form-group">
                         <span>Practicum-Bearing Class:
                         <select class="form-control" id="practicumBearing" name="practicumBearing" ng-model="$parent.enrolledClasses">
-                            <option ng-repeat="item in practicumBearingClasses">{{ '{{item}}' }}</option>
+                            <option>N/A</option>
+                            <option ng-repeat="item in practicumBearingClasses | orderBy: item">{{ '{{item}}' }}</option>
                         </select></span>
                     </div><br />
                     <div class="form-group">
                         <span>Endorsement:
                         <select class="form-control" id="endorsement" name="endorsement" ng-model="$parent.endorsementSought">
+                            <option>N/A</option>
                             <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>
                         </select></span>
                     </div>
@@ -119,7 +120,7 @@
                     <div slim-scroll height="350px">
                         <ul class="list-group" dnd-list="lists[0].students">
                             <button class="list-group-item btn" ng-repeat="student in lists[0].students" ng-class="{active : currentStudent === student}" 
-                            ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" auto-close="true" 
+                            ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" placement="left" auto-close="true" 
                             data-html="true" ng-click="setCurrentStudent(student)" bs-popover 
                             dnd-draggable="student" dnd-effect-allowed="move">
                                 <span ng-bind="student.firstName"></span>&nbsp;
@@ -131,7 +132,53 @@
             </div>
         </div>
         <div class="col-md-6">
-            <h4>Teachers</h4>
+            <h4 class="text-center">Teachers</h4>
+            <br/>
+            <div class="row">
+                <div class="col-md-6">
+                    <span>Filter By</span><br/><br/>
+                    <div class="form-group">
+                        <span>School Division:
+                        <select class="form-control" id="division" name="division" ng-model="schoolDivision">
+                            <option>N/A</option>
+                            <option ng-repeat="item in schoolDivisions">{{ '{{item.division}}' }}</option>
+                        </select></span>
+                    </div>
+                    <div class="form-group">
+                        <span>School:
+                        <select class="form-control" id="school" name="school" ng-model="school">
+                            <option>N/A</option>
+                            <option ng-repeat="school in getSchools(schoolDivision)">{{ '{{school}}' }}</option>
+                        </select></span>
+                    </div>
+                    <div class="form-group">
+                        <span>Grade</span>
+                        <select class="form-control" id="grade" name="grade" ng-model="grade" ng-options="g as g.displayName for g in grades">
+                            <option>N/A</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <span>Subject</span>
+                        <select class="form-control" id="course" name="course" ng-model="course">
+                            <option>N/A</option>
+                            <option ng-repeat="c in courses">{{ '{{c}}' }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div slim-scroll height="350px">
+                        <ul class="list-group" dnd-list="lists[0].teachers">
+                            <button class="list-group-item btn" ng-repeat="teacher in lists[0].teachers" ng-class="{active : currentTeacher === teacher}" 
+                            ng-model="$parent.teacher" data-template-url="popover.student.tpl.html" container="body" auto-close="true" 
+                            data-html="true" ng-click="setCurrentTeacher(teacher)" bs-popover 
+                            dnd-draggable="teacher" dnd-effect-allowed="move">
+                                <span ng-bind="teacher.firstName"></span>&nbsp;
+                                <span ng-bind="teacher.lastName"></span>
+                            </button>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <br /><br /><br /><hr/>
@@ -145,9 +192,11 @@
             </ul>
         </div>
         <div class="col-md-9">
-             <div class="panel panel-default">
-              <div class="panel-heading">
+             <div class="panel well">
                   <div class="row" ng-if="practicumMode">
+                      <table>
+                          <th></th>
+                      </table>
                       <div class="col-md-3 right-border">
                         <h5>Student</h5>
                       </div>
@@ -166,18 +215,14 @@
                         <h5>Riders</h5>
                       </div>
                   </div>
-              </div>
-              <div class="panel-body">
+                  <hr/>
                   <div class="row" ng-if="practicumMode">
-                      <table class="table">
-                          <tbody>
-                              <tr>
-                                  <td class="col-md-3"></td>
-                                  <td class="col-md-3"></td>
-                                  <td class="col-md-6"></td>
-                              </tr>
-                          </tbody>
-                      </table>
+                      <div class="col-md-3">
+                      </div>
+                      <div class="col-md-3">
+                      </div>
+                      <div class="col-md-6">
+                      </div>
                   </div>
                   <div class="row" ng-if="transportationMode">
                       <div class="col-md-4">
@@ -186,10 +231,11 @@
                       </div>
                   </div>
               </div>
+
+              </div>
             </div>
         </div>
-    </div>
 
-</div><br />
+    </div><br />
 
 {% endblock %}

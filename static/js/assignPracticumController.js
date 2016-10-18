@@ -23,12 +23,6 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         ], 
         'email': 'hpotter@hogwarts.uk'};
         
-    $scope.practicumBearingClasses = ["EDSE 303", "EDUC 203", "EDUC 204", "EDUC 303", "EDUC 305", "EDUC 351A", "EDUC 371", 
-    "EDUC 373", "EDUC 385", "EDUC 388", "EDUC 453", "EDUC 454", "EDUC 455", "EDUC 456",
-    "EDUC 457", "EDUC 458", "EDUC 459", "EDUC 510", "MATH 204", "EDCI 501", "EDCI 502", 
-    "EDCI 507", "EDCI 509", "EDCI 515", "EDCI 519", "EDCI 521", "EDCI 523", "EDCI 538", 
-    "EDCI 552", "EDCI 553", "EDCI 554", "EDCI 555", "EDCI 556", "EDCI 557", "EDCI 558",
-    "EDCI 559", "EDSE 512", "EDSE 519", "EDSE 521", "EDSE 539", "EDSE 541", "TESL 515"];
     
     $scope.endorsements = ["Elementary Education pK-6", "English", "Foreign Language- French", "Foreign Language- German", 
     "Foreign Language- Latin", "Foreign Language- Spanish", "History & Social Sciences", "Mathematics", 
@@ -41,6 +35,9 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.currentStudent = {};
     $scope.practicumMode = true;
     $scope.transportationMode = false;
+    $scope.schoolDivisions = [];
+    $scope.practicumBearingClasses = [];
+    
     $scope.lists = [
         {
             label: "Students",
@@ -115,8 +112,22 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
        $scope.practicumMode = false;
     };
     
+    $scope.getPracticumBearing = function(){
+        socket.emit('getPracticumBearing');
+    }
+    
+    socket.on("retrievedPracticumBearing", function(courses){
+        if (courses.length > 0){
+            for (var i=0; i < courses.length; i++){
+                $scope.practicumBearingClasses.push(courses[i][0]);
+            }
+        }
+        // console.log($scope.practicumBearingClasses);
+    });
+    
     
     $scope.initializeStudents();
+    $scope.getPracticumBearing();
     
 
 
