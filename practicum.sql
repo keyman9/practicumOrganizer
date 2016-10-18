@@ -19,7 +19,7 @@ CREATE TABLE students (
   lastName varchar(60) NOT NULL default '',
   hasCar boolean NOT NULL default FALSE,
   passengers integer NOT NULL default 0,
-  assignedPracticum boolean,
+  assignedPracticum boolean default FALSE,
   PRIMARY KEY  (email),
   UNIQUE(email)
 );
@@ -57,7 +57,7 @@ DROP TABLE IF EXISTS enrolledCourses;
 CREATE TABLE enrolledCourses(
   courseName varchar(60) NOT NULL default '',
   studentEmail varchar(60) NOT NULL references students(email),
-  PRIMARY KEY (courseName)
+  PRIMARY KEY (courseName,studentEmail)
 );
 
 GRANT SELECT, INSERT ON enrolledCourses TO practicum_normal;
@@ -68,7 +68,7 @@ DROP TABLE IF EXISTS endorsement;
 CREATE TABLE endorsements(
   endorsementName varchar(60) NOT NULL default '',
   studentEmail varchar(60),
-  PRIMARY KEY (endorsementName),
+  PRIMARY KEY (endorsementName,studentEmail),
   FOREIGN KEY (studentEmail) references students(email)
 );
 
