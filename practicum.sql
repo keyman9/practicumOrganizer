@@ -665,8 +665,6 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Head Start',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Friends of the Rappahannock',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
-INSERT INTO schools(schoolName,divisionId) VALUES ('Other',
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 
 --Practicum Bearing Courses--
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 303');
