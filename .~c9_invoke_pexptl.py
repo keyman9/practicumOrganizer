@@ -44,35 +44,53 @@ def getStudentData():
     return render_template('student_form.html')
     
     
-loginQuery= 'SELECT * from login WHERE password= crypt(%s, password)'
+loginQuery= 'SELECT * from users WHERE username = %s AND password= crypt(%s, password)'
     
-@app.route('/login', methods=['GET', 'POST'])
+        selectedMenu= 'Login'
 def login():
     redirectPage= "login.html"
-    #selectedMenu= 'Login'
+    selectedMenu= 'Login'
     if request.method=='POST':
         db= connect_to_db()
         cur= db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        #username = request.form['username']
-        pw= request.form['password']
+        username = request.form['username']
+        pw= request.form['pw']
 
-        query= cur.mogrify(loginQuery,(pw,))
+        cur.execute(loginQuery,(username,pw))
+        results= cur.fetchone()
+        print(results)
+        if not results:
+            print('Incorrect username or password')
+        else:
+            session['username']=results['username']
+            session['zipcode']=results['zipcode']
+            redirectPage='index.html'
+            selectedMenu='Home'
+            
+        cur.close()
+        db.close()
+            
+    return render_template('login.html')
+    
+@app.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    
+    if request.method == "POST":
+        
+        print(request.form) #DEBUG
+        
+        pd = request.form['password']
+        
+        db = connect_to_db()
+        cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        query = cur.mogrify(loginQuery, (pw,))
         try:
             cur.execute(query)
-            results= cur.fetchone()
+            results = cur.fetchone()
         except Exception as e:
             print("Error: SEARCH in 'login' table: %s" % e)
-            db.rollback();
-        #print(results)
-        if not results:
-            print('Incorrect password')
-        else:
-            #session['username']=results['username']
-            #session['zipcode']=results['zipcode']
-            session['password']=results['password'];
-            redirectPage='index.html'
-            #selectedMenu='Home'
-            
+            db.rollback()
+        
         cur.close()
         db.close()
         
@@ -81,36 +99,7 @@ def login():
         else:
             session['user'] = uuid.uuid1()
             
-    return render_template('login.html')
-    
-# @app.route('/dashboard', methods=['GET', 'POST'])
-# def dashboard():
-    
-#     if request.method == "POST":
-        
-#         print(request.form) #DEBUG
-        
-#         pd = request.form['password']
-        
-#         db = connect_to_db()
-#         cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-#         query = cur.mogrify(loginQuery, (pw,))
-#         try:
-#             cur.execute(query)
-#             results = cur.fetchone()
-#         except Exception as e:
-#             print("Error: SEARCH in 'login' table: %s" % e)
-#             db.rollback()
-        
-#         cur.close()
-#         db.close()
-        
-#         if not results: # user does not exist
-#             error += 'Incorrect username or password.\n'
-#         else:
-#             session['user'] = uuid.uuid1()
-            
-#     return render_template('dashboard.html')
+    return render_template('dashboard.html')
     
 @app.route('/practica', methods=['GET', 'POST'])
 def assignPractica():
@@ -245,14 +234,11 @@ def updatePassword(payload):
     
     
 selectStudents = "SELECT * FROM students"
-selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
-availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
-selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
+selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email"
 @socketio.on('loadStudents', namespace='/practica') 
 def loadStudents():
     
     students = []
-    studentsFromDB = []
     studentsPractica = []
     studentsAvailability = []
     
@@ -264,32 +250,32 @@ def loadStudents():
         query = cur.mogrify(selectStudents) 
         print query
         cur.execute(query)
-        studentsFromDB = cur.fetchall()
+        students = cur.fetchall()
         
     except Exception as e:
-        print("Error: Invalid SELECT on 'students' table: %s" % e)
+        print("Error: Invalid SELCT in 'students' table: %s" % e)
         db.rollback()
     
     # Grab all students practicas
     try:
-        query = cur.mogrify(selectStudentPractica) 
+        query = cur.mogrify(selectStudents) 
         print query
         cur.execute(query)
-        studentsPractica = cur.fetchall()
+        students = cur.fetchall()
         
     except Exception as e:
-        print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
+        print("Error: Invalid SELCT in 'students' table: %s" % e)
         db.rollback()
         
-    # Grab all students availablities
+    # Grab all students
     try:
-        query = cur.mogrify(selectStudentAvailability) 
+        query = cur.mogrify(selectStudents) 
         print query
         cur.execute(query)
-        studentsAvailability = cur.fetchall()
+        students = cur.fetchall()
         
     except Exception as e:
-        print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
+        print("Error: Invalid SELCT in 'students' table: %s" % e)
         db.rollback()
     
     
