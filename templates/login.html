@@ -6,12 +6,33 @@
 
     <div class="container">
         
-        <div class="alert alert-danger" role="alert" id="messageBox" style='display:none'></div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "logged out" in message %}
+                    
+                    <div class="alert alert-success alert-dismissible" role="alert" id="loginError" style='display:none'>
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <span class="glyphicon glyphicon-exclamation-ok" aria-hidden="true"></span>&nbsp;&nbsp;Success: {{ message }}
+                    </div>
+                    
+                    {% else %}
+                    
+                    <div class="alert alert-warning alert-dismissible" role="alert" id="loginError" style='display:none'>
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;Error: {{ message }}
+                    </div>
+                    
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
         
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-            <div class="panel panel-primary">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title">Sign In</div>
+                    <div class="panel-title" style=" color:white">Sign In</div>
                     <div style="float:right; font-size: 80%; position: relative; top:-10px"><a id="forgotPassword" style=" color:white" href="#">Forgot password?</a></div>
                 </div>
                 <div style="padding-top:30px" class="panel-body">
@@ -21,17 +42,17 @@
                             <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
                         </div>
                         <div style="margin-bottom: 25px" class="input-group" id="passwordDiv">
-                            <span class="input-group-addon" style="background-color:#2b3e50"><i class="glyphicon glyphicon-lock"></i></span>
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                             <input id="login-password" type="password" class="form-control" name="password" placeholder="password">
                         </div>
                         <div style="margin-top:10px" class="form-group">
                             <!-- Button -->
                             <div class="col-md-5">
-                                <a class="btn btn-info" style="width:100%;margin-bottom:5px;" href="/"><strong>Home</strong></a>
+                                <a class="btn btn-primary" style="width:100%;margin-bottom:5px;" href="/"><strong>Home</strong></a>
                             </div>
                             <div class="col-md-2"></div>
                             <div class="col-md-5">
-                                <button type="submit" class="btn btn-success" style="width:100%;margin-bottom:5px;" ng-click="/practica"><strong>Login</strong></button>
+                                <button type="submit" class="btn btn-success" style="width:100%;margin-bottom:5px;"><strong>Login</strong></button>
                             </div>
                         </div>
                     </form>
@@ -57,7 +78,7 @@
                             <button type="button" class="btn btn-danger" data-dismiss="modal" style="width:100%;"><strong>No</strong></button>
                         </div>
                         <div class="col-md-6">
-                            <a type="button" id="yesReset" class="btn btn-info" style="width:100%;" ng-click="forgotPassword()"><strong>Yes</strong></a>
+                            <a type="button" id="yesReset" class="btn btn-success" style="width:100%;" ng-click="forgotPassword()"><strong>Yes</strong></a>
                         </div>
                     </div>
                 </div>
@@ -85,7 +106,7 @@
                         </div>
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
-                            <span class="input-group-addon" style="background-color:#2b3e50"><i class="glyphicon glyphicon-lock"></i></span>
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                             <input id="accessCode" type="text" class="form-control" name="accessCode" placeholder="Access Code">
                         </div>
 
@@ -125,7 +146,7 @@
                         </div>
 
                         <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
-                            <span class="input-group-addon" style="background-color:#2b3e50"><i class="glyphicon glyphicon-lock"></i></span>
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                             <input id="resetPassword1" type="password" class="form-control" name="resetPassword1" placeholder="password">
                         </div>
 
@@ -170,6 +191,15 @@
             e.parentNode.removeChild(e);
         }
     )();
+    
+    (function() {
+            var e = document.getElementById("loginError");
+            if(e){
+                $("#loginError").fadeIn(600).delay(3000).fadeOut(600);
+            }
+        }
+    )();
+
     
     $('#forgotPassword').click(function() {
         $('#forgotPasswordModal').modal('show');

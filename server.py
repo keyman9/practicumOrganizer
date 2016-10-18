@@ -15,7 +15,6 @@ import uuid
 import string
 import random
 
-
 app = Flask(__name__)
 socketio = SocketIO(app)
 
@@ -23,15 +22,158 @@ app.secret_key= os.urandom(24).encode('hex')
 
 globalDict = {'accessCode': ''}
 
-
 #Queries
 loginQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
 updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE passwordid = 1"
-    
+
+
+studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
+endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
+meetingTable = "SELECT meetingid from meetinday where "
+meetingAddon = "%s = %s"
+meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s)"
+prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
+enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
-    print "here"
-    print data
+    print(data)
+    print(data['email'])
+    studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
+    #print(studentData)
+    
+    #student Table
+    try:
+        db = connect_to_db()
+        cur = db.cursor()
+        #cur.mogrify(studentTable, studentData)
+        cur.execute(studentTable, studentData)
+        db.commit()
+    except Exception as e:
+        print(e)
+    
+    #endorsement Table
+    for endorsement in data['endorsements']:
+        try:
+            endorsementData = [endorsement, data['email']]
+            #cur.mogrify(endorseTable, endorsementData)
+            cur.execute(endorseTable, endorsementData)
+            print("inserted into endorsements table")
+            db.commit()
+        except Exception as e:
+            print(e)
+    
+    #previousPractica Table
+    for practica in data['previousPractica']:
+        try:
+            practicaData = [data['school'],data['grade'],data['course'],data['email']]
+            cur.execute(prevPracTable, practicaData)
+            print("inserted into prev practica table")
+            db.commit()
+        except Exception as e:
+            print(e)
+            
+    #enrolledCourses Table
+    for enrolledIn in data['enrolledClasses']:
+       try:
+            coursesData = [enrolledIn, data['email']]       
+            cur.execute(enrolledCourseTable, coursesData)
+            print("inserted into enrolled courses")
+       except Exception as e:
+            print(e) 
+       
+    #meetingDays Table 
+    #availableTimes Table
+
+selectStudents = "SELECT * FROM students"
+selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
+availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
+selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
+selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
+selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
+@socketio.on('loadStudents', namespace='/practica') 
+def loadStudents():
+    
+    students = []
+    studentsFromDB = []
+    studentsPractica = []
+    studentsAvailability = []
+    studentsEndorsements = []
+    studentsCourses = []
+    hasError = False
+    
+    db = connect_to_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    
+    # Grab all students
+    try:
+        query = cur.mogrify(selectStudents) 
+        print query
+        cur.execute(query)
+        studentsFromDB = cur.fetchall()
+        
+    except Exception as e:
+        print("Error: Invalid SELECT on 'students' table: %s" % e)
+        db.rollback()
+        hasError = True
+    
+    if not hasError:
+        # Grab all students practicas
+        try:
+            query = cur.mogrify(selectStudentPractica) 
+            print query
+            cur.execute(query)
+            studentsPractica = cur.fetchall()
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    if not hasError:    
+        # Grab all students availablities
+        try:
+            query = cur.mogrify(selectStudentAvailability) 
+            print query
+            cur.execute(query)
+            studentsAvailability = cur.fetchall()
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    if not hasError:
+        # Grab all students endorsements
+        try:
+            query = cur.mogrify(selectStudentEndorsements) 
+            print query
+            cur.execute(query)
+            studentsEndorsements = cur.fetchall()
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    if not hasError:
+        # Grab all students enrolled courses
+        try:
+            query = cur.mogrify(selectStudentCourses) 
+            print query
+            cur.execute(query)
+            studentsCourses = cur.fetchall()
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    for student in studentsFromDB:
+        pass
+
+    
+    emit('initializeStudents')
+
     
 @app.route('/')
 def mainIndex():
@@ -46,18 +188,23 @@ def getStudentData():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-
     return render_template('login.html')
+    
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    session.clear()
+    flash('You have successfully logged out!')
+    return redirect(url_for('login'))
     
 @app.route('/practica', methods=['GET', 'POST'])
 def assignPractica():
-    redirectPage='login.html'
-    selectedMenu= 'Login'
+    hasRedirect = False
     error = ''
     if request.method == "POST":
-    
-        pd = request.form['password']
+        
+        if 'password' in request.form:
+            pd = request.form['password']
+            hasRedirect = True
         
         db = connect_to_db()
         cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -66,21 +213,22 @@ def assignPractica():
         results = cur.fetchone()
         if not results:
             error+= 'Incorrect Password.\n'
+            flash('Invalid Password')
+            
+            hasRedirect = False
         else:
-            session['userid']= results['passwordid']
-            redirectPage= 'practicum_assignment.html'
+            session['userid'] = results['passwordid']
+            session['loggedIn'] = True
+            
         
         cur.close()
         db.close()
+        if hasRedirect:
+            return render_template('practicum_assignment.html')
+        return redirect(url_for('login'))
         
-    if len(error) == 0:
-        emit('login', {'success' : True, 'message' : "Successfully logged in.",'userid' : session['userid']})
-    else:
-        emit('login', {'success' : False, 'message' : error})
-  
-    emit('error', {'exists' : len(error) != 0, 'message' : error, 'type' : 'login'})
-    
-    return render_template(redirectPage, selectedMenu=selectedMenu)
+    flash('Please log in to access practica')
+    return redirect(url_for('login'))
 
 @socketio.on('forgotPassword', namespace='/login') 
 def forgotPassword():
@@ -98,7 +246,9 @@ def forgotPassword():
     msg = MIMEText(message)
     msg['Subject'] = '[Practicum Organizer] Reset password'
     msg['From'] = 'buymybooks350@gmail.com'
-    msg['To'] = 'bmnosar@gmail.com' #Just to test
+    msg['To'] = 'sheldonmcclung@gmail.com' #Just to test
+    sender='buymybooks350@gmail.com'
+    receiver= 'sheldonmcclung@gmail.com'
     
     
     try:
@@ -107,14 +257,14 @@ def forgotPassword():
         smtpObj.ehlo()
         smtpObj.starttls()
         smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
-        smtpObj.sendmail(sender, receiver, msg.as_string())         
+        smtpObj.sendmail(msg['From'], msg['To'], msg.as_string())
+        smtpObj.close()
         print "Successfully sent email"
     except Exception as e:
         print(e)
             
     emit('forgotPassword')
     
-
 # @app.route('/forgotpassword', methods=['GET', 'POST'])
 # def forgotPassword():
 #     loggedIn = False
@@ -122,49 +272,49 @@ def forgotPassword():
 #     passFailed = False
 #     wrongUsername = False
 #     if request.method=="POST":
-#         receiver=[request.form['email']]
+#         receiver=['sheldonmcclung@gmail.com']#[request.form['email']]
 #         sender = ['buymybooks350@gmail.com']
         
 #         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-#         accessCode = ''.join(random.choice(chars) for _ in range(8))
+#         accessCode = ''.join(random.choice(chars) for _ in range(10))
 #         print accessCode
         
 #         emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
-#         msg = MIMEText(emailMSG)
-#         msg['Subject'] = 'Reset password'
-#         msg['From'] = 'buymybooks350@gmail.com'
-#         msg['To'] = request.form['email']
+#         #msg = MIMEText(emailMSG)
+#         #msg['Subject'] = 'Reset password'
+#         #msg['From'] = 'buymybooks350@gmail.com'
+#         #msg['To'] = 'sheldonmcclung@gmail.com'#request.form['email']
         
-#         conn = connectToDB()
-#         cur = conn.cursor()
+#         #conn = connectToDB()
+#         #cur = conn.cursor()
         
-#         query = cur.mogrify("""SELECT * FROM users WHERE email = %s;""", (request.form['email'],))
-#         print query
-#         cur.execute(query)
-#         results = cur.fetchall()
-#         print results
-#         if results != []:
-#             try:
-#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (accessCode, request.form['email'])) 
-#                 print query
-#                 cur.execute(query)
-#                 conn.commit()
-#                 passChanged = True
-#                 print "Password changed"
-#                 try:
-#                     smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
-#                     #server.set_debuglevel(1)
-#                     smtpObj.ehlo()
-#                     smtpObj.starttls()
-#                     smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
-#                     smtpObj.sendmail(sender, receiver, msg.as_string())         
-#                     print "Successfully sent email"
-#                 except Exception as e:
-#                     print(e)
-#             except:
-#                 print("Error changing password")
-#                 conn.rollback()
-#                 passFailed = True
+#         # query = cur.mogrify("""SELECT * FROM users WHERE email = %s;""", ('sheldonmcclung@gmail.com',))#(request.form['email'],))
+#         # print query
+#         # cur.execute(query)
+#         # results = cur.fetchall()
+#         # print results
+#         # if results != []:
+#         #     try:
+#         #         query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (accessCode, 'sheldonmcclung@gmail.com'))#request.form['email'])) 
+#         #         print query
+#         #         cur.execute(query)
+#         #         conn.commit()
+#         #         passChanged = True
+#         #         print "Password changed"
+#         try:
+#             smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+#             #server.set_debuglevel(1)
+#             smtpObj.ehlo()
+#             smtpObj.starttls()
+#             smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
+#             smtpObj.sendmail('buymybooks350@gmail.com', 'sheldonmcclung@gmail.com', emailMSG.as_string())         
+#             print "Successfully sent email"
+#         except Exception as e:
+#             print(e)
+#             # except:
+#             #     print("Error changing password")
+#             #     conn.rollback()
+#             #     passFailed = True
 #         else:
 #             wrongUsername = True
 #             print "Incorrect email"
@@ -210,57 +360,7 @@ def updatePassword(payload):
     emit('updatePassword')
     
     
-selectStudents = "SELECT * FROM students"
-selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
-availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
-selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
-@socketio.on('loadStudents', namespace='/practica') 
-def loadStudents():
-    
-    students = []
-    studentsFromDB = []
-    studentsPractica = []
-    studentsAvailability = []
-    
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
-    # Grab all students
-    try:
-        query = cur.mogrify(selectStudents) 
-        print query
-        cur.execute(query)
-        studentsFromDB = cur.fetchall()
-        
-    except Exception as e:
-        print("Error: Invalid SELECT on 'students' table: %s" % e)
-        db.rollback()
-    
-    # Grab all students practicas
-    try:
-        query = cur.mogrify(selectStudentPractica) 
-        print query
-        cur.execute(query)
-        studentsPractica = cur.fetchall()
-        
-    except Exception as e:
-        print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
-        db.rollback()
-        
-    # Grab all students availablities
-    try:
-        query = cur.mogrify(selectStudentAvailability) 
-        print query
-        cur.execute(query)
-        studentsAvailability = cur.fetchall()
-        
-    except Exception as e:
-        print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
-        db.rollback()
-    
-    
-    
-    emit('initializeStudents')
+
     
 # @app.route('/resetpassword', methods=['GET', 'POST'])
 # def resetPassword():
