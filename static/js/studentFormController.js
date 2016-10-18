@@ -368,49 +368,52 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         var invalid = false;
         
         //start time is before 7:30AM
-        if (av.start.getHours() < 7){
-            invalid = true;
-            if (updateMsg && $scope.availabilityErrorMsg.indexOf("The start time must be after 7:00AM!\n") === -1){
-                $scope.availabilityErrorMsg[index] += "The start time must be after 7:00AM!\n";
+        if (av.start && av.end){
+            if (av.start.getHours() < 7){
+                invalid = true;
+                if (updateMsg && $scope.availabilityErrorMsg.indexOf("The start time must be after 7:00AM!\n") === -1){
+                    $scope.availabilityErrorMsg[index] += "The start time must be after 7:00AM!\n";
+                }
+            } else {
+                if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("The start time must be after 7:00AM!\n") != -1){
+                    var msg = $scope.availabilityErrorMsg[index];
+                    msg = msg.replace("The start time must be after 7:00AM!\n", "");
+                    $scope.availabilityErrorMsg[index] = msg;
+                }
+            }
+            
+            //end time is after 3:30PM
+            if (av.end.getHours() >= 16){
+                invalid = true;
+                if (updateMsg && $scope.availabilityErrorMsg.indexOf("The end time must be before 4:00PM!") === -1){
+                    $scope.availabilityErrorMsg[index] += "The end time must be before 4:00PM!\n";
+                }
+            } else {
+                if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("The end time must be before 4:00PM!\n") != -1){
+                    var msg = $scope.availabilityErrorMsg[index];
+                    msg = msg.replace("The end time must be before 4:00PM!\n", "");
+                    $scope.availabilityErrorMsg[index] = msg;
+                }
+            }
+            
+            //end time is not at least 2 hours after start time
+            var diff = av.end.getTime() - av.start.getTime();
+            var diffMins = (diff/1000)/60;
+            if (diffMins < 120){
+                invalid = true;
+                if (updateMsg && $scope.availabilityErrorMsg.indexOf("Timeslots must be at least 2 hours long!") === -1){
+                    $scope.availabilityErrorMsg[index] += "Timeslots must be at least 2 hours long!\n";
+                }
+            } else {
+                if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("Timeslots must be at least 2 hours long!\n") != -1){
+                    var msg = $scope.availabilityErrorMsg[index];
+                    msg = msg.replace("Timeslots must be at least 2 hours long!\n", "");
+                    $scope.availabilityErrorMsg[index] = msg;
+                }    
             }
         } else {
-            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("The start time must be after 7:00AM!\n") != -1){
-                var msg = $scope.availabilityErrorMsg[index];
-                msg = msg.replace("The start time must be after 7:00AM!\n", "");
-                $scope.availabilityErrorMsg[index] = msg;
-            }
-        }
-        
-        //end time is after 3:30PM
-        if (av.end.getHours() >= 16){
             invalid = true;
-            if (updateMsg && $scope.availabilityErrorMsg.indexOf("The end time must be before 4:00PM!") === -1){
-                $scope.availabilityErrorMsg[index] += "The end time must be before 4:00PM!\n";
-            }
-        } else {
-            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("The end time must be before 4:00PM!\n") != -1){
-                var msg = $scope.availabilityErrorMsg[index];
-                msg = msg.replace("The end time must be before 4:00PM!\n", "");
-                $scope.availabilityErrorMsg[index] = msg;
-            }
         }
-        
-        //end time is not at least 2 hours after start time
-        var diff = av.end.getTime() - av.start.getTime();
-        var diffMins = (diff/1000)/60;
-        if (diffMins < 120){
-            invalid = true;
-            if (updateMsg && $scope.availabilityErrorMsg.indexOf("Timeslots must be at least 2 hours long!") === -1){
-                $scope.availabilityErrorMsg[index] += "Timeslots must be at least 2 hours long!\n";
-            }
-        } else {
-            if (updateMsg && $scope.availabilityErrorMsg[index].indexOf("Timeslots must be at least 2 hours long!\n") != -1){
-                var msg = $scope.availabilityErrorMsg[index];
-                msg = msg.replace("Timeslots must be at least 2 hours long!\n", "");
-                $scope.availabilityErrorMsg[index] = msg;
-            }    
-        }
-        
         return invalid;
         
     }

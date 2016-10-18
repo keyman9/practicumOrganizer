@@ -1,5 +1,6 @@
 
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize'])
+var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize', 'dndLists'])
+
 
 POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
@@ -38,6 +39,22 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.students = [];
     $scope.studentsFromDB = [];
     $scope.currentStudent = {};
+    $scope.practicumMode = true;
+    $scope.transportationMode = false;
+    $scope.lists = [
+        {
+            label: "Students",
+            allowedTypes: ['student'],
+            students: [
+            ]
+        }, 
+        {
+            label: "Teachers",
+            allowedTypes: ['teacher'],
+            teachers: [
+            ]
+        }
+    ];
         
     $scope.initializeStudents = function(){
         
@@ -47,9 +64,10 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         for (var i = 0; i < 10; i++){
             var stu = new Student();
             stu.initialize(student);
-            $scope.students.push(stu);
+            stu.type = "student";
+            $scope.lists[0].students.push(stu);
         }
-        console.log($scope.students);
+        console.log($scope.lists[0].students);
     }
     
     $scope.setCurrentStudent = function(student){
@@ -85,7 +103,18 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         }
         
         return transportation;
-    }
+    };
+    
+    $scope.togglePracticumMode = function(){
+       $scope.practicumMode = !$scope.practicumMode;
+       $scope.transportationMode = false;
+    };
+
+    $scope.toggleTransportationMode = function(){
+       $scope.transportationMode= !$scope.transportationMode;
+       $scope.practicumMode = false;
+    };
+    
     
     $scope.initializeStudents();
     
