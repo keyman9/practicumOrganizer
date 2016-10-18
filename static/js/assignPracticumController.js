@@ -43,6 +43,12 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             allowedTypes: ['student'],
             students: [
             ]
+        }, 
+        {
+            label: "Teachers",
+            allowedTypes: ['teacher'],
+            teachers: [
+            ]
         }
     ];
         
