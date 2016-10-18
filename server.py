@@ -243,6 +243,44 @@ def updatePassword(payload):
     
     emit('updatePassword')
     
+@socketio.on('getDivisions', namespace='/student')
+def getSchoolDivisions():
+    db = connect_to_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    schoolDivisions = []
+    
+    # Grab all school divisions
+    try:
+        query = cur.mogrify("SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) FROM \
+        schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
+        GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName")
+        print query
+        cur.execute(query)
+        schoolDivisions = cur.fetchall()
+        print schoolDivisions
+    except Exception as e:
+        print("Error: Invalid SELECT on 'schoolDivision' table: %s" % e)
+        db.rollback()
+    emit("retrievedDivisions", schoolDivisions)
+
+@socketio.on('getPracticumBearing', namespace='/student')
+def getPracticumBearing():
+    db = connect_to_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    courses = []
+    
+    # Grab all school divisions
+    try:
+        query = cur.mogrify("SELECT practicumCourses.courseName FROM practicumCourses")
+        cur.execute(query)
+        courses = cur.fetchall()
+        print courses
+    except Exception as e:
+        print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
+        db.rollback()
+    emit("retrievedPracticumBearing", courses)
+
+
     
 selectStudents = "SELECT * FROM students"
 selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"

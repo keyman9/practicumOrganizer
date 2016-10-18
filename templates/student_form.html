@@ -187,13 +187,14 @@
                     <div class="col-md-3">
                         <span>School Division</span>
                         <select class="form-control" id="division" name="division" ng-model="item.schoolDivision" ng-change="changeSchoolDivision(item)" required>
-                            <option ng-repeat="s in schools">{{ '{{s.division}}' }}</option>
+                            <option ng-repeat="div in schoolDivisions">{{ '{{div.division}}' }}</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <span>School</span>
                         <select class="form-control" id="school" name="school" ng-model="item.school" ng-change="changeSchool(item)" required>
-                            <option ng-repeat="school in getDivision(previousPractica.indexOf(item))">{{ '{{school}}' }}</option>
+                            <option ng-repeat="school in getSchools(previousPractica.indexOf(item))">{{ '{{school}}' }}</option>
+                            <option>Other</option>
                         </select>
                     </div>
                     <div class="col-md-9" ng-if="item.school==='Other'" ng-class="{'col-md-offset-1' : previousPractica.indexOf(item)<previousPractica.length-1}">
