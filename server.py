@@ -25,7 +25,7 @@ globalDict = {'accessCode': ''}
 
 
 #Queries
-loginQuery = "SELECT password FROM login WHERE password = crypt(%s, password)"
+loginQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
 updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE passwordid = 1"
     
 @socketio.on('submit', namespace='/student')
@@ -43,78 +43,44 @@ def getStudentData():
     #     print(request.form)
     return render_template('student_form.html')
     
-    
-loginQuery= 'SELECT * from login WHERE password= crypt(%s, password)'
-    
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    redirectPage= "login.html"
-    #selectedMenu= 'Login'
-    if request.method=='POST':
-        db= connect_to_db()
-        cur= db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        #username = request.form['username']
-        pw= request.form['password']
 
-        query= cur.mogrify(loginQuery,(pw,))
-        try:
-            cur.execute(query)
-            results= cur.fetchone()
-        except Exception as e:
-            print("Error: SEARCH in 'login' table: %s" % e)
-            db.rollback();
-        #print(results)
-        if not results:
-            print('Incorrect password')
-        else:
-            #session['username']=results['username']
-            #session['zipcode']=results['zipcode']
-            session['password']=results['password'];
-            redirectPage='index.html'
-            #selectedMenu='Home'
-            
-        cur.close()
-        db.close()
-        
-        if not results: # user does not exist
-            error += 'Incorrect username or password.\n'
-        else:
-            session['user'] = uuid.uuid1()
-            
+
     return render_template('login.html')
-    
-# @app.route('/dashboard', methods=['GET', 'POST'])
-# def dashboard():
-    
-#     if request.method == "POST":
-        
-#         print(request.form) #DEBUG
-        
-#         pd = request.form['password']
-        
-#         db = connect_to_db()
-#         cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-#         query = cur.mogrify(loginQuery, (pw,))
-#         try:
-#             cur.execute(query)
-#             results = cur.fetchone()
-#         except Exception as e:
-#             print("Error: SEARCH in 'login' table: %s" % e)
-#             db.rollback()
-        
-#         cur.close()
-#         db.close()
-        
-#         if not results: # user does not exist
-#             error += 'Incorrect username or password.\n'
-#         else:
-#             session['user'] = uuid.uuid1()
-            
-#     return render_template('dashboard.html')
     
 @app.route('/practica', methods=['GET', 'POST'])
 def assignPractica():
-    return render_template('practicum_assignment.html')
+    redirectPage='login.html'
+    selectedMenu= 'Login'
+    error = ''
+    if request.method == "POST":
+    
+        pd = request.form['password']
+        
+        db = connect_to_db()
+        cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        cur.execute("""SELECT passwordid FROM login WHERE password = crypt(%s, password)""",(pd,))
+        results = cur.fetchone()
+        if not results:
+            error+= 'Incorrect Password.\n'
+        else:
+            session['userid']= results['passwordid']
+            redirectPage= 'practicum_assignment.html'
+        
+        cur.close()
+        db.close()
+        
+    if len(error) == 0:
+        emit('login', {'success' : True, 'message' : "Successfully logged in.",'userid' : session['userid']})
+    else:
+        emit('login', {'success' : False, 'message' : error})
+  
+    emit('error', {'exists' : len(error) != 0, 'message' : error, 'type' : 'login'})
+    
+    return render_template(redirectPage, selectedMenu=selectedMenu)
 
 @socketio.on('forgotPassword', namespace='/login') 
 def forgotPassword():
@@ -294,7 +260,7 @@ def loadStudents():
     
     
     
-    emit('updatePassword')
+    emit('initializeStudents')
     
 # @app.route('/resetpassword', methods=['GET', 'POST'])
 # def resetPassword():
