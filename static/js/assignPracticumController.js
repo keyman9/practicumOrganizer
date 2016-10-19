@@ -1,4 +1,6 @@
+
 var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize', 'dndLists'])
+
 
 POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
@@ -52,25 +54,16 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     ];
         
     $scope.initializeStudents = function(){
-        console.log("LOADING STUDENTS");
         socket.emit('loadStudents');
-        
     };
     
-    socket.on('i', function(results){
-        console.log("I got here");
-        console.log(results);
-        $scope.students = results;
-        for(var i = 0; i < $scope.students.length; i++){
-            console.log($scope.students[i]);
-            
-        }
+     socket.on('loadStudents', function(results){
+        $scope.lists[0].students = results
+        console.log(results)
+        
+        $scope.$apply();
         
     });
-    
-    socket.on('error', function (err) {
-    console.log(err);
-});
     
     $scope.setCurrentStudent = function(student){
         $scope.currentStudent = student;
@@ -129,6 +122,8 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         }
         // console.log($scope.practicumBearingClasses);
     });
+    
+    
     
     $scope.initializeStudents();
     

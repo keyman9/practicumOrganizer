@@ -18,7 +18,7 @@ import random
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.secret_key = os.urandom(24).encode('hex')
+app.secret_key= os.urandom(24).encode('hex')
 
 globalDict = {'accessCode': ''}
 
@@ -202,40 +202,72 @@ def loadStudents():
     for student in studentsFromDB:
         newStudent = {}
         newStudent['email'] = student['email']
-        newStudent['firstname'] = student['firstname']
-        newStudent['lastname'] = student['lastname']
-        newStudent['hascar'] = student['hascar']
-        newStudent['passengers'] = student['passengers']
-        newStudent['assignedpracticum'] = student['assignedpracticum']
-        newStudent['previousPractica'] = []
-        newStudent['availability'] = []
-        newStudent['endorsements'] = []
-        newStudent['enrolledClasses'] = []
+        newStudent['firstName'] = student['firstname']#
+        newStudent['lastName'] = student['lastname']#
+        newStudent['hasCar'] = student['hascar']#
+        newStudent['passengers'] = student['passengers'] #
+        newStudent['previousPractica'] = []#
+        newStudent['availability'] = []#
+        newStudent['endorsements'] = []#
+        newStudent['enrolledClasses'] = []#
         
-        for col in studentsPractica:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['previousPractica'].append(col)
+        ###
+        for student in studentsPractica:
+            if newStudent['email'] == student['studentemail']:
+                payload = {}
+                payload['school'] = student['school']
+                if student['grade'] == 0:
+                    payload['course'] = student['course']
+                else:
+                    payload['course'] = student['grade']
                 
-        for col in studentsAvailability:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['availability'].append(col)
                 
-        for col in studentsEndorsements:
-            if newStudent['email'] == col['studentemail']:
                 #col.remove(newStudent['email'])
-                newStudent['endorsements'].append(col)
+                newStudent['previousPractica'].append(payload)
+        
+        print(newStudent['previousPractica'])
+        
+        
+        ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
+        for student in studentsAvailability:
+            if newStudent['email'] == student['studentemail']:
+                payload = {}
+                payload['starttime'] = student['starttime']
+                payload['endtime'] = student['endtime']
+                payload['monday'] = student['monday']
+                payload['tuesday'] = student['tuesday']
+                payload['wednesday'] = student['wednesday']
+                payload['thursday'] = student['thursday']
+                payload['friday'] = student['friday']
                 
-        for col in studentsCourses:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['enrolledClasses'].append(col)
+            
+                newStudent['availability'].append(payload)
+        
+        print(newStudent['availability'])
+        
+        endorsementPayload = []   
+        for student in studentsEndorsements:
+            
+            if newStudent['email'] == student['studentemail']:
+                endorsementPayload.append(student['endorsementname'])
+                
+        newStudent['endorsements'] = endorsementPayload
+        print(newStudent['endorsements'])
+                
+        
+        enrolledPayload = []
+        for student in studentsCourses:
+            if newStudent['email'] == student['studentemail']:
+                enrolledPayload.append(student['coursename'])
+        
+        print(newStudent['enrolledClasses'])
+        newStudent['enrolledClasses'] = enrolledPayload
                 
         listOfStudents.append(newStudent)
     
-
-    emit('i', listOfStudents)
+    print(listOfStudents)
+    
+    emit('loadStudents', listOfStudents)
 
     
 @app.route('/')
@@ -307,21 +339,27 @@ def forgotPassword():
     # emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
     print(message)
     msg = MIMEText(message)
-    msg['Subject'] = '[Practicum Organizer] Reset password'
-    msg['From'] = 'buymybooks350@gmail.com'
-    msg['To'] = 'sheldonmcclung@gmail.com' #Just to test
-    sender='buymybooks350@gmail.com'
+    subject = '[Practicum Organizer] Reset password'
+    From = 'practicumorganizer@gmail.com'
+    To = 'sheldonmcclung@gmail.com' #Just to test
+    sender='practicumorganizer@gmail.com'
     receiver= 'sheldonmcclung@gmail.com'
     
     
     try:
-        smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
+        #smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
+        smtpObj = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        print("HERE 1")
         #server.set_debuglevel(1)
         smtpObj.ehlo()
-        smtpObj.starttls()
-        smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
-        smtpObj.sendmail(msg['From'], msg['To'], msg.as_string())
+        print("Here 2")
+        print("Here 3")
+        smtpObj.login('practicumorganizer@gmail.com', 'Grown Jacob Broom Spar')
+        print("Here 4")
+        smtpObj.sendmail(From, To, msg.as_string())
+        print("Here 5")
         smtpObj.close()
+        print("Here 6")
         print "Successfully sent email"
     except Exception as e:
         print(e)
