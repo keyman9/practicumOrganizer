@@ -59,31 +59,4 @@ POBoxApp.controller('LoginController', function($scope, $window){
     
     });
     
-    socket.on('login', function(data){
-        var messageBox= $('#messageBox');
-        var messageText= ''
-        
-        if(data['success'])
-        {
-            $scope.logged_in=true;
-            $scope.user= data['userid'];
-            
-            messageBox.removeClass('alert-danger');
-            messageBox.addClass('alert-success');
-            messageText = '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span><span class="sr-only">Success:</span> ' + data['message'];
-        }
-        else
-        {
-            $scope.logged_out = true;
-            messageBox.removeClass('alert-success');
-            messageBox.addClass('alert-danger');
-            messageText = '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span> ' + data['message'];
-        }
-    $scope.$apply()
-    messageBox.empty();
-    messageBox.append(messageText);
-    messageBox.fadeIn().delay(3000).fadeOut(600);
-    });
-        
-    
 });

@@ -18,7 +18,7 @@ import random
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.secret_key = os.urandom(24).encode('hex')
+app.secret_key= os.urandom(24).encode('hex')
 
 globalDict = {'accessCode': ''}
 
@@ -114,7 +114,7 @@ selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTim
 selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
 selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
 
-@socketio.on('loadStudents', namespace='/practica') 
+@socketio.on('loadStudents', namespace='/practica) 
 def loadStudents():
     
     students = []
@@ -162,7 +162,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsAvailability = cur.fetchall()
-            print("Availability", studentsAvailability)
+            print("Ava") studentsAvailability
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
@@ -235,7 +235,7 @@ def loadStudents():
         listOfStudents.append(newStudent)
     
 
-    emit('i', listOfStudents)
+    emit('initStudents', payload)
 
     
 @app.route('/')

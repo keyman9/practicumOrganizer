@@ -18,7 +18,7 @@ import random
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.secret_key = os.urandom(24).encode('hex')
+app.secret_key= os.urandom(24).encode('hex')
 
 globalDict = {'accessCode': ''}
 
@@ -114,7 +114,7 @@ selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTim
 selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
 selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
 
-@socketio.on('loadStudents', namespace='/practica') 
+@socketio.on('loadStudents', namespace='/practica) 
 def loadStudents():
     
     students = []
@@ -217,7 +217,7 @@ def loadStudents():
                 #col.remove(newStudent['email'])
                 newStudent['previousPractica'].append(col)
                 
-        for col in studentsAvailability:
+                newStudent['availability'].append(col)
             if newStudent['email'] == col['studentemail']:
                 #col.remove(newStudent['email'])
                 newStudent['availability'].append(col)
@@ -235,7 +235,7 @@ def loadStudents():
         listOfStudents.append(newStudent)
     
 
-    emit('i', listOfStudents)
+    emit('initStudents', payload)
 
     
 @app.route('/')

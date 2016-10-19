@@ -18,7 +18,7 @@ import random
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.secret_key = os.urandom(24).encode('hex')
+app.secret_key= os.urandom(24).encode('hex')
 
 globalDict = {'accessCode': ''}
 
@@ -90,7 +90,9 @@ def submitStudent(data):
        except Exception as e:
             print(e) 
        
-    #meetingDays Table 
+    #meetingDays Table
+    
+    
     #availableTimes Table
     for times in data['availability']:
         try:
@@ -104,8 +106,7 @@ def submitStudent(data):
             print("inserted into meeting table and availabletimes tables")
         except Exception as e:
             print(e) 
-    
- 
+
 
 selectStudents = "SELECT * FROM students"
 selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
@@ -134,7 +135,7 @@ def loadStudents():
         
         cur.execute(query)
         studentsFromDB = cur.fetchall()
-        print("Students", studentsFromDB)
+        print studentsFromDB
         
     except Exception as e:
         print("Error: Invalid SELECT on 'students' table: %s" % e)
@@ -148,7 +149,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsPractica = cur.fetchall()
-            print("Previous Pactica", studentsPractica)
+            print studentsPractica
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
@@ -162,7 +163,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsAvailability = cur.fetchall()
-            print("Availability", studentsAvailability)
+            print studentsAvailability
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
@@ -176,7 +177,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsEndorsements = cur.fetchall()
-            print("Endorsements", studentsEndorsements)
+            print studentEndorsements
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
@@ -190,52 +191,18 @@ def loadStudents():
             
             cur.execute(query)
             studentsCourses = cur.fetchall()
-            print("Courses", studentsCourses)
+            print studentCourses
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
             db.rollback()
             hasError = True
-            
-    listOfStudents = []
     
     for student in studentsFromDB:
-        newStudent = {}
-        newStudent['email'] = student['email']
-        newStudent['firstname'] = student['firstname']
-        newStudent['lastname'] = student['lastname']
-        newStudent['hascar'] = student['hascar']
-        newStudent['passengers'] = student['passengers']
-        newStudent['assignedpracticum'] = student['assignedpracticum']
-        newStudent['previousPractica'] = []
-        newStudent['availability'] = []
-        newStudent['endorsements'] = []
-        newStudent['enrolledClasses'] = []
-        
-        for col in studentsPractica:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['previousPractica'].append(col)
-                
-        for col in studentsAvailability:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['availability'].append(col)
-                
-        for col in studentsEndorsements:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['endorsements'].append(col)
-                
-        for col in studentsCourses:
-            if newStudent['email'] == col['studentemail']:
-                #col.remove(newStudent['email'])
-                newStudent['enrolledClasses'].append(col)
-                
-        listOfStudents.append(newStudent)
-    
+        pass
 
-    emit('i', listOfStudents)
+    
+    emit('initializeStudents')
 
     
 @app.route('/')

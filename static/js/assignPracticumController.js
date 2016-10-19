@@ -1,6 +1,4 @@
-
 var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize', 'dndLists'])
-
 
 POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
@@ -54,23 +52,30 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     ];
         
     $scope.initializeStudents = function(){
-        
+        console.log("LOADING STUDENTS");
         socket.emit('loadStudents');
         
-        
-        for (var i = 0; i < 10; i++){
-            var stu = new Student();
-            stu.initialize(student);
-            stu.type = "student";
-            $scope.lists[0].students.push(stu);
+    };
+    
+    socket.on('i', function(results){
+        console.log("I got here");
+        console.log(results);
+        $scope.students = results;
+        for(var i = 0; i < $scope.students.length; i++){
+            console.log($scope.students[i]);
+            
         }
-        console.log($scope.lists[0].students);
-    }
+        
+    });
+    
+    socket.on('error', function (err) {
+    console.log(err);
+});
     
     $scope.setCurrentStudent = function(student){
         $scope.currentStudent = student;
         console.log($scope.currentStudent);
-    }
+    };
     
     $scope.getAvailabilityString = function(av){
         var days = "";
@@ -87,7 +92,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             
         var time = av.startTime + " - " + av.endTime;
         return days + " -> " + time;
-    }
+    };
     
     $scope.getTransportationString = function(stu){
         var transportation = "";
@@ -114,7 +119,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     $scope.getPracticumBearing = function(){
         socket.emit('getPracticumBearing');
-    }
+    };
     
     socket.on("retrievedPracticumBearing", function(courses){
         if (courses.length > 0){
@@ -125,9 +130,11 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         // console.log($scope.practicumBearingClasses);
     });
     
-    
     $scope.initializeStudents();
-    $scope.getPracticumBearing();
+    
+    
+    
+    //$scope.getPracticumBearing();
     
 
 
