@@ -3,7 +3,6 @@
 {% block content %}
 <style type="text/css">
     .btn-default{
-        color:#0b0a0a  !important;
         text-shadow: none;
     }
     .error{
@@ -12,14 +11,14 @@
     }
     .list-group-item{
         border: 1px solid #ebebeb;
+        background-color: gray;
+        color: white !important;
     }
-    
-    .list-group-item{
-        border: 1px solid #ebebeb;
+    .nav-pills li{
+        background-color:gray;
     }
-    
     .right-border{
-        border-right: 3px solid black;
+        border-right: 3px solid white;
     }
     
     .popover-content{
@@ -30,10 +29,18 @@
         font-size: 1.25em;
     }
     .well{
-        color: black !important;
+        background-color: gray;
     }
     .panel-heading{
         color: black !important;
+    }
+    
+    body{
+        color: white;
+    }
+    
+    hr{
+        border-top: 1px solid white;
     }
 
 </style>
@@ -187,8 +194,8 @@
         <hr/>
         <div class="col-md-2">
             <ul class="nav nav-pills nav-stacked">
-              <li ng-class="{active : practicumMode}"><a href="#" ng-click="togglePracticumMode()">Practicum</a></li>
-              <li ng-class="{active : transportationMode}"><a href="#" ng-click="toggleTransportationMode()">Transportation</a></li>
+              <li ng-class="{active : practicumMode}"><a href="" ng-click="togglePracticumMode()">Practicum</a></li>
+              <li ng-class="{active : transportationMode}"><a href="" ng-click="toggleTransportationMode()">Transportation</a></li>
             </ul>
         </div>
         <div class="col-md-9">
