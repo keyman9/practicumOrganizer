@@ -341,9 +341,7 @@ def forgotPassword():
     msg = MIMEText(message)
     subject = '[Practicum Organizer] Reset password'
     From = 'practicumorganizer@gmail.com'
-    To = 'sheldonmcclung@gmail.com' #Just to test
-    sender='practicumorganizer@gmail.com'
-    receiver= 'sheldonmcclung@gmail.com'
+    To = 'lcarter3@mail.umw.edu' #Just to test
     
     
     try:
