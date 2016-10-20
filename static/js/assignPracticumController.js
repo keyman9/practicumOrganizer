@@ -54,9 +54,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     ];
         
     $scope.initializeStudents = function(){
-        
         socket.emit('loadStudents');
-        
         
         for (var i = 0; i < 10; i++){
             var stu = new Student();
