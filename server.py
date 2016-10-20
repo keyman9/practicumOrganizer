@@ -403,6 +403,7 @@ def updatePassword(payload):
     
     message = {}
     message['success'] = "Password Updated Successfully!"
+    emit('updatePassword', message)
     
 @socketio.on('getDivisions', namespace='/student')
 def getSchoolDivisions():

@@ -180,7 +180,9 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         else 
         {
             if ($scope.selectCourse == true)
-            {
+            {   
+                console.log("Showing filtered student courses")
+                console.log($scope.showStudentsCourses)
                 $scope.lists[0].students = $scope.showStudentsCourses;
                 //$scope.showStudentsCourses = [];
             } else 
@@ -198,7 +200,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         {
             $scope.prevEndorsementSought = endorsementSought;
         }
-        $scope.$apply();
+        //$scope.$apply();
     };
     
     $scope.changeCourse = function(courseSought){
@@ -245,7 +247,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         }
         //$scope.showStudentsCourses = [];
         //$scope.showStudentsEndorsements= [];
-        $scope.$apply();
+        //$scope.$apply();
     };
     
     
