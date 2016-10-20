@@ -94,6 +94,7 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
                 }
             }
         }
+        $scope.$apply();
         // console.log($scope.schoolDivisions);
     });
     
@@ -107,6 +108,7 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
                 $scope.practicumBearingClasses.push(courses[i][0]);
             }
         }
+        $scope.$apply();
         // console.log($scope.practicumBearingClasses);
     });
     

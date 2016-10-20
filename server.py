@@ -274,7 +274,7 @@ def loadStudents():
 def mainIndex():
     return render_template('index.html', currentPage='home')
     
-@app.route('/student', methods=['GET'])
+@app.route('/student', methods=['GET', 'POST'])
 def getStudentData():
     # if request.method == "POST":
     #     print(request.form)

@@ -118,6 +118,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             for (var i=0; i < courses.length; i++){
                 $scope.practicumBearingClasses.push(courses[i][0]);
             }
+            $scope.$apply();
         }
         // console.log($scope.practicumBearingClasses);
     });
@@ -128,7 +129,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     
     
-    //$scope.getPracticumBearing();
+    $scope.getPracticumBearing();
     
 
 
