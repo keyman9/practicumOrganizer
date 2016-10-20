@@ -113,24 +113,33 @@
                     <span>Filter By</span><br/><br/>
                     <div class="form-group">
                         <span>Practicum-Bearing Class:
-                        <select class="form-control" id="practicumBearing" name="practicumBearing" ng-model="$parent.enrolledClasses">
+                        <select class="form-control" id="practicumBearing" name="practicumBearing" ng-model="courseSought" ng-change="changeCourse(courseSought)">
                             <option>N/A</option>
-                            <option ng-repeat="item in practicumBearingClasses | orderBy: item">{{ '{{item}}' }}</option>
+                            <option ng-repeat="item in courses | orderBy: item">{{ '{{item}}' }}</option>
                         </select></span>
                     </div><br />
                     <div class="form-group">
                         <span>Endorsement:
-                        <select class="form-control" id="endorsement" name="endorsement" ng-model="$parent.endorsementSought">
-                            <option>N/A</option>
+                        
+                        <select class="form-control" id="endorsement" name="endorsement" ng-model="endorsementSought" ng-change="changeEndorsement(endorsementSought)" required>
                             <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>
-                        </select></span>
+                        </select>
+                        </span>
+                        
+                        
+                        
+                        <!--<select class="form-control" id="endorsement" name="endorsement" ng-model="$parent.endorsementSought">-->
+                        <!--    <option>N/A</option>-->
+                        <!--    <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>-->
+                        <!--</select>-->
+                        
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div slim-scroll height="350px">
                         <ul class="list-group" dnd-list="lists[0].students">
                             <button class="list-group-item btn" ng-repeat="student in lists[0].students" ng-class="{active : currentStudent === student}" ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" placement="left" auto-close="true" data-html="true"
-                                ng-click="setCurrentStudent(student)" bs-popover dnd-draggable="student" dnd-effect-allowed="move">
+                                ng-click="setCurrentStudent(student)" bs-popover dnd-draggable="student" dnd-effect-allowed="move" >
                                 <span ng-bind="student.firstName"></span>&nbsp;
                                 <span ng-bind="student.lastName"></span>
                             </button>

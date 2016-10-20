@@ -28,6 +28,8 @@
             {% endif %}
         {% endwith %}
         
+        <div class="alert alert-danger" role="alert" id="messageBox" style='display:none'></div>
+        
         
         <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
             <div class="panel panel-default">
@@ -145,14 +147,14 @@
                             <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="username or email">
                         </div>
 
-                        <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
+                        <div style="margin-bottom: 25px" class="input-group" id="resetPassword1">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="resetPassword1" type="password" class="form-control" name="resetPassword1" placeholder="password">
+                            <input type="password" class="form-control" name="resetPasswordField1" id="resetPasswordField1" placeholder="password">
                         </div>
 
-                        <div style="margin-bottom: 25px" class="input-group" id="resetPasswordDiv">
+                        <div style="margin-bottom: 25px" class="input-group" id="resetPassword2">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="resetPassword2" type="password" class="form-control" name="resetPassword2" placeholder="password">
+                            <input type="password" class="form-control" name="resetPasswordField2" id="resetPasswordField2" placeholder="password">
                         </div>
 
                         <div style="margin-top:10px" class="form-group">
