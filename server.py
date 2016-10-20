@@ -235,8 +235,8 @@ def loadStudents():
         for student in studentsAvailability:
             if newStudent['email'] == student['studentemail']:
                 payload = {}
-                payload['starttime'] = student['starttime']
-                payload['endtime'] = student['endtime']
+                payload['startTime'] = student['starttime']
+                payload['endTime'] = student['endtime']
                 payload['monday'] = student['monday']
                 payload['tuesday'] = student['tuesday']
                 payload['wednesday'] = student['wednesday']
