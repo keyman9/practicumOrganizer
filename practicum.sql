@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS practicum;
-CREATE DATABASE practicum;
+CREATE DATABASE practicum ENCODING 'UTF8' TEMPLATE template0;;
 \c practicum;
 
 DROP ROLE IF EXISTS practicum_normal;

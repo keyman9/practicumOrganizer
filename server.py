@@ -15,6 +15,9 @@ import uuid
 import string
 import random
 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
+
 app = Flask(__name__)
 socketio = SocketIO(app)
 
