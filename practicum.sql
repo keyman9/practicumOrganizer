@@ -52,6 +52,9 @@ CREATE TABLE previousPractica(
 GRANT SELECT, INSERT ON previousPractica TO practicum_normal;
 GRANT SELECT, INSERT ON previousPractica TO practicum_admin;
 
+GRANT ALL ON previousPractica_id_seq TO practicum_normal;
+GRANT ALL ON previousPractica_id_seq TO practicum_admin;
+
 ---Enrolled Courses---
 DROP TABLE IF EXISTS enrolledCourses;
 CREATE TABLE enrolledCourses(
@@ -96,8 +99,8 @@ GRANT ALL ON meetingdays_meetingid_seq TO practicum_admin;
 ---Available Times---
 DROP TABLE IF EXISTS availableTimes;
 CREATE TABLE availableTimes(
-  startTime timestamp NOT NULL,
-  endTime timestamp NOT NULL,
+  startTime varchar(60) NOT NULL,
+  endTime varchar(60) NOT NULL,
   meetingID serial NOT NULL,
   studentEmail varchar(60) NOT NULL,
   FOREIGN KEY(meetingID) references meetingDays(meetingID),
@@ -706,8 +709,3 @@ INSERT INTO practicumCourses(courseName) VALUES ('EDSE 521');
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 539');
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 541');
 INSERT INTO practicumCourses(courseName) VALUES ('TESL 515');
-
-
-
-
-

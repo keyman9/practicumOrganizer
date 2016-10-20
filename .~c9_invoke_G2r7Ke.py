@@ -90,7 +90,9 @@ def submitStudent(data):
        except Exception as e:
             print(e) 
        
-    #meetingDays Table 
+    #meetingDays Table
+    
+    
     #availableTimes Table
     for times in data['availability']:
         try:
@@ -104,8 +106,7 @@ def submitStudent(data):
             print("inserted into meeting table and availabletimes tables")
         except Exception as e:
             print(e) 
-    
- 
+
 
 selectStudents = "SELECT * FROM students"
 selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
@@ -134,7 +135,7 @@ def loadStudents():
         
         cur.execute(query)
         studentsFromDB = cur.fetchall()
-        print("Students", studentsFromDB)
+        print studentsFromDB
         
     except Exception as e:
         print("Error: Invalid SELECT on 'students' table: %s" % e)
@@ -148,7 +149,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsPractica = cur.fetchall()
-            print("Previous Pactica", studentsPractica)
+            print studentsPractica
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
@@ -162,7 +163,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsAvailability = cur.fetchall()
-            print("Availability", studentsAvailability)
+            print studentsAvailability
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
@@ -176,7 +177,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsEndorsements = cur.fetchall()
-            print("Endorsements", studentsEndorsements)
+            print studentEndorsements
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
@@ -190,84 +191,18 @@ def loadStudents():
             
             cur.execute(query)
             studentsCourses = cur.fetchall()
-            print("Courses", studentsCourses)
+            print studentCourses
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
             db.rollback()
             hasError = True
-            
-    listOfStudents = []
     
     for student in studentsFromDB:
-        newStudent = {}
-        newStudent['email'] = student['email']
-        newStudent['firstName'] = student['firstname']#
-        newStudent['lastName'] = student['lastname']#
-        newStudent['hasCar'] = student['hascar']#
-        newStudent['passengers'] = student['passengers'] #
-        newStudent['previousPractica'] = []#
-        newStudent['availability'] = []#
-        newStudent['endorsements'] = []#
-        newStudent['enrolledClasses'] = []#
-        
-        ###
-        for student in studentsPractica:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['school'] = student['school']
-                if student['grade'] == 0:
-                    payload['course'] = student['course']
-                else:
-                    payload['course'] = student['grade']
-                
-                
-                #col.remove(newStudent['email'])
-                newStudent['previousPractica'].append(payload)
-        
-        print(newStudent['previousPractica'])
-        
-        
-        ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
-        for student in studentsAvailability:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['starttime'] = student['starttime']
-                payload['endtime'] = student['endtime']
-                payload['monday'] = student['monday']
-                payload['tuesday'] = student['tuesday']
-                payload['wednesday'] = student['wednesday']
-                payload['thursday'] = student['thursday']
-                payload['friday'] = student['friday']
-                
-            
-                newStudent['availability'].append(payload)
-        
-        print(newStudent['availability'])
-        
-        endorsementPayload = []   
-        for student in studentsEndorsements:
-            
-            if newStudent['email'] == student['studentemail']:
-                endorsementPayload.append(student['endorsementname'])
-                
-        newStudent['endorsements'] = endorsementPayload
-        print(newStudent['endorsements'])
-                
-        
-        enrolledPayload = []
-        for student in studentsCourses:
-            if newStudent['email'] == student['studentemail']:
-                enrolledPayload.append(student['coursename'])
-        
-        print(newStudent['enrolledClasses'])
-        newStudent['enrolledClasses'] = enrolledPayload
-                
-        listOfStudents.append(newStudent)
+        pass
+
     
-    print(listOfStudents)
-    
-    emit('loadStudents', listOfStudents)
+    emit('initializeStudents')
 
     
 @app.route('/')
@@ -339,25 +274,21 @@ def forgotPassword():
     # emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
     print(message)
     msg = MIMEText(message)
-    subject = '[Practicum Organizer] Reset password'
-    From = 'practicumorganizer@gmail.com'
-    To = 'lcarter3@mail.umw.edu' #Just to test
+    msg['Subject'] = '[Practicum Organizer] Reset password'
+    msg['From'] = 'buymybooks350@gmail.com'
+    msg['To'] = 'sheldonmcclung@gmail.com' #Just to test
+    sender='buymybooks350@gmail.com'
+    receiver= 'sheldonmcclung@gmail.com'
     
     
     try:
-        #smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
-        smtpObj = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        print("HERE 1")
+        smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
         #server.set_debuglevel(1)
         smtpObj.ehlo()
-        print("Here 2")
-        print("Here 3")
-        smtpObj.login('practicumorganizer@gmail.com', 'Grown Jacob Broom Spar')
-        print("Here 4")
-        smtpObj.sendmail(From, To, msg.as_string())
-        print("Here 5")
+        smtpObj.starttls()
+        smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
+        smtpObj.sendmail(msg['From'], msg['To'], msg.as_string())
         smtpObj.close()
-        print("Here 6")
         print "Successfully sent email"
     except Exception as e:
         print(e)

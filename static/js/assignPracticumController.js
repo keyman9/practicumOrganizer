@@ -55,20 +55,19 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         
     $scope.initializeStudents = function(){
         socket.emit('loadStudents');
+    };
+    
+     socket.on('loadStudents', function(results){
+        $scope.lists[0].students = results
+        console.log(results)
+        $scope.$apply();
         
-        for (var i = 0; i < 10; i++){
-            var stu = new Student();
-            stu.initialize(student);
-            stu.type = "student";
-            $scope.lists[0].students.push(stu);
-        }
-        console.log($scope.lists[0].students);
-    }
+    });
     
     $scope.setCurrentStudent = function(student){
         $scope.currentStudent = student;
         console.log($scope.currentStudent);
-    }
+    };
     
     $scope.getAvailabilityString = function(av){
         var days = "";
@@ -85,7 +84,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             
         var time = av.startTime + " - " + av.endTime;
         return days + " -> " + time;
-    }
+    };
     
     $scope.getTransportationString = function(stu){
         var transportation = "";
@@ -112,7 +111,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     $scope.getPracticumBearing = function(){
         socket.emit('getPracticumBearing');
-    }
+    };
     
     socket.on("retrievedPracticumBearing", function(courses){
         if (courses.length > 0){
@@ -124,8 +123,12 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     });
     
     
+    
     $scope.initializeStudents();
-    $scope.getPracticumBearing();
+    
+    
+    
+    //$scope.getPracticumBearing();
     
 
 
