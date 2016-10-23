@@ -78,10 +78,6 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
      socket.on('loadStudents', function(results){
         $scope.lists[0].students = results;
         $scope.allStudents = results;
-        console.log(results)
-        //console.log($scope.lists[0].students[0]['email'])
-        //console.log($scope.lists[0].students[0]['endorsements'][0])
-        
         $scope.$apply();
         
     });
@@ -131,153 +127,90 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
        $scope.practicumMode = false;
     };
     
-    $scope.getPracticumBearing = function(){
-        socket.emit('getPracticumBearing');
-    };
-    
-    socket.on("retrievedPracticumBearing", function(courses){
-        if (courses.length > 0){
-            for (var i=0; i < courses.length; i++){
-                $scope.practicumBearingClasses.push(courses[i][0]);
-            }
-            $scope.$apply();
-        }
-        // console.log($scope.practicumBearingClasses);
-    });
-    
-    
-    $scope.initializeStudents();
-    
-    //$scope.getPracticumBearing();
-    
-    $scope.changeEndorsement = function(endorsementSought){
+    $scope.filterCourses = function(){
         
-        if(endorsementSought !== "N/A")
-        {
-            if(endorsementSought !== $scope.prevEndorsementSought)
-            {
-                $scope.showStudentsEndorsements = [];
-            }
+        $scope.showStudentsCourses = [];
             
-            if($scope.selectCourses == false){
-                $scope.lists[0].students = $scope.allStudents;
-            }
-        
             for(var i = 0; i < $scope.lists[0].students.length; i++){
             
-                if($scope.lists[0].students[i]['endorsements'].indexOf(endorsementSought) !== -1)
-                {
+                if($scope.lists[0].students[i]['enrolledClasses'].indexOf($scope.courseSought) !== -1){
+                    $scope.showStudentsCourses.push($scope.lists[0].students[i]);
+                }
+            }
+        
+            $scope.selectCourse = true;
+            $scope.lists[0].students = $scope.showStudentsCourses;
+    };
+    
+    $scope.filterEndorsements = function(){
+        
+        $scope.showStudentsEndorsements = []
+            
+            for(var i = 0; i < $scope.lists[0].students.length; i++){
+            
+                if($scope.lists[0].students[i]['endorsements'].indexOf($scope.endorsementSought) !== -1){
                     $scope.showStudentsEndorsements.push($scope.lists[0].students[i]);
                 }
             }
-            $scope.selectEndorsement = true;
-            //if($scope.showStudentsEndorsements.length >= 1)
-            //{
-            $scope.lists[0].students = $scope.showStudentsEndorsements;
-            //}
         
-        } 
-        else 
-        {
-            if ($scope.selectCourse == true)
-            {   
-                console.log("Showing filtered student courses")
-                console.log($scope.showStudentsCourses)
-                $scope.lists[0].students = $scope.showStudentsCourses;
-                //$scope.showStudentsCourses = [];
-            } else 
-            {
-                $scope.lists[0].students = $scope.allStudents;
-                //$scope.showStudentsEndorsements = [];
-            }
+            $scope.selectEndorsement = true;
+            $scope.lists[0].students = $scope.showStudentsEndorsements;
+    };
+    
+    $scope.changeEndorsement = function(endorsementSought){
+        
+        $scope.lists[0].students = $scope.allStudents;
+
+        if(endorsementSought !== "N/A"){
+            
+            if($scope.selectCourse == true){
+                
+                $scope.filterCourses();
+            
+            } 
+
+            $scope.filterEndorsements();
+        
+        } else {
             
             $scope.selectEndorsement = false;
-        
+            
+            if($scope.selectCourse == true){
+                
+                $scope.filterCourses()
+                
+            } 
         }
-        
-        // HERE
-        if($scope.selectEndorsement == true)
-        {
-            $scope.prevEndorsementSought = endorsementSought;
-        }
-        //$scope.$apply();
     };
     
     $scope.changeCourse = function(courseSought){
         
-        if(courseSought !== "N/A"){
-            // if(courseSought !== $scope.prevCourseSought)
-            // {
-            //     $scope.showStudentsCourses = [];
-            //     //empty showStudentsCourses
-            // }
-            if($scope.selectEndorsement == false){
-                $scope.lists[0].students = $scope.allStudents;
-            }
+        $scope.lists[0].students = $scope.allStudents;
         
-            for(var i = 0; i < $scope.lists[0].students.length; i++){
+        if(courseSought !== "N/A"){
             
-                if($scope.lists[0].students[i]['enrolledClasses'].indexOf(courseSought) !== -1)
-                {
-                    $scope.showStudentsCourses.push($scope.lists[0].students[i]);
-                }
+            if($scope.selectEndorsement == true){
+                
+                $scope.filterEndorsements();
+                
             }
-            $scope.selectCourse = true;
-            //if($scope.showStudentsCourses.length >= 1){
-            $scope.lists[0].students = $scope.showStudentsCourses;
-            //}
+            
+            $scope.filterCourses();
         
         } else {
             
-            //if ($scope.selectEndorsement == true && $scope.selectCourse == true){
-            //    $scope.lists[0].students = $scope.showStudentsCourses + $scope.showStudentsEndorsements;
-            if($scope.selectEndorsement == true){
-                $scope.lists[0].students = $scope.showStudentsEndorsements;
-                $scope.showStudentsEndorsements = [];
-            }else{
-                $scope.lists[0].students = $scope.allStudents;
-                $scope.showStudentsCourses = [];
-            }
-            
             $scope.selectCourse = false;
+            
+            if($scope.selectEndorsement == true){
+            
+                $scope.filterEndorsements()
+                
+            }
         }
-        if($scope.selectCourse == true)
-        {
-            $scope.prevCourseSought = courseSought;
-        }
-        //$scope.showStudentsCourses = [];
-        //$scope.showStudentsEndorsements= [];
-        //$scope.$apply();
     };
-    
-    
-    
-    // $scope.changeCourse = function(courseSought){
-    //     //for(var i = 0; i < $scope.lists[0].students.length; i++){
-            
-    //       //  if($scope.lists[0].students[i]['endorsements'].indexOf(endorsementSought) !== -1)
-    //         //{
-    //         //   $scope.showStudents.push($scope.lists[0].students[i]);
-    //         //}
-            
-    //     //}
-    //     console.log(courseSought);
-    // };
-    
-    
-    // $scope.getTransportationString = function(stu){
-    // var transportation = "";
-    // if (stu.hasCar && stu.passengers > 0){
-    //     transportation = "Can transport self and " + stu.passengers + " others";
-    // } else if (stu.hasCar){
-    //     transportation = "Can only transport self";
-    // } else {
-    //     transportation = "Needs transportation";
-    // }
-    
-    // return transportation;
-    // };
-    
-    
 
+
+
+
+    $scope.initializeStudents();
 });
