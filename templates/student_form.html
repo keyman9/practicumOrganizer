@@ -26,8 +26,17 @@
 <script type="text/javascript" src="static/js/studentFormController.js"></script>
 
 
-<div class="container" ng-controller="StudentFormController">
-    <br /> 
+<div class="container" id="container" ng-controller="StudentFormController">
+     <br id="top" /> 
+     <div class="alert alert-success alert-dismissible" role="alert" id="submitSuccess" ng-hide="!submissionSuccess">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{submissionMsg}}' }}
+    </div>
+
+    <div class="alert alert-warning alert-dismissible" role="alert" id="submitFail" ng-hide="!submissionFailure">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{submissionMsg}}' }}
+    </div>
     <div class="row">
         <div class="col-md-6 col-md-offset-4">
             <h3>Student Practicum Form</h3>

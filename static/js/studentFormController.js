@@ -1,6 +1,6 @@
 var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll']);
 
-POBoxApp.controller('StudentFormController', function($scope, $window){
+POBoxApp.controller('StudentFormController', function($scope, $window, $location, $anchorScroll){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/student')
     
     
@@ -65,6 +65,9 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.invalidPractica = true;
     $scope.availabilityErrorMsg = ["", "", ""];
     $scope.practicaErrorMsg = [];
+    $scope.submissionSuccess = false;
+    $scope.submissionFailure = false;
+    $scope.submissionMsg = "";
         
     //returns schools in selected division (of previous practica)
     $scope.getSchools = function(id){
@@ -110,6 +113,21 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         }
         $scope.$apply();
         // console.log($scope.practicumBearingClasses);
+    });
+    
+    socket.on("submissionResult", function(result){
+        console.log(result);
+        if (result.error){
+            $scope.submissionFailure = true;
+            $scope.submissionSuccess = false;
+            $scope.goToTop();
+        } else{
+            $scope.submissionSuccess = true;
+            $scope.submissionFailure = false;
+            $scope.resetForm();
+        }
+        $scope.submissionMsg = result.msg;
+        $scope.$apply();
     });
     
     $scope.addAvailability = function(){
@@ -205,6 +223,12 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         item.other = undefined;
         $scope.changeCourse(item);
         $scope.changeGrade(item);
+        var index = $scope.previousPractica.indexOf(item);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a school!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
     
     $scope.changeSchoolDivision = function(item){
@@ -513,13 +537,43 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
 
-     //TODO: Pull school divisions/schools, courses, endorsements, practicum-bearing courses from database
+    $scope.goToTop = function() {
+        $location.hash('top');
+        $anchorScroll();
+    };
     
-    for (var i = 0; i < 3; i++){
-        $scope.addAvailability();
+    $scope.resetForm = function(){
+        $scope.endorsementSought = undefined;
+        $scope.enrolledClasses = undefined;
+        $scope.transportation = undefined;
+        $scope.passengerNum = 0;
+        $scope.firstName = undefined;
+        $scope.lastName = undefined;
+        $scope.email = undefined;
+        $scope.availability = [];
+        $scope.previousPractica = [];
+        $scope.noPreviousPractica = false;
+    
+        $scope.invalidFirstName = false;
+        $scope.invalidLastName = false;
+        $scope.invalidEmail = false;
+        $scope.invalidEndorsement = false;
+        $scope.invalidEnrolledClass= false;
+        $scope.invalidTransportation= false;
+        $scope.invalidAvailability = true;
+        $scope.invalidPractica = true;
+        $scope.availabilityErrorMsg = ["", "", ""];
+        $scope.practicaErrorMsg = [];
+        
+        for (var i = 0; i < 3; i++){
+            $scope.addAvailability();
+        }
+        
+        $scope.addPractica();
+        $scope.goToTop();
     }
     
-    $scope.addPractica();
+    $scope.resetForm();
     $scope.getPracticumBearing()
     $scope.getSchoolDivisions();
 });
