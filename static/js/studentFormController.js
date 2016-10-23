@@ -160,7 +160,16 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     
     $scope.isElementary = function(school){
         var sch = String(school);
-        if (sch.indexOf("Elementary") > 0){
+        if (sch.indexOf("Elementary School") > 0){
+            return true;
+        } else {
+            return false;
+        }
+    };
+    
+    $scope.isSecondary = function(school){
+        var sch = String(school);
+        if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
             return true;
         } else {
             return false;
@@ -170,11 +179,25 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.changeGrade = function(item){
         item.course = undefined;
         item.other = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        console.log($scope.previousPractica[index]);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a course!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
     
     $scope.changeCourse = function(item){
         item.grade = undefined;
         item.other = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        console.log($scope.previousPractica[index]);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a course!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
     
     $scope.changeSchool = function(item){
@@ -187,11 +210,17 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.changeSchoolDivision = function(item){
         $scope.changeSchool(item);
         item.school = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a school!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
 
-    // $scope.print = function(item){
-    //     console.log(item);
-    // };
+    $scope.print = function(item){
+        console.log(item);
+    };
     
     $scope.submit = function(){
         var stu = new Student();
@@ -221,16 +250,24 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         for (var i = 0; i < $scope.previousPractica.length; i++){
             var current = $scope.previousPractica[i]; 
             delete current.schoolDivision;
-            if (current.course === "Other"){
-                current.course = current.other;
-            }
+            
             if (current.school === "Other"){
                 current.school = current.otherSchool;
             }
-            if (current.grade && current.grade.value == -1){
+            
+            if ((current.course && current.course === "Other")){
+                current.course = current.other;
+                current.grade = undefined;
+            }
+            
+            if (current.course && inGrades(current.course)){
+                var temp = getGradeValue(current.course);
+                current.grade = temp;
+                current.course = undefined;
+            } else if (current.grade && current.grade.value === -1){
                 current.course = current.grade.displayName;
                 current.grade = undefined;
-            } else if(current.grade){
+            } else if (current.grade){
                 var temp = current.grade.value;
                 current.grade = temp;
             }
@@ -245,6 +282,10 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
             stu.hasCar = true;
         }
         
+        if ($scope.transportation === "none" || $scope.transportation != "self"){
+    		$scope.passengerNum = 0;
+    	} 
+        
         stu.passengers = $scope.passengerNum;
         
         console.log(stu);
@@ -252,6 +293,27 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         socket.emit('submit', stu);
     };
     
+    var inGrades = function(name){
+        for (var i = 0; i < $scope.grades.length; i++){
+            var grade = $scope.grades[i].displayName;
+            if (name === grade && $scope.grades[i].value >= 0){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    var getGradeValue = function(name){
+        var temp = -1
+        for (var i = 0; i < $scope.grades.length; i++){
+            var grade = $scope.grades[i].displayName;
+            if (name === grade){
+                temp = $scope.grades[i].value;
+            }
+        }
+        return temp;
+    }
     
     //Validation
     

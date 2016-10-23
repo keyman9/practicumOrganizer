@@ -209,37 +209,47 @@
                             <option>Other</option>
                         </select>
                     </div>
-                    <div class="col-md-9" ng-if="item.school==='Other'" ng-class="{'col-md-offset-1' : previousPractica.indexOf(item)<previousPractica.length-1}">
-                        <br/>
-                        <div class="form-group">
-                             <span>Enter School Name</span>
-                            <input type="text" class="form-control" name="otherSchool" id="otherSchool" ng-model="item.otherSchool" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
-                        </div>
-                    </div>
                     <div class="col-md-3" ng-if="item.school && isElementary(item.school)">
                         <span>Grade/Subject</span>
                         <select class="form-control" id="grade" name="grade" ng-model="item.grade" required ng-change="changeGrade(item)"
                         ng-options="g as g.displayName for g in grades">
                         </select>
                     </div>
-                    <div class="col-md-3" ng-if="item.school && !isElementary(item.school)" ng-class="{'col-md-offset-1' : item.school==='Other'}">
+                    <div class="col-md-3" ng-if="item.school && isSecondary(item.school)">
                         <span>Subject</span>
                         <select class="form-control" id="course" name="course" ng-model="item.course" ng-change="changeCourse(item)">
-                            <option ng-repeat="c in courses">{{ '{{c}}' }}</option>
+                            <option ng-repeat="c in courses | orderBy:c">{{ '{{c}}' }}</option>
                             <option>Other</option>
                         </select>
                     </div>
-                    <div ng-if="item.course === 'Other'" ng-class="{'col-md-9' : item.school!='Other', 'col-md-8' : item.school==='Other', 'col-md-7' : previousPractica.indexOf(item) > 0}">  
-                        <br ng-if="item.school!='Other'"/>
-                        <div class="form-group">
-                            <span>Enter course name:</span>
-                            <input type="text" class="form-control" name="other" id="other" ng-model="item.other" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
-                        </div>
+                    <div class="col-md-3" ng-if="item.school && !isElementary(item.school) && !isSecondary(item.school)">
+                        <span>Grade/Subject</span>
+                        <select class="form-control" id="grade" name="grade" ng-model="item.course" required ng-change="changeCourse(item)">
+                            <option ng-repeat="g in grades">{{ '{{g.displayName}}' }}</option>
+                            <option ng-repeat="c in courses | orderBy:c">{{ '{{c}}' }}</option>
+                            <option>Other</option>
+                        </select>
                     </div>
-                     <div class="col-md-1" ng-if="previousPractica.indexOf(item) > 0">
+                    <div class="col-md-1" ng-if="previousPractica.indexOf(item) > 0">
                         <br />
                         <div>
                             <button class="btn btn-danger" ng-click="deletePractica(item)">-</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-9 col-md-offset-1" ng-if="item.school==='Other'">
+                        <br/>
+                        <div class="form-group">
+                             <span>Enter School Name:</span>
+                            <input type="text" class="form-control" name="otherSchool" id="otherSchool" ng-model="item.otherSchool" ng-change="print(item)" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
+                        </div>
+                    </div>
+                    <div class="col-md-9 col-md-offset-1" ng-if="item.course === 'Other' || item.grade === 'Other'">  
+                        <br ng-if="item.school!='Other'"/>
+                        <div class="form-group">
+                            <span>Enter Course Name:</span>
+                            <input type="text" class="form-control" name="other" id="other" ng-model="item.other" ng-change="print(item)" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
                         </div>
                     </div>
                 </div>
@@ -255,7 +265,8 @@
         <div class="col-md-2 col-md-offset-5">
             <div class="form-group">
                 <br />
-                <input type="submit" class="btn btn-primary" value="Submit" ng-disabled="formIsInvalid()">
+                <!--<input type="submit" class="btn btn-primary" value="Submit" ng-disabled="formIsInvalid()">-->
+                <input type="button" class="btn btn-primary" value="Submit" ng-click="submit()" ng-disabled="formIsInvalid()">
             </div>
         </div>
     </div>
