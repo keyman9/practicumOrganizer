@@ -1,6 +1,7 @@
+<!DOCTYPE html>
 <html ng-app="POBoxApp">
-<meta http-equiv="Content-Type" content="text/html">
-<meta charset='utf-8'>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<!--<meta charset='utf-8'>-->
 <meta http-equiv="X-UA-Compatible" content="chrome=1">
 <meta name="viewport" content="width=device-width">
 
@@ -25,13 +26,6 @@
 <script src="static/node_modules/angular-slimscroll/angular-slimScroll.js"></script>
 <script src="static/node_modules/angular-drag-and-drop-lists/angular-drag-and-drop-lists.min.js"></script>
 
-
-
-<!--<script src="{{ url_for('static', filename='js/controller.js') }}" charset="utf-8"></script>-->
-
-
-<head>
-</head>
 
 <body>
     {% if session['loggedIn'] %}
@@ -61,15 +55,9 @@
     {% block content %}
     {% endblock %}
     
-    
-    
-
-
-
     <script src="{{ url_for('static', filename='js/npm.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    
 </body>
 
-<footer>
-
-</footer>
+</html>
