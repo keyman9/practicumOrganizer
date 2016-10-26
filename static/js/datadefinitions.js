@@ -98,5 +98,104 @@ function PracticumAssignment(){
     this.student = undefined;
     this.teacher = undefined;
     this.course = undefined;
+    //stores the day booleans, start, and end time
     this.availability = new Availability();
+    
+    this.initialize = function(obj){
+        if (obj.student)
+            this.student  = obj.student;
+        if (obj.teacher)
+            this.teacher = obj.teacher;
+        if (obj.course)
+            this.course = obj.course;
+        if (obj.availability)
+            this.availability.initialize(obj.availability);
+    }
+}
+
+function ElementaryCourse(){
+    this.course = undefined;
+    this.startTime = undefined;
+    this.endTime = undefined;
+    
+    this.initialize = function(obj){
+        if (obj.course)
+            this.course  = obj.course;
+        if (obj.startTime)
+            this.startTime = obj.startTime;
+        if (obj.endTime)
+            this.endTime = obj.endTime;
+    }
+}
+
+function SecondaryCourse(){
+    this.course = undefined;
+    this.startTime = undefined;
+    this.endTime = undefined;
+    this.dayType = undefined;
+    this.block = undefined;
+    
+    this.initialize = function(obj){
+        if (obj.course)
+            this.course  = obj.course;
+        if (obj.startTime)
+            this.startTime = obj.startTime;
+        if (obj.endTime)
+            this.endTime = obj.endTime;
+        if (obj.dayType)
+            this.dayType = obj.dayType;
+        if (obj.block)
+            this.block = obj.block;
+    } 
+}
+
+function Teacher() {
+    this.firstName = undefined;
+    this.lastName = undefined;
+    this.email = undefined;
+    this.id = undefined;
+    this.school = undefined;
+    this.schoolDivision = undefined;
+    this.grade = undefined;
+    this.hostFall = false;
+    this.hostSpring = false;
+    this.elementarySchedule = [];
+    this.secondarySchedule = [];
+    
+    this.initialize = function(obj){
+        if (obj.firstName)
+            this.firstName = obj.firstName;
+        if (obj.lastName)
+            this.lastName = obj.lastName;
+        if (obj.email)
+            this.email = obj.email;
+        if (obj.id)
+            this.id = obj.id;
+        if (obj.school)
+            this.school = obj.school;
+        if (obj.schoolDivision)
+            this.schoolDivision = obj.schoolDivision;
+        if (obj.grade)
+            this.grade = obj.grade;
+        if (obj.hostFall)
+            this.hostFall = obj.hostFall;
+        if (obj.hostSpring)
+            this.hostSpring = obj.hostSpring;
+        if (obj.elementarySchedule){
+            for (var i = 0; i < obj.elementarySchedule.length; i++){
+                var el = new ElementaryCourse();
+                el.initialize(obj.elementarySchedule[i]);
+                this.elementarySchedule.push(el);
+            }
+        }
+        
+        if (obj.secondarySchedule){
+            for (var i = 0; i < obj.secondarySchedule.length; i++){
+                var sec = new SecondaryCourse();
+                sec.initialize(obj.secondarySchedule[i]);
+                this.secondarySchedule.push(sec);
+            }
+        }
+        
+    }
 }
