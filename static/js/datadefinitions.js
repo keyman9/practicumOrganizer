@@ -95,17 +95,19 @@ function PreviousPractica(){
 
 
 function PracticumAssignment(){
-    this.student = undefined;
-    this.teacher = undefined;
+    //student email
+    this.studentId = undefined;
+    //teacher serial id
+    this.teacherId = undefined;
     this.course = undefined;
     //stores the day booleans, start, and end time
     this.availability = new Availability();
     
     this.initialize = function(obj){
-        if (obj.student)
-            this.student  = obj.student;
-        if (obj.teacher)
-            this.teacher = obj.teacher;
+        if (obj.studentId)
+            this.studentId  = obj.studentId;
+        if (obj.teacherId)
+            this.teacherId = obj.teacherId;
         if (obj.course)
             this.course = obj.course;
         if (obj.availability)
