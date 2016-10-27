@@ -94,6 +94,44 @@
     </div>
 </script>
 
+<script type="text/ng-template" id="popover.teacher.tpl.html">
+    <div class="popover" tabindex="-1">
+        <div class="arrow"></div>
+            <h3 class="popover-title text-center" ng-bind="teacher.firstName + '  ' + teacher.lastName" ></h3>
+        <div class="popover-content">
+            <div class="">
+                <table class="table table-responsive text-center">
+                    <tbody>
+                      <tr>
+                        <td ng-bind="teacher.email"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="getHostString(teacher)"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="teacher.schoolDivision"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="teacher.school"></td>
+                      </tr>
+                      <tr ng-if="teacher.grade">
+                        <td ng-bind="'Grade: ' + teacher.grade"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Schedule:</span></td>
+                      </tr>
+                      <tr class="well" ng-if="teacher.elementarySchedule.length > 0" ng-repeat="class in teacher.elementarySchedule">
+                        <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                      <tr class="well" ng-if="teacher.secondarySchedule.length > 0" ng-repeat="class in teacher.secondarySchedule">
+                        <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>
 
 <div class="container" ng-controller="AssignPracticumController">
     <div class="row">
@@ -110,7 +148,6 @@
                     </div><br />
                     <div class="form-group">
                         <span>Endorsement:
-                        
                         <select class="form-control" id="endorsement" name="endorsement" ng-model="endorsementSought" ng-change="changeEndorsement(endorsementSought)" required>
                             <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>
                         </select>
@@ -128,7 +165,9 @@
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
                         <ul class="list-group" dnd-list="lists[0].students">
-                            <button class="list-group-item btn" ng-repeat="student in lists[0].students" ng-class="{active : currentStudent === student}" ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" placement="left" auto-close="true" data-html="true"
+                            <button class="list-group-item btn" ng-repeat="student in lists[0].students" 
+                            ng-class="{active : currentStudent === student}" ng-model="$parent.student" 
+                            data-template-url="popover.student.tpl.html" container="body" placement="left" auto-close="true" data-html="true"
                                 ng-click="setCurrentStudent(student)" bs-popover dnd-draggable="student" dnd-effect-allowed="move" >
                                 <span ng-bind="student.firstName"></span>&nbsp;
                                 <span ng-bind="student.lastName"></span>
@@ -144,7 +183,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <span>School Division:
-                        <select class="form-control" id="division" name="division" ng-model="schoolDivision">
+                        <select class="form-control" id="division" name="division" ng-model="currentSchoolDivision">
                             <option>N/A</option>
                             <option ng-repeat="item in schoolDivisions">{{ '{{item.division}}' }}</option>
                         </select></span>
@@ -153,27 +192,31 @@
                         <span>School:
                         <select class="form-control" id="school" name="school" ng-model="school">
                             <option>N/A</option>
-                            <option ng-repeat="school in getSchools(schoolDivision)">{{ '{{school}}' }}</option>
+                            <option ng-repeat="school in getSchools(currentSchoolDivision)">{{ '{{school}}' }}</option>
                         </select></span>
                     </div>
                     <div class="form-group">
                         <span>Grade</span>
-                        <select class="form-control" id="grade" name="grade" ng-model="grade" ng-options="g as g.displayName for g in grades">
-                            <option>N/A</option>
+                        <select class="form-control" id="grade" name="grade" ng-model="grade">
+                            <option>N/A</option>                            
+                            <option ng-repeat="g in grades">{{ '{{g.displayName}}' }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <span>Subject</span>
-                        <select class="form-control" id="course" name="course" ng-model="course">
+                        <select class="form-control" id="subject" name="subject" ng-model="subject">
                             <option>N/A</option>
-                            <option ng-repeat="c in courses">{{ '{{c}}' }}</option>
+                            <option ng-repeat="s in subjects | orderBy:c">{{ '{{s}}' }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
                         <ul class="list-group" dnd-list="lists[0].teachers">
-                            <button class="list-group-item btn" ng-repeat="teacher in lists[0].teachers" ng-class="{active : currentTeacher === teacher}" ng-model="$parent.teacher" data-template-url="popover.student.tpl.html" container="body" auto-close="true" data-html="true" ng-click="setCurrentTeacher(teacher)"
+                            <button class="list-group-item btn" ng-repeat="teacher in lists[1].teachers" 
+                            ng-class="{active : currentTeacher === teacher}" ng-model="$parent.teacher" 
+                            data-template-url="popover.teacher.tpl.html" container="body" placement="left" auto-close="true" data-html="true" 
+                            ng-click="setCurrentTeacher(teacher)"
                                 bs-popover dnd-draggable="teacher" dnd-effect-allowed="move">
                                 <span ng-bind="teacher.firstName"></span>&nbsp;
                                 <span ng-bind="teacher.lastName"></span>
