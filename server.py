@@ -358,7 +358,6 @@ def forgotPassword():
     From = 'practicumorganizer@gmail.com'
     To = 'lcarter3@mail.umw.edu' #Just to test
     
-    
     try:
         #smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
         smtpObj = smtplib.SMTP_SSL('smtp.gmail.com', 465)
