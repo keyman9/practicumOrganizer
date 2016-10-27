@@ -45,6 +45,8 @@ def submitStudent(data):
     print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
     #print(studentData)
+    error = False
+    msg = ""
     
     #student Table
     try:
@@ -54,6 +56,7 @@ def submitStudent(data):
         cur.execute(studentTable, studentData)
         db.commit()
     except Exception as e:
+        error = True
         print(e)
     
     #endorsement Table
@@ -65,6 +68,7 @@ def submitStudent(data):
             print("inserted into endorsements table")
             db.commit()
         except Exception as e:
+            error = True
             print(e)
     
     #previousPractica Table
@@ -82,6 +86,7 @@ def submitStudent(data):
             print("inserted into prev practica table")
             db.commit()
         except Exception as e:
+            error = True
             print(e)
             
     #enrolledCourses Table
@@ -91,7 +96,8 @@ def submitStudent(data):
             cur.execute(enrolledCourseTable, coursesData)
             print("inserted into enrolled courses")
        except Exception as e:
-            print(e) 
+            error = True
+            print(e)
        
     #meetingDays Table 
     #availableTimes Table
@@ -106,7 +112,15 @@ def submitStudent(data):
             db.commit()
             print("inserted into meeting table and availabletimes tables")
         except Exception as e:
-            print(e) 
+            error = True
+            print(e)
+    
+    if not error:
+        msg = "Your information has been submitted!"
+    else:
+        msg = "There was an error submitting your information. Try again."
+    
+    emit("submissionResult", {"error": error, "msg": msg})
     
  
 
@@ -277,10 +291,8 @@ def loadStudents():
 def mainIndex():
     return render_template('index.html', currentPage='home')
     
-@app.route('/student', methods=['GET', 'POST'])
+@app.route('/student', methods=['GET'])
 def getStudentData():
-    # if request.method == "POST":
-    #     print(request.form)
     return render_template('student_form.html')
     
 
@@ -344,8 +356,7 @@ def forgotPassword():
     msg = MIMEText(message)
     subject = '[Practicum Organizer] Reset password'
     From = 'practicumorganizer@gmail.com'
-    #To = 'lcarter3@mail.umw.edu' #Just to test
-    To = 'sheldonmcclung@gmail.com'
+    To = 'lcarter3@mail.umw.edu' #Just to test
     
     try:
         #smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
@@ -366,6 +377,64 @@ def forgotPassword():
         print(e)
             
     emit('forgotPassword')
+    
+# @app.route('/forgotpassword', methods=['GET', 'POST'])
+# def forgotPassword():
+#     loggedIn = False
+#     passChanged = False
+#     passFailed = False
+#     wrongUsername = False
+#     if request.method=="POST":
+#         receiver=['sheldonmcclung@gmail.com']#[request.form['email']]
+#         sender = ['buymybooks350@gmail.com']
+        
+#         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+#         accessCode = ''.join(random.choice(chars) for _ in range(10))
+#         print accessCode
+        
+#         emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
+#         #msg = MIMEText(emailMSG)
+#         #msg['Subject'] = 'Reset password'
+#         #msg['From'] = 'buymybooks350@gmail.com'
+#         #msg['To'] = 'sheldonmcclung@gmail.com'#request.form['email']
+        
+#         #conn = connectToDB()
+#         #cur = conn.cursor()
+        
+#         # query = cur.mogrify("""SELECT * FROM users WHERE email = %s;""", ('sheldonmcclung@gmail.com',))#(request.form['email'],))
+#         # print query
+#         # cur.execute(query)
+#         # results = cur.fetchall()
+#         # print results
+#         # if results != []:
+#         #     try:
+#         #         query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (accessCode, 'sheldonmcclung@gmail.com'))#request.form['email'])) 
+#         #         print query
+#         #         cur.execute(query)
+#         #         conn.commit()
+#         #         passChanged = True
+#         #         print "Password changed"
+#         try:
+#             smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+#             #server.set_debuglevel(1)
+#             smtpObj.ehlo()
+#             smtpObj.starttls()
+#             smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
+#             smtpObj.sendmail('buymybooks350@gmail.com', 'sheldonmcclung@gmail.com', emailMSG.as_string())         
+#             print "Successfully sent email"
+#         except Exception as e:
+#             print(e)
+#             # except:
+#             #     print("Error changing password")
+#             #     conn.rollback()
+#             #     passFailed = True
+#         else:
+#             wrongUsername = True
+#             print "Incorrect email"
+#     return render_template('forgotpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed,
+#     wrongUsername=wrongUsername)
+    
+
 
 @socketio.on('resetPassword', namespace='/login') 
 def resetPassword(payload):
@@ -375,11 +444,11 @@ def resetPassword(payload):
     
     if payload['accessCode'] == globalDict['accessCode']:
         globalDict['accessCode'] = ''
-        message = {'success' : 'The access code inputted was accepted!\n'}
+        message = {'success' : 'Access code accepted!\n'}
         emit('resetPassword', message)
         
     else:    
-        message = {'error' : 'The access code inputted is denied!\n'}
+        message = {'error' : 'Access code denied!\n'}
         emit('resetPassword', message)
     
 
@@ -401,9 +470,7 @@ def updatePassword(payload):
         print("Error: Invalid UPDATE in 'login' table: %s" % e)
         db.rollback()
     
-    message = {}
-    message['success'] = "Password Updated Successfully!"
-    emit('updatePassword', message)
+    emit('updatePassword')
     
 @socketio.on('getDivisions', namespace='/student')
 def getSchoolDivisions():
@@ -450,7 +517,46 @@ def getPracticumBearing():
         print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
         db.rollback()
     return courses
+    
+    
 
+    
+# @app.route('/resetpassword', methods=['GET', 'POST'])
+# def resetPassword():
+#     loggedIn = False
+#     passChanged = False
+#     passFailed = False
+#     wrongPass = False
+#     if 'user' in session:
+#         currentUser = session['user']
+#         loggedIn = True
+#     if request.method=="POST":
+#         oldpass = request.form['oldpassword']
+#         newpass = request.form['password1']
+#         conn = connectToDB()
+#         cur = conn.cursor()
+#         query = cur.mogrify("""SELECT * FROM users WHERE email = %s AND password = crypt(%s, password);""", (currentUser, oldpass)) 
+#         print(query)
+#         cur.execute(query)
+#         results = cur.fetchall()
+#         print results
+#         if results != []:
+#             try:
+#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (newpass, currentUser)) 
+#                 print query
+#                 cur.execute(query)
+#                 conn.commit()
+#                 passChanged = True
+#                 print "Password changed"
+#             except:
+#                 print("Error changing password")
+#                 conn.rollback()
+#                 passFailed = True
+#         else:
+#             wrongPass = True
+#             print "Incorrect password"
+#     return render_template('resetpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed, 
+#     wrongPass=wrongPass)
     
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)

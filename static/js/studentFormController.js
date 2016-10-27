@@ -1,6 +1,6 @@
 var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll']);
 
-POBoxApp.controller('StudentFormController', function($scope, $window){
+POBoxApp.controller('StudentFormController', function($scope, $window, $location, $anchorScroll){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/student')
     
     
@@ -65,6 +65,9 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.invalidPractica = true;
     $scope.availabilityErrorMsg = ["", "", ""];
     $scope.practicaErrorMsg = [];
+    $scope.submissionSuccess = false;
+    $scope.submissionFailure = false;
+    $scope.submissionMsg = "";
         
     //returns schools in selected division (of previous practica)
     $scope.getSchools = function(id){
@@ -110,6 +113,21 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         }
         $scope.$apply();
         // console.log($scope.practicumBearingClasses);
+    });
+    
+    socket.on("submissionResult", function(result){
+        console.log(result);
+        if (result.error){
+            $scope.submissionFailure = true;
+            $scope.submissionSuccess = false;
+            $scope.goToTop();
+        } else{
+            $scope.submissionSuccess = true;
+            $scope.submissionFailure = false;
+            $scope.resetForm();
+        }
+        $scope.submissionMsg = result.msg;
+        $scope.$apply();
     });
     
     $scope.addAvailability = function(){
@@ -160,7 +178,16 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     
     $scope.isElementary = function(school){
         var sch = String(school);
-        if (sch.indexOf("Elementary") > 0){
+        if (sch.indexOf("Elementary School") > 0){
+            return true;
+        } else {
+            return false;
+        }
+    };
+    
+    $scope.isSecondary = function(school){
+        var sch = String(school);
+        if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
             return true;
         } else {
             return false;
@@ -170,11 +197,25 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
     $scope.changeGrade = function(item){
         item.course = undefined;
         item.other = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        console.log($scope.previousPractica[index]);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a course!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
     
     $scope.changeCourse = function(item){
         item.grade = undefined;
         item.other = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        console.log($scope.previousPractica[index]);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a course!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
     
     $scope.changeSchool = function(item){
@@ -182,16 +223,28 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         item.other = undefined;
         $scope.changeCourse(item);
         $scope.changeGrade(item);
+        var index = $scope.previousPractica.indexOf(item);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a school!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
     
     $scope.changeSchoolDivision = function(item){
         $scope.changeSchool(item);
         item.school = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a school!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
     }
 
-    // $scope.print = function(item){
-    //     console.log(item);
-    // };
+    $scope.print = function(item){
+        console.log(item);
+    };
     
     $scope.submit = function(){
         var stu = new Student();
@@ -221,16 +274,24 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         for (var i = 0; i < $scope.previousPractica.length; i++){
             var current = $scope.previousPractica[i]; 
             delete current.schoolDivision;
-            if (current.course === "Other"){
-                current.course = current.other;
-            }
+            
             if (current.school === "Other"){
                 current.school = current.otherSchool;
             }
-            if (current.grade && current.grade.value == -1){
+            
+            if ((current.course && current.course === "Other")){
+                current.course = current.other;
+                current.grade = undefined;
+            }
+            
+            if (current.course && inGrades(current.course)){
+                var temp = getGradeValue(current.course);
+                current.grade = temp;
+                current.course = undefined;
+            } else if (current.grade && current.grade.value === -1){
                 current.course = current.grade.displayName;
                 current.grade = undefined;
-            } else if(current.grade){
+            } else if (current.grade){
                 var temp = current.grade.value;
                 current.grade = temp;
             }
@@ -245,6 +306,10 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
             stu.hasCar = true;
         }
         
+        if ($scope.transportation === "none" || $scope.transportation != "self"){
+    		$scope.passengerNum = 0;
+    	} 
+        
         stu.passengers = $scope.passengerNum;
         
         console.log(stu);
@@ -252,6 +317,27 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         socket.emit('submit', stu);
     };
     
+    var inGrades = function(name){
+        for (var i = 0; i < $scope.grades.length; i++){
+            var grade = $scope.grades[i].displayName;
+            if (name === grade && $scope.grades[i].value >= 0){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    var getGradeValue = function(name){
+        var temp = -1
+        for (var i = 0; i < $scope.grades.length; i++){
+            var grade = $scope.grades[i].displayName;
+            if (name === grade){
+                temp = $scope.grades[i].value;
+            }
+        }
+        return temp;
+    }
     
     //Validation
     
@@ -451,13 +537,43 @@ POBoxApp.controller('StudentFormController', function($scope, $window){
         $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
 
-     //TODO: Pull school divisions/schools, courses, endorsements, practicum-bearing courses from database
+    $scope.goToTop = function() {
+        $location.hash('top');
+        $anchorScroll();
+    };
     
-    for (var i = 0; i < 3; i++){
-        $scope.addAvailability();
+    $scope.resetForm = function(){
+        $scope.endorsementSought = undefined;
+        $scope.enrolledClasses = undefined;
+        $scope.transportation = undefined;
+        $scope.passengerNum = 0;
+        $scope.firstName = undefined;
+        $scope.lastName = undefined;
+        $scope.email = undefined;
+        $scope.availability = [];
+        $scope.previousPractica = [];
+        $scope.noPreviousPractica = false;
+    
+        $scope.invalidFirstName = false;
+        $scope.invalidLastName = false;
+        $scope.invalidEmail = false;
+        $scope.invalidEndorsement = false;
+        $scope.invalidEnrolledClass= false;
+        $scope.invalidTransportation= false;
+        $scope.invalidAvailability = true;
+        $scope.invalidPractica = true;
+        $scope.availabilityErrorMsg = ["", "", ""];
+        $scope.practicaErrorMsg = [];
+        
+        for (var i = 0; i < 3; i++){
+            $scope.addAvailability();
+        }
+        
+        $scope.addPractica();
+        $scope.goToTop();
     }
     
-    $scope.addPractica();
+    $scope.resetForm();
     $scope.getPracticumBearing()
     $scope.getSchoolDivisions();
 });

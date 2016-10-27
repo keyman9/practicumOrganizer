@@ -96,21 +96,11 @@
 
 
 <div class="container" ng-controller="AssignPracticumController">
-    <br />
-    <div class="row">
-        <div class="col-md-6 col-md-offset-4">
-            <!--<h3>Practicum Assignment</h3>-->
-        </div>
-        <br /><br /><br />
-    </div>
-
     <div class="row">
         <div class="col-md-6 right-border">
-            <h4 class="text-center">Students</h4>
-            <br/>
+            <h4 class="text-center">Students</h4><br/>
             <div class="row">
                 <div class="col-md-6">
-                    <span>Filter By</span><br/><br/>
                     <div class="form-group">
                         <span>Practicum-Bearing Class:
                         <select class="form-control" id="practicumBearing" name="practicumBearing" ng-model="courseSought" ng-change="changeCourse(courseSought)">
@@ -136,7 +126,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div slim-scroll height="350px">
+                    <div slim-scroll height="300px">
                         <ul class="list-group" dnd-list="lists[0].students">
                             <button class="list-group-item btn" ng-repeat="student in lists[0].students" ng-class="{active : currentStudent === student}" ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" placement="left" auto-close="true" data-html="true"
                                 ng-click="setCurrentStudent(student)" bs-popover dnd-draggable="student" dnd-effect-allowed="move" >
@@ -149,11 +139,9 @@
             </div>
         </div>
         <div class="col-md-6">
-            <h4 class="text-center">Teachers</h4>
-            <br/>
+            <h4 class="text-center">Teachers</h4><br/>
             <div class="row">
                 <div class="col-md-6">
-                    <span>Filter By</span><br/><br/>
                     <div class="form-group">
                         <span>School Division:
                         <select class="form-control" id="division" name="division" ng-model="schoolDivision">
@@ -183,7 +171,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div slim-scroll height="350px">
+                    <div slim-scroll height="300px">
                         <ul class="list-group" dnd-list="lists[0].teachers">
                             <button class="list-group-item btn" ng-repeat="teacher in lists[0].teachers" ng-class="{active : currentTeacher === teacher}" ng-model="$parent.teacher" data-template-url="popover.student.tpl.html" container="body" auto-close="true" data-html="true" ng-click="setCurrentTeacher(teacher)"
                                 bs-popover dnd-draggable="teacher" dnd-effect-allowed="move">
@@ -196,7 +184,6 @@
             </div>
         </div>
     </div>
-    <br /><br /><br />
     <hr/>
     <div class="row">
         <h4 class="text-center">Assignments</h4>
