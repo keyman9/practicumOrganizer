@@ -345,7 +345,7 @@ def forgotPassword():
     subject = '[Practicum Organizer] Reset password'
     From = 'practicumorganizer@gmail.com'
     #To = 'lcarter3@mail.umw.edu' #Just to test
-    To = 'lcarter347@gmail.com'
+    To = 'sheldonmcclung@gmail.com'
     
     try:
         #smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
