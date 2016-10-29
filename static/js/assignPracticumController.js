@@ -1,5 +1,5 @@
 
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize', 'dndLists'])
+var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize', 'dndLists', 'ngDragDrop'])
 
 
 POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
@@ -30,7 +30,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         'hostFall': true, 
         'hostSpring': true,
         'secondarySchedule': [
-            {'dayType': 'A/X', 'block': '1', 'course': 'Intro to Potions', 'startTime': '10:00AM', 'endTime': '11:00AM'}, 
+            {'dayType': 'A/X', 'block': '1', 'course': 'Intro to Potions', 'startTime': '09:00AM', 'endTime': '11:00AM'}, 
             {'dayType': 'B/Y', 'block': '5', 'course': 'Potions 201', 'startTime': '12:00PM', 'endTime': '1:00PM'},  
             {'dayType': 'A/X', 'block': '2', 'course': 'Advanced Potions', 'startTime': '2:00PM', 'endTime': '3:00PM'}
         ]};
@@ -72,13 +72,18 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     "German I", "German I - Part B", "German II", "German III", "German IV", "AP/DE/IB German","Latin I", "Latin I - Part B", 
     "Latin II", "Latin III", "Latin IV", "AP/DE/IB Latin", "Special Education: General", "Special Education: Adapted"];
     
-    $scope.studentsFromDB = [];
+    $scope.students = [];
+    $scope.teachers =[];
     $scope.currentStudent = {};
     $scope.currentTeacher = {};
+    $scope.currentSchoolDivision = {};
     $scope.practicumMode = true;
     $scope.transportationMode = false;
-    $scope.schoolDivisions = [];
     $scope.practicumBearingClasses = [];
+    $scope.courses = [];
+    $scope.schoolDivisions = [];
+    $scope.editingPracticumAssignments = [];
+    $scope.publishedPracticumAssignments = [];
     
     
     $scope.selectEndorsement = false;
@@ -92,25 +97,11 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.showStudentsCourses = [];
     $scope.allStudents = [];
     
-    $scope.schoolDivisions = [];
-    $scope.currentSchoolDivision = {};
-    $scope.courses = []
-    
-    
-    $scope.lists = [
-        {
-            label: "Students",
-            allowedTypes: ['student'],
-            students: [
-            ]
-        }, 
-        {
-            label: "Teachers",
-            allowedTypes: ['teacher'],
-            teachers: [
-            ]
-        }
-    ];
+
+
+
+
+
     
     $scope.getSchools = function(school){
        for (var i = 0; i < $scope.schoolDivisions.length; i++){
@@ -139,7 +130,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
                 }
             }
         }
-        console.log($scope.schoolDivisions);
+        // console.log($scope.schoolDivisions);
         $scope.$apply();
     });
     
@@ -162,7 +153,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     };
     
      socket.on('loadStudents', function(results){
-        $scope.lists[0].students = results;
+        $scope.students = results;
         $scope.allStudents = results;
         $scope.$apply();
         
@@ -172,22 +163,84 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         for (var i = 0; i < 5; i++){
             var t = new Teacher();
             t.initialize(teacher);
-            $scope.lists[1].teachers.push(t);
+            $scope.teachers.push(t);
             var t2 = new Teacher();
             t2.initialize(teacher1);
-            $scope.lists[1].teachers.push(t2);
+            $scope.teachers.push(t2);
         }
-        console.log($scope.lists[1].teachers);
+        // console.log($scope.teachers);
     };
+    
+    $scope.initializeAssignments = function(){
+        var a = new PracticumAssignment();
+        a.student = {};
+        a.teacher = {};
+        a.availability.start = new Date();
+        a.availability.start.setHours(7);
+        a.availability.start.setMinutes(30);
+        a.availability.end = new Date();
+        a.availability.end.setHours(15);
+        a.availability.end.setMinutes(30);
+        $scope.editingPracticumAssignments.push(a);
+        console.log($scope.editingPracticumAssignments);
+    }
+    
+    $scope.print = function(){
+        console.log($scope.editingPracticumAssignments);
+    }
+    
+    $scope.setAssignedCourse = function(event){
+        console.log(event, practicum);
+        if (practicum.teacher.elementarySchedule.length > 0){
+            practicum.course = practicum.teacher.elementarySchedule[0];
+            $scope.changeAssignedCourse(practicum);
+        } else if(practicum.teacher.secondarySchedule.length > 0){
+            practicum.course = practicum.teacher.secondarySchedule[0];
+            $scope.changeAssignedCourse(practicum);
+        }
+    }
+    
+    $scope.changeAssignedCourse = function(practicum){
+        var classes = practicum.teacher.elementarySchedule.concat(practicum.teacher.secondarySchedule);
+        for (var i = 0; i < classes.length; i++){
+            if (classes[i].course === practicum.course){
+                var start = classes[i].startTime;
+                var split = start.split(":");
+                var startHrs = parseInt(split[0]);
+                var startMin = parseInt(split[1].substring(0, 2));
+                var mer = split[1].substring(2, 4);
+                if (mer === "PM"){
+                    startHrs += 12;
+                }
+                practicum.availability.start = new Date();
+                practicum.availability.start.setHours(startHrs);
+                practicum.availability.start.setMinutes(startMin);
+
+                var end = classes[i].endTime;
+                var split = end.split(":");
+                var endHrs = parseInt(split[0]);
+                var endMin = parseInt(split[1].substring(0, 2));
+                var mer = split[1].substring(2, 4);
+                if (mer === "PM"){
+                    endHrs += 12;
+                }
+                practicum.availability.end = new Date();
+                practicum.availability.end.setHours(endHrs);
+                practicum.availability.end.setMinutes(endMin);
+            }
+        }
+        // console.log(practicum);
+        
+    }
     
     $scope.setCurrentStudent = function(student){
         $scope.currentStudent = student;
-        console.log($scope.currentStudent);
+        // console.log($scope.currentStudent);
     };
     
     $scope.setCurrentTeacher = function(teacher){
         $scope.currentTeacher = teacher;
-        console.log($scope.currentTeacher);
+        // console.log($scope.currentTeacher);
     };
     
     $scope.getAvailabilityString = function(av){
@@ -264,35 +317,35 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         
         $scope.showStudentsCourses = [];
             
-            for(var i = 0; i < $scope.lists[0].students.length; i++){
+            for(var i = 0; i < $scope.students.length; i++){
             
-                if($scope.lists[0].students[i]['enrolledClasses'].indexOf($scope.courseSought) !== -1){
-                    $scope.showStudentsCourses.push($scope.lists[0].students[i]);
+                if($scope.students[i]['enrolledClasses'].indexOf($scope.courseSought) !== -1){
+                    $scope.showStudentsCourses.push($scope.students[i]);
                 }
             }
         
             $scope.selectCourse = true;
-            $scope.lists[0].students = $scope.showStudentsCourses;
+            $scope.students = $scope.showStudentsCourses;
     };
     
     $scope.filterEndorsements = function(){
         
         $scope.showStudentsEndorsements = []
             
-            for(var i = 0; i < $scope.lists[0].students.length; i++){
+            for(var i = 0; i < $scope.students.length; i++){
             
-                if($scope.lists[0].students[i]['endorsements'].indexOf($scope.endorsementSought) !== -1){
-                    $scope.showStudentsEndorsements.push($scope.lists[0].students[i]);
+                if($scope.students[i]['endorsements'].indexOf($scope.endorsementSought) !== -1){
+                    $scope.showStudentsEndorsements.push($scope.students[i]);
                 }
             }
         
             $scope.selectEndorsement = true;
-            $scope.lists[0].students = $scope.showStudentsEndorsements;
+            $scope.students = $scope.showStudentsEndorsements;
     };
     
     $scope.changeEndorsement = function(endorsementSought){
         
-        $scope.lists[0].students = $scope.allStudents;
+        $scope.students = $scope.allStudents;
 
         if(endorsementSought !== "N/A"){
             
@@ -318,7 +371,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     $scope.changeCourse = function(courseSought){
         
-        $scope.lists[0].students = $scope.allStudents;
+        $scope.students = $scope.allStudents;
         
         if(courseSought !== "N/A"){
             
@@ -342,11 +395,10 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         }
     };
 
-
-
     
     $scope.initializeStudents();
     $scope.initializeTeachers();
+    $scope.initializeAssignments();
     $scope.getPracticumBearing()
     $scope.getSchoolDivisions();
 });

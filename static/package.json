@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "angular-drag-and-drop-lists": "^1.4.0",
+    "angular-dragdrop": "^1.0.13",
     "angular-slimscroll": "^1.0.0",
     "angular-strap": "^2.3.9",
     "angular-ui-bootstrap": "^2.2.0"
