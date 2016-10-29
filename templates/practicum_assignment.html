@@ -67,6 +67,14 @@
     .teacher-drop{
         margin-left: 10px;
     }
+    .practica-table{
+        height: 500px;
+        overflow-y: scroll;
+    }
+    .practica{
+        background-color: white !important;
+        color: black;
+    }
 </style>
 <script type="text/javascript" src="static/js/assignPracticumController.js"></script>
 
@@ -344,11 +352,11 @@
                             <h5>Teacher</h5>
                         </div>
                         <div class="col-md-6">
-                            <h5>Day/Time</h5>
+                            <h5>Class, Day, Time</h5>
                         </div>
                         <div class="col-md-1">
                             <div>
-                                <button class="btn btn-primary">&nbsp;+&nbsp;</button>
+                                <button class="btn btn-primary" ng-click="addPracticumAssignment()">&nbsp;+&nbsp;</button>
                             </div>
                         </div>
                     </div>
@@ -359,13 +367,13 @@
                                 <div class="col-md-2">
                                     <br/>
                                     <div>
-                                        <button class="btn btn-danger">&nbsp;-&nbsp;</button>
+                                        <button class="btn btn-danger" ng-click="deleteEditingPracticumAssignment(editingPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
                                     </div>
                                 </div>
                                 <div class="col-md-5 student-drop">
                                     <br/>
                                     <div class="thumbnail" ng-model="item.student"
-                                    data-drop="true" data-jqyoui-options="{accept:'.student'}"  jqyoui-droppable="{onDrop:'print'}">
+                                    data-drop="true" data-jqyoui-options="{accept:'.student'}"  jqyoui-droppable>
                                         <div class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                         ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
                                         container="body" placement="top" auto-close="true" data-html="true" bs-popover>
@@ -377,7 +385,7 @@
                                 <div class="col-md-5 teacher-drop">
                                     <br/>
                                     <div class="thumbnail" ng-model="item.teacher" 
-                                        data-drop="true" data-jqyoui-options="{accept:'.teacher'}"  jqyoui-droppable="{onDrop:'setAssignedCourse({{item}})'}">
+                                        data-drop="true" data-jqyoui-options="{accept:'.teacher'}"  jqyoui-droppable>
                                         <div class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                         ng-model="item.teacher" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedteacher.tpl.html" 
                                         container="body" placement="top" auto-close="true" data-html="true" bs-popover>
@@ -392,6 +400,7 @@
                                 <div class="col-md-3">
                                     <span>Class</span>
                                     <select class="form-control" id="course" name="course" ng-model="item.course" ng-change="changeAssignedCourse(item)">
+                                        <option></option>
                                         <option ng-repeat="c in item.teacher.elementarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
                                         <option ng-repeat="c in item.teacher.secondarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
                                         <option>Other</option>
@@ -401,40 +410,40 @@
                                     <span>From</span>
                                     <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.availability.start" data-time-format="h:mm a"  required bs-timepicker 
                                     data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"  
-                                    bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}" ng-change="print()">
+                                    bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                                 </div>
                                 <div class="col-md-2">
                                     <span>To</span>
                                     <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.availability.end" data-time-format="h:mm a"  required bs-timepicker  
                                     data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"   
-                                     bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}" ng-change="print()">
+                                     bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                                 </div>
                                 <div class="col-md-5">
                                     <div class="row">
                                         <div class="col-md-1">
                                             <span>M</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.monday" ng-change="print()">  
+                                            <input type="checkbox" value="true" ng-model="item.availability.monday">  
                                         </div>
                                         <div class="col-md-1">
                                             <span>T</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.tuesday" ng-change="print()">  
+                                            <input type="checkbox" value="true" ng-model="item.availability.tuesday">  
                                         </div>
                                         <div class="col-md-1">
                                             <span>W</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.wednesday" ng-change="print()">  
+                                            <input type="checkbox" value="true" ng-model="item.availability.wednesday">  
                                         </div>
                                         <div class="col-md-1">
                                             <span>Th</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.thursday" ng-change="print()">  
+                                            <input type="checkbox" value="true" ng-model="item.availability.thursday">  
                                         </div>
                                         <div class="col-md-1">
                                             <span>F</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.friday" ng-change="print()">  
+                                            <input type="checkbox" value="true" ng-model="item.availability.friday">  
                                         </div>
                                         <div class="col-md-1">
                                             <br/>
                                             <div>
-                                                <button class="btn btn-success"><i class="glyphicon glyphicon-floppy-disk"></i></button>
+                                                <button class="btn btn-success" ng-click="savePracticumAssignment(editingPracticumAssignments.indexOf(item))"><i class="glyphicon glyphicon-floppy-disk"></i></button>
                                             </div>
                                         </div>
                                     </div>
@@ -466,6 +475,24 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row" ng-if="practicumMode">
+        <div class="col-md-12 practica-table">
+            <table class="table table-bordered">
+                <thead class="practica">
+                    <th>Student</th>
+                    <th>Teacher</th>
+                    <th>Class</th>
+                    <th>Day/Time</th>
+                </thead>
+                <tr class="practica" ng-repeat="item in publishedPracticumAssignments"> 
+                    <td ng-bind="item.student.firstName + ' ' + item.student.lastName"></td>
+                    <td ng-bind="item.teacher.firstName + ' ' + item.teacher.lastName"></td>
+                    <td ng-bind="getScheduleString(getScheduleCourse(item.teacher,item.course))"></td>
+                    <td ng-bind="getAvailabilityString(item.availability)"></td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

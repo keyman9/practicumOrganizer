@@ -171,7 +171,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         // console.log($scope.teachers);
     };
     
-    $scope.initializeAssignments = function(){
+    $scope.addPracticumAssignment = function(){
         var a = new PracticumAssignment();
         a.student = {};
         a.teacher = {};
@@ -182,24 +182,51 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         a.availability.end.setHours(15);
         a.availability.end.setMinutes(30);
         $scope.editingPracticumAssignments.push(a);
-        console.log($scope.editingPracticumAssignments);
+        // console.log($scope.editingPracticumAssignments);
+    }
+    
+    $scope.deleteEditingPracticumAssignment = function(index){
+        $scope.editingPracticumAssignments.splice(index, 1);
+    }
+    
+    $scope.savePracticumAssignment = function(index){
+        var prac = angular.copy($scope.editingPracticumAssignments[index]);
+        var publishPrac = angular.copy($scope.editingPracticumAssignments[index]);
+        $scope.deleteEditingPracticumAssignment(index);
+        
+        publishPrac.studentId = publishPrac.student.email;
+        publishPrac.teacherId = publishPrac.teacher.id;
+        delete publishPrac.student;
+        delete publishPrac.teacher;
+        
+        if (Object.prototype.toString.call(publishPrac.availability.start) === "[object Date]"){
+            publishPrac.availability.startTime = publishPrac.availability.start.toLocaleTimeString();
+        }
+        if (Object.prototype.toString.call(publishPrac.availability.end) === "[object Date]"){
+            publishPrac.availability.endTime = publishPrac.availability.end.toLocaleTimeString();
+        }
+        if (Object.prototype.toString.call(prac.availability.start) === "[object Date]"){
+            prac.availability.startTime = prac.availability.start.toLocaleTimeString();
+        }
+        if (Object.prototype.toString.call(prac.availability.end) === "[object Date]"){
+            prac.availability.endTime = prac.availability.end.toLocaleTimeString();
+        }
+        delete publishPrac.availability.start;
+        delete publishPrac.availability.end;
+        
+        // console.log(prac);
+        //TODO: send to database
+        
+        $scope.publishedPracticumAssignments.push(prac);
+        // console.log($scope.publishedPracticumAssignments);
+        $scope.addPracticumAssignment();
     }
     
     $scope.print = function(){
         console.log($scope.editingPracticumAssignments);
     }
     
-    $scope.setAssignedCourse = function(event){
-        console.log(event, practicum);
-        if (practicum.teacher.elementarySchedule.length > 0){
-            practicum.course = practicum.teacher.elementarySchedule[0];
-            $scope.changeAssignedCourse(practicum);
-        } else if(practicum.teacher.secondarySchedule.length > 0){
-            practicum.course = practicum.teacher.secondarySchedule[0];
-            $scope.changeAssignedCourse(practicum);
-        }
-    }
-    
+    //sets the start and end time when a course is selected for the practicum assignment
     $scope.changeAssignedCourse = function(practicum){
         var classes = practicum.teacher.elementarySchedule.concat(practicum.teacher.secondarySchedule);
         for (var i = 0; i < classes.length; i++){
@@ -288,20 +315,35 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     $scope.getScheduleString = function(course){
         var str = "";
-        if(course.dayType)
-            str += "[" + course.dayType + " Days";
-        if (course.block)
-            str += ", Block " + course.block + "] ";
-        if (course.startTime)
-            str += course.startTime;
-        if (course.endTime)
-            str += " - " + course.endTime;
-        if (course.course)
-            str += " -> " + course.course;    
-        
+        if (course){
+            if(course.dayType)
+                str += "[" + course.dayType + " Days";
+            if (course.block)
+                str += ", Block " + course.block + "] ";
+            if (course.startTime)
+                str += course.startTime;
+            if (course.endTime)
+                str += " - " + course.endTime;
+            if (course.course)
+                str += " -> " + course.course;    
+        }
         // console.log(str);
         return str;
     };
+    
+    $scope.getScheduleCourse = function(teacher, name){
+        for (var i = 0; i < teacher.elementarySchedule.length; i++){
+            if (teacher.elementarySchedule[i].course === name){
+                return teacher.elementarySchedule[i];
+            }
+        }
+        
+        for (var i = 0; i < teacher.secondarySchedule.length; i++){
+            if (teacher.secondarySchedule[i].course === name){
+                return teacher.secondarySchedule[i];
+            }
+        }
+    }
     
     $scope.togglePracticumMode = function(){
        $scope.practicumMode = !$scope.practicumMode;
@@ -398,7 +440,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     $scope.initializeStudents();
     $scope.initializeTeachers();
-    $scope.initializeAssignments();
+    $scope.addPracticumAssignment();
     $scope.getPracticumBearing()
     $scope.getSchoolDivisions();
 });
