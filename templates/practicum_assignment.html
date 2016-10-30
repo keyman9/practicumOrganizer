@@ -74,6 +74,13 @@
     .practica{
         background-color: white !important;
         color: black;
+        font-size: 1.25em;
+    }
+    thead{
+        font-size: 1.5em !important;
+    }
+    .show-assigned{
+        margin-top:10px;
     }
 </style>
 <script type="text/javascript" src="static/js/assignPracticumController.js"></script>
@@ -325,9 +332,14 @@
                     </div>
                 </div>
             </div>
+            <div class="row show-assigned">
+                <div class="col-md-12">
+                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedTeachers">&nbsp;Show teachers that have already been assigned a practicum student.</label>
+                </div>
+            </div>
         </div>
     </div>
-    <br/> <br/> 
+    <br/> 
     <div class="row assignment-heading">
         <div class="col-md-4 pills">
             <ul class="nav nav-tabs">
@@ -443,7 +455,9 @@
                                         <div class="col-md-1">
                                             <br/>
                                             <div>
-                                                <button class="btn btn-success" ng-click="savePracticumAssignment(editingPracticumAssignments.indexOf(item))"><i class="glyphicon glyphicon-floppy-disk"></i></button>
+                                                <button class="btn btn-success" ng-click="savePracticumAssignment(editingPracticumAssignments.indexOf(item))">
+                                                    <i class="glyphicon glyphicon-floppy-disk"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -477,20 +491,35 @@
             </div>
         </div>
     </div>
+    <br/>
     <div class="row" ng-if="practicumMode">
         <div class="col-md-12 practica-table">
             <table class="table table-bordered">
                 <thead class="practica">
+                    <th></th>
                     <th>Student</th>
                     <th>Teacher</th>
                     <th>Class</th>
                     <th>Day/Time</th>
+                    <th></th>
                 </thead>
                 <tr class="practica" ng-repeat="item in publishedPracticumAssignments"> 
+                    <td>
+                        <div>
+                            <button class="btn btn-danger" ng-click="">&nbsp;-&nbsp;</button>
+                        </div>
+                    </td>
                     <td ng-bind="item.student.firstName + ' ' + item.student.lastName"></td>
                     <td ng-bind="item.teacher.firstName + ' ' + item.teacher.lastName"></td>
                     <td ng-bind="getScheduleString(getScheduleCourse(item.teacher,item.course))"></td>
                     <td ng-bind="getAvailabilityString(item.availability)"></td>
+                    <td>
+                        <div>
+                            <button class="btn btn-primary" ng-click="">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>

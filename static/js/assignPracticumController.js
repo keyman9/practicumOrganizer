@@ -84,7 +84,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.schoolDivisions = [];
     $scope.editingPracticumAssignments = [];
     $scope.publishedPracticumAssignments = [];
-    
+    $scope.showAssignedTeachers = false;
     
     $scope.selectEndorsement = false;
     $scope.selectCourse = false;
@@ -236,7 +236,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
                 var startHrs = parseInt(split[0]);
                 var startMin = parseInt(split[1].substring(0, 2));
                 var mer = split[1].substring(2, 4);
-                if (mer === "PM"){
+                if (mer === "PM" && startHrs != 12){
                     startHrs += 12;
                 }
                 practicum.availability.start = new Date();
@@ -248,7 +248,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
                 var endHrs = parseInt(split[0]);
                 var endMin = parseInt(split[1].substring(0, 2));
                 var mer = split[1].substring(2, 4);
-                if (mer === "PM"){
+                if (mer === "PM" && endHrs != 12){
                     endHrs += 12;
                 }
                 practicum.availability.end = new Date();
