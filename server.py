@@ -477,6 +477,15 @@ def updatePassword(payload):
     emit('updatePassword')
     
 @socketio.on('getDivisions', namespace='/student')
+def getDivisionsForStudent():
+    divisions = getSchoolDivisions()
+    emit("retrievedDivisions", divisions)
+    
+@socketio.on('getDivisions', namespace='/practica')
+def getDivisionsForPractica():
+    divisions = getSchoolDivisions()
+    emit("retrievedDivisions", divisions)
+
 def getSchoolDivisions():
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -494,7 +503,8 @@ def getSchoolDivisions():
     except Exception as e:
         print("Error: Invalid SELECT on 'schoolDivision' table: %s" % e)
         db.rollback()
-    emit("retrievedDivisions", schoolDivisions)
+    return schoolDivisions
+
 
 @socketio.on('getPracticumBearing', namespace='/student')
 def getPracticumBearingForStudent():

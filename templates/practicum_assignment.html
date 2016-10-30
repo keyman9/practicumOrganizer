@@ -46,6 +46,42 @@
     .form-control{
         color:black;
     }
+    
+    .btn-draggable { 
+        width: 110px;
+        height: 40px;
+        overflow: hidden;
+        margin-left: -5px;
+    }
+    .assignment-heading{
+        border-top: 1px solid white;
+        border-bottom: 1px solid white;
+    }
+    .pills{
+        margin-top:2px;
+        margin-left:-15px;
+    }
+    .student-drop{
+        margin-left: -15px;
+    }
+    .teacher-drop{
+        margin-left: 10px;
+    }
+    .practica-table{
+        height: 500px;
+        overflow-y: scroll;
+    }
+    .practica{
+        background-color: white !important;
+        color: black;
+        font-size: 1.25em;
+    }
+    thead{
+        font-size: 1.5em !important;
+    }
+    .show-assigned{
+        margin-top:10px;
+    }
 </style>
 <script type="text/javascript" src="static/js/assignPracticumController.js"></script>
 
@@ -93,9 +129,123 @@
         </div>
     </div>
 </script>
+<script type="text/ng-template" id="popover.assignedstudent.tpl.html">
+     <div class="popover" tabindex="-1">
+        <div class="arrow"></div>
+            <h3 class="popover-title text-center" ng-bind="item.student.firstName + '  ' + item.student.lastName" ></h3>
+        <div class="popover-content">
+            <div class="">
+                <table class="table table-responsive text-center">
+                    <tbody>
+                      <tr>
+                        <td ng-bind="item.student.email"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="getTransportationString(item.student)"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Enrolled In:</span></td>
+                      </tr>
+                      <tr class="well" ng-repeat="en in item.student.enrolledClasses">
+                        <td ng-bind="en"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Endorsements:</span></td>
+                      </tr>
+                      <tr class="well" ng-repeat="en in item.student.endorsements">
+                        <td ng-bind="en"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Availability:</span></td>
+                      </tr>
+                      <tr class="well" ng-repeat="av in item.student.availability">
+                        <td ng-bind="getAvailabilityString(av)"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Previous Practica:</span></td>
+                      </tr>
+                      <tr class="well" ng-repeat="prac in item.student.previousPractica">
+                        <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>
 
+<script type="text/ng-template" id="popover.teacher.tpl.html">
+    <div class="popover" tabindex="-1">
+        <div class="arrow"></div>
+            <h3 class="popover-title text-center" ng-bind="teacher.firstName + '  ' + teacher.lastName" ></h3>
+        <div class="popover-content">
+            <div class="">
+                <table class="table table-responsive text-center">
+                    <tbody>
+                      <tr>
+                        <td ng-bind="teacher.email"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="getHostString(teacher)"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="teacher.schoolDivision + ': ' + teacher.school"></td>
+                      </tr>
+                      <tr  class="well" ng-if="teacher.grade">
+                        <td ng-bind="'Grade: ' + teacher.grade"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Schedule:</span></td>
+                      </tr>
+                      <tr class="well" ng-if="teacher.elementarySchedule.length > 0" ng-repeat="class in teacher.elementarySchedule">
+                        <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                      <tr class="well" ng-if="teacher.secondarySchedule.length > 0" ng-repeat="class in teacher.secondarySchedule">
+                        <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="popover.assignedteacher.tpl.html">
+    <div class="popover" tabindex="-1">
+        <div class="arrow"></div>
+            <h3 class="popover-title text-center" ng-bind="item.teacher.firstName + '  ' + item.teacher.lastName" ></h3>
+        <div class="popover-content">
+            <div class="">
+                <table class="table table-responsive text-center">
+                    <tbody>
+                      <tr>
+                        <td ng-bind="item.teacher.email"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="getHostString(item.teacher)"></td>
+                      </tr>
+                      <tr>
+                        <td ng-bind="item.teacher.schoolDivision + ': ' + item.teacher.school"></td>
+                      </tr>
+                      <tr  class="well" ng-if="item.teacher.grade">
+                        <td ng-bind="'Grade: ' + item.teacher.grade"></td>
+                      </tr>
+                      <tr>
+                        <td><span class="popover-heading">Schedule:</span></td>
+                      </tr>
+                      <tr class="well" ng-if="item.teacher.elementarySchedule.length > 0" ng-repeat="class in item.teacher.elementarySchedule">
+                        <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                      <tr class="well" ng-if="item.teacher.secondarySchedule.length > 0" ng-repeat="class in item.teacher.secondarySchedule">
+                        <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>
 
-<div class="container" ng-controller="AssignPracticumController">
+<div class="container" ng-controller="AssignPracticumController" id="container">
     <div class="row">
         <div class="col-md-6 right-border">
             <h4 class="text-center">Students</h4><br/>
@@ -105,34 +255,29 @@
                         <span>Practicum-Bearing Class:
                         <select class="form-control" id="practicumBearing" name="practicumBearing" ng-model="courseSought" ng-change="changeCourse(courseSought)">
                             <option>N/A</option>
-                            <option ng-repeat="item in courses | orderBy: item">{{ '{{item}}' }}</option>
+                            <option ng-repeat="item in practicumBearingClasses | orderBy: item">{{ '{{item}}' }}</option>
                         </select></span>
                     </div><br />
                     <div class="form-group">
                         <span>Endorsement:
-                        
                         <select class="form-control" id="endorsement" name="endorsement" ng-model="endorsementSought" ng-change="changeEndorsement(endorsementSought)" required>
                             <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>
                         </select>
                         </span>
-                        
-                        
-                        
-                        <!--<select class="form-control" id="endorsement" name="endorsement" ng-model="$parent.endorsementSought">-->
-                        <!--    <option>N/A</option>-->
-                        <!--    <option ng-repeat="item in endorsements">{{ '{{item}}' }}</option>-->
-                        <!--</select>-->
-                        
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
-                        <ul class="list-group" dnd-list="lists[0].students">
-                            <button class="list-group-item btn" ng-repeat="student in lists[0].students" ng-class="{active : currentStudent === student}" ng-model="$parent.student" data-template-url="popover.student.tpl.html" container="body" placement="left" auto-close="true" data-html="true"
-                                ng-click="setCurrentStudent(student)" bs-popover dnd-draggable="student" dnd-effect-allowed="move" >
-                                <span ng-bind="student.firstName"></span>&nbsp;
+                        <ul class="list-group">
+                            <div class="list-group-item btn student" ng-repeat="student in students" 
+                            ng-class="{active : currentStudent === student}" ng-model="student" 
+                            data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
+                            jqyoui-draggable="{placeholder:false, animate:true}" data-template-url="popover.student.tpl.html" 
+                            container="body" placement="left" auto-close="true" data-html="true"
+                            ng-click="setCurrentStudent(student)" bs-popover>
+                                <span ng-bind="student.firstName"></span>&nbsp; 
                                 <span ng-bind="student.lastName"></span>
-                            </button>
+                            </div>
                         </ul>
                     </div>
                 </div>
@@ -144,7 +289,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <span>School Division:
-                        <select class="form-control" id="division" name="division" ng-model="schoolDivision">
+                        <select class="form-control" id="division" name="division" ng-model="currentSchoolDivision">
                             <option>N/A</option>
                             <option ng-repeat="item in schoolDivisions">{{ '{{item.division}}' }}</option>
                         </select></span>
@@ -153,61 +298,172 @@
                         <span>School:
                         <select class="form-control" id="school" name="school" ng-model="school">
                             <option>N/A</option>
-                            <option ng-repeat="school in getSchools(schoolDivision)">{{ '{{school}}' }}</option>
+                            <option ng-repeat="school in getSchools(currentSchoolDivision)">{{ '{{school}}' }}</option>
                         </select></span>
                     </div>
                     <div class="form-group">
                         <span>Grade</span>
-                        <select class="form-control" id="grade" name="grade" ng-model="grade" ng-options="g as g.displayName for g in grades">
-                            <option>N/A</option>
+                        <select class="form-control" id="grade" name="grade" ng-model="grade">
+                            <option>N/A</option>                            
+                            <option ng-repeat="g in grades">{{ '{{g.displayName}}' }}</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <span>Subject</span>
-                        <select class="form-control" id="course" name="course" ng-model="course">
+                        <select class="form-control" id="subject" name="subject" ng-model="subject">
                             <option>N/A</option>
-                            <option ng-repeat="c in courses">{{ '{{c}}' }}</option>
+                            <option ng-repeat="s in subjects | orderBy:c">{{ '{{s}}' }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
-                        <ul class="list-group" dnd-list="lists[0].teachers">
-                            <button class="list-group-item btn" ng-repeat="teacher in lists[0].teachers" ng-class="{active : currentTeacher === teacher}" ng-model="$parent.teacher" data-template-url="popover.student.tpl.html" container="body" auto-close="true" data-html="true" ng-click="setCurrentTeacher(teacher)"
-                                bs-popover dnd-draggable="teacher" dnd-effect-allowed="move">
+                        <ul class="list-group">
+                            <div class="list-group-item btn teacher" ng-repeat="teacher in teachers" 
+                            ng-class="{active : currentTeacher === teacher}" ng-model="teacher" 
+                            data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
+                            jqyoui-draggable="{placeholder:false, animate:true}"
+                            data-template-url="popover.teacher.tpl.html" container="body" placement="left" auto-close="true" data-html="true" 
+                            ng-click="setCurrentTeacher(teacher)" bs-popover>
                                 <span ng-bind="teacher.firstName"></span>&nbsp;
                                 <span ng-bind="teacher.lastName"></span>
-                            </button>
+                            </div>
                         </ul>
                     </div>
                 </div>
             </div>
+            <div class="row show-assigned">
+                <div class="col-md-12">
+                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedTeachers">&nbsp;Show teachers that have already been assigned a practicum student.</label>
+                </div>
+            </div>
         </div>
     </div>
-    <hr/>
-    <div class="row">
-        <h4 class="text-center">Assignments</h4>
-        <hr/>
-        <div class="col-md-2">
-            <ul class="nav nav-pills nav-stacked">
+    <br/> 
+    <div class="row assignment-heading">
+        <div class="col-md-4 pills">
+            <ul class="nav nav-tabs">
                 <li ng-class="{active : practicumMode}"><a href="" ng-click="togglePracticumMode()">Practicum</a></li>
                 <li ng-class="{active : transportationMode}"><a href="" ng-click="toggleTransportationMode()">Transportation</a></li>
             </ul>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-offset-5">
+            <h4>&nbsp;Assignments</h4>
+        </div>
+    </div>
+    <br/> 
+    <div class="row">
+        <div class="col-md-12">
             <div class="panel well">
-                <div class="row" ng-if="practicumMode">
-                    <table>
-                        <th></th>
-                    </table>
-                    <div class="col-md-3 right-border">
-                        <h5>Student</h5>
+                <div ng-if="practicumMode">
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-1 right-border">
+                            <h5>Student</h5>
+                        </div>
+                        <div class="col-md-2 right-border">
+                            <h5>Teacher</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Class, Day, Time</h5>
+                        </div>
+                        <div class="col-md-1">
+                            <div>
+                                <button class="btn btn-primary" ng-click="addPracticumAssignment()">&nbsp;+&nbsp;</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3 right-border">
-                        <h5>Teacher</h5>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Day/Time</h5>
+                    <hr/>
+                    <div class="row" ng-repeat="item in editingPracticumAssignments">
+                        <div class="col-md-5">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <br/>
+                                    <div>
+                                        <button class="btn btn-danger" ng-click="deleteEditingPracticumAssignment(editingPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 student-drop">
+                                    <br/>
+                                    <div class="thumbnail" ng-model="item.student"
+                                    data-drop="true" data-jqyoui-options="{accept:'.student'}"  jqyoui-droppable>
+                                        <div class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                        ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
+                                        container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                            <span ng-bind="item.student.firstName"></span>&nbsp;
+                                            <span ng-bind="item.student.lastName"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 teacher-drop">
+                                    <br/>
+                                    <div class="thumbnail" ng-model="item.teacher" 
+                                        data-drop="true" data-jqyoui-options="{accept:'.teacher'}"  jqyoui-droppable>
+                                        <div class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                        ng-model="item.teacher" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedteacher.tpl.html" 
+                                        container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                            <span ng-bind="item.teacher.lastName"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <span>Class</span>
+                                    <select class="form-control" id="course" name="course" ng-model="item.course" ng-change="changeAssignedCourse(item)">
+                                        <option></option>
+                                        <option ng-repeat="c in item.teacher.elementarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
+                                        <option ng-repeat="c in item.teacher.secondarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <span>From</span>
+                                    <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.availability.start" data-time-format="h:mm a"  required bs-timepicker 
+                                    data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"  
+                                    bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
+                                </div>
+                                <div class="col-md-2">
+                                    <span>To</span>
+                                    <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.availability.end" data-time-format="h:mm a"  required bs-timepicker  
+                                    data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"   
+                                     bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <span>M</span><br />
+                                            <input type="checkbox" value="true" ng-model="item.availability.monday">  
+                                        </div>
+                                        <div class="col-md-1">
+                                            <span>T</span><br />
+                                            <input type="checkbox" value="true" ng-model="item.availability.tuesday">  
+                                        </div>
+                                        <div class="col-md-1">
+                                            <span>W</span><br />
+                                            <input type="checkbox" value="true" ng-model="item.availability.wednesday">  
+                                        </div>
+                                        <div class="col-md-1">
+                                            <span>Th</span><br />
+                                            <input type="checkbox" value="true" ng-model="item.availability.thursday">  
+                                        </div>
+                                        <div class="col-md-1">
+                                            <span>F</span><br />
+                                            <input type="checkbox" value="true" ng-model="item.availability.friday">  
+                                        </div>
+                                        <div class="col-md-1">
+                                            <br/>
+                                            <div>
+                                                <button class="btn btn-success" ng-click="savePracticumAssignment(editingPracticumAssignments.indexOf(item))">
+                                                    <i class="glyphicon glyphicon-floppy-disk"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row" ng-if="transportationMode">
@@ -218,7 +474,6 @@
                         <h5>Riders</h5>
                     </div>
                 </div>
-                <hr/>
                 <div class="row" ng-if="practicumMode">
                     <div class="col-md-3">
                     </div>
@@ -234,7 +489,39 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+    </div>
+    <br/>
+    <div class="row" ng-if="practicumMode">
+        <div class="col-md-12 practica-table">
+            <table class="table table-bordered">
+                <thead class="practica">
+                    <th></th>
+                    <th>Student</th>
+                    <th>Teacher</th>
+                    <th>Class</th>
+                    <th>Day/Time</th>
+                    <th></th>
+                </thead>
+                <tr class="practica" ng-repeat="item in publishedPracticumAssignments"> 
+                    <td>
+                        <div>
+                            <button class="btn btn-danger" ng-click="">&nbsp;-&nbsp;</button>
+                        </div>
+                    </td>
+                    <td ng-bind="item.student.firstName + ' ' + item.student.lastName"></td>
+                    <td ng-bind="item.teacher.firstName + ' ' + item.teacher.lastName"></td>
+                    <td ng-bind="getScheduleString(getScheduleCourse(item.teacher,item.course))"></td>
+                    <td ng-bind="getAvailabilityString(item.availability)"></td>
+                    <td>
+                        <div>
+                            <button class="btn btn-primary" ng-click="">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
