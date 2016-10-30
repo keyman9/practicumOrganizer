@@ -295,6 +295,10 @@ def mainIndex():
 def getStudentData():
     return render_template('student_form.html')
     
+@app.route('/teacher', methods=['GET'])
+def getTeacherData():
+    return render_template('teacher_form.html')
+    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
