@@ -82,6 +82,7 @@
     .show-assigned{
         margin-top:10px;
     }
+
 </style>
 <script type="text/javascript" src="static/js/assignPracticumController.js"></script>
 
@@ -373,102 +374,109 @@
                         </div>
                     </div>
                     <hr/>
-                    <div class="row" ng-repeat="item in editingPracticumAssignments">
-                        <div class="col-md-5">
-                            <div class="row">
-                                <div class="col-md-2">
-                                    <br/>
-                                    <div>
-                                        <button class="btn btn-danger" ng-click="deleteEditingPracticumAssignment(editingPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-5 student-drop">
-                                    <br/>
-                                    <div class="thumbnail" ng-model="item.student"
-                                    data-drop="true" data-jqyoui-options="{accept:'.student'}"  jqyoui-droppable>
-                                        <div class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                        ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
-                                        container="body" placement="top" auto-close="true" data-html="true" bs-popover>
-                                            <span ng-bind="item.student.firstName"></span>&nbsp;
-                                            <span ng-bind="item.student.lastName"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-5 teacher-drop">
-                                    <br/>
-                                    <div class="thumbnail" ng-model="item.teacher" 
-                                        data-drop="true" data-jqyoui-options="{accept:'.teacher'}"  jqyoui-droppable>
-                                        <div class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                        ng-model="item.teacher" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedteacher.tpl.html" 
-                                        container="body" placement="top" auto-close="true" data-html="true" bs-popover>
-                                            <span ng-bind="item.teacher.lastName"></span>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div ng-repeat="item in editingPracticumAssignments">
+                        <div class="row">
+                             <div class="alert alert-danger" role="alert" id="invalidPractica" ng-if="practicaErrorMsg[editingPracticumAssignments.indexOf(item)].length > 0">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{practicaErrorMsg[editingPracticumAssignments.indexOf(item)]}}' }}
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <span>Class</span>
-                                    <select class="form-control" id="course" name="course" ng-model="item.course" ng-change="changeAssignedCourse(item)">
-                                        <option></option>
-                                        <option ng-repeat="c in item.teacher.elementarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
-                                        <option ng-repeat="c in item.teacher.secondarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <span>From</span>
-                                    <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.availability.start" data-time-format="h:mm a"  required bs-timepicker 
-                                    data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"  
-                                    bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
-                                </div>
-                                <div class="col-md-2">
-                                    <span>To</span>
-                                    <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.availability.end" data-time-format="h:mm a"  required bs-timepicker  
-                                    data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"   
-                                     bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
-                                </div>
-                                <div class="col-md-5">
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                            <span>M</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.monday">  
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <br/>
+                                        <div>
+                                            <button class="btn btn-danger" ng-click="deleteEditingPracticumAssignment(editingPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
                                         </div>
-                                        <div class="col-md-1">
-                                            <span>T</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.tuesday">  
+                                    </div>
+                                    <div class="col-md-5 student-drop">
+                                        <br/>
+                                        <div class="thumbnail" ng-model="item.student"
+                                        data-drop="true" data-jqyoui-options="{accept:'.student'}" ng-change="validateStudent(editingPracticumAssignments.indexOf(item),true)" jqyoui-droppable>
+                                            <div class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                            ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
+                                            container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                                <span ng-bind="item.student.firstName"></span>&nbsp;
+                                                <span ng-bind="item.student.lastName"></span>
+                                            </div>
                                         </div>
-                                        <div class="col-md-1">
-                                            <span>W</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.wednesday">  
-                                        </div>
-                                        <div class="col-md-1">
-                                            <span>Th</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.thursday">  
-                                        </div>
-                                        <div class="col-md-1">
-                                            <span>F</span><br />
-                                            <input type="checkbox" value="true" ng-model="item.availability.friday">  
-                                        </div>
-                                        <div class="col-md-1">
-                                            <br/>
-                                            <div>
-                                                <button class="btn btn-success" ng-click="savePracticumAssignment(editingPracticumAssignments.indexOf(item))">
-                                                    <i class="glyphicon glyphicon-floppy-disk"></i>
-                                                </button>
+                                    </div>
+                                    <div class="col-md-5 teacher-drop">
+                                        <br/>
+                                        <div class="thumbnail" ng-model="item.teacher" 
+                                            data-drop="true" data-jqyoui-options="{accept:'.teacher'}"  ng-change="validateTeacher(editingPracticumAssignments.indexOf(item),true)" jqyoui-droppable>
+                                            <div class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                            ng-model="item.teacher" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedteacher.tpl.html" 
+                                            container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                                <span ng-bind="item.teacher.lastName"></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <br/>
-                                <div class="col-md-7" ng-if="item.course==='Other'">
-                                    <div class="form-group">
-                                        <span>Enter Course Name:</span>
-                                        <input type="text" class="form-control" name="other" id="other" ng-model="item.other" required>
+                            <div class="col-md-7">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <span>Class</span>
+                                        <select class="form-control" id="course" name="course" ng-model="item.course" ng-change="changeAssignedCourse(item, editingPracticumAssignments.indexOf(item))">
+                                            <option></option>
+                                            <option ng-repeat="c in item.teacher.elementarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
+                                            <option ng-repeat="c in item.teacher.secondarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span>From</span>
+                                        <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.availability.start" data-time-format="h:mm a"  required bs-timepicker 
+                                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1"  ng-change="validateTimes(editingPracticumAssignments.indexOf(item), true)"
+                                        bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span>To</span>
+                                        <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.availability.end" data-time-format="h:mm a"  required bs-timepicker  
+                                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="5" data-autoclose="1" ng-change="validateTimes(editingPracticumAssignments.indexOf(item), true)" 
+                                         bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                                <span>M</span><br />
+                                                <input type="checkbox" value="true" ng-model="item.availability.monday" ng-click="validateDays(editingPracticumAssignments.indexOf(item), true)">  
+                                            </div>
+                                            <div class="col-md-1">
+                                                <span>T</span><br />
+                                                <input type="checkbox" value="true" ng-model="item.availability.tuesday" ng-click="validateDays(editingPracticumAssignments.indexOf(item), true)">  
+                                            </div>
+                                            <div class="col-md-1">
+                                                <span>W</span><br />
+                                                <input type="checkbox" value="true" ng-model="item.availability.wednesday" ng-click="validateDays(editingPracticumAssignments.indexOf(item), true)">  
+                                            </div>
+                                            <div class="col-md-1">
+                                                <span>Th</span><br />
+                                                <input type="checkbox" value="true" ng-model="item.availability.thursday" ng-click="validateDays(editingPracticumAssignments.indexOf(item), true)">  
+                                            </div>
+                                            <div class="col-md-1">
+                                                <span>F</span><br />
+                                                <input type="checkbox" value="true" ng-model="item.availability.friday" ng-click="validateDays(editingPracticumAssignments.indexOf(item), true)">  
+                                            </div>
+                                            <div class="col-md-1">
+                                                <br/>
+                                                <div>
+                                                    <button class="btn btn-success" ng-click="savePracticumAssignment(editingPracticumAssignments.indexOf(item))" ng-disabled="practicaIsInvalid(editingPracticumAssignments.indexOf(item))">
+                                                        <i class="glyphicon glyphicon-floppy-disk"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <br/>
+                                    <div class="col-md-7" ng-if="item.course==='Other'">
+                                        <div class="form-group">
+                                            <span>Enter Course Name:</span>
+                                            <input type="text" class="form-control" name="other" id="other" ng-model="item.other" ng-blur="validateCourse(editingPracticumAssignments.indexOf(item), true)" required>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
