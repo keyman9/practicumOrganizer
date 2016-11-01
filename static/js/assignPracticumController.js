@@ -97,11 +97,6 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.showStudentsCourses = [];
     $scope.allStudents = [];
     
-
-
-
-
-
     
     $scope.getSchools = function(school){
        for (var i = 0; i < $scope.schoolDivisions.length; i++){
@@ -175,6 +170,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         var a = new PracticumAssignment();
         a.student = {};
         a.teacher = {};
+        a.other = undefined;
         a.availability.start = new Date();
         a.availability.start.setHours(7);
         a.availability.start.setMinutes(30);
@@ -214,8 +210,18 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         delete publishPrac.availability.start;
         delete publishPrac.availability.end;
         
+        if (publishPrac.course === "Other" && publishPrac.other){
+                publishPrac.course = publishPrac.other;
+        }
+        delete publishPrac.other;
+        
+        if (prac.course === "Other" && prac.other){
+                prac.course = prac.other;
+        }
+        delete prac.other;
+        
         // console.log(prac);
-        //TODO: send to database
+        socket.emit('submitPractica', publishPrac);
         
         $scope.publishedPracticumAssignments.push(prac);
         // console.log($scope.publishedPracticumAssignments);

@@ -532,6 +532,9 @@ def getPracticumBearing():
         db.rollback()
     return courses
     
+@socketio.on('submitPractica', namespace='/practica')
+def submitPractica(assignment):
+    print(assignment)
     
 
     
