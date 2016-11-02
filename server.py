@@ -564,6 +564,16 @@ def getPracticumBearing():
         db.rollback()
     return courses
     
+@socketio.on('submitPractica', namespace='/practica')
+def submitPractica(assignment):
+    print(assignment)
+    #TODO: insert/update in database
+    
+@socketio.on('deletePractica', namespace='/practica')
+def deletePractica(assignment):
+    print(assignment)
+    #TODO: delete from database, resend assignments
+    
     
 
     

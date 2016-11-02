@@ -85,6 +85,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.editingPracticumAssignments = [];
     $scope.publishedPracticumAssignments = [];
     $scope.showAssignedTeachers = false;
+    $scope.practicaErrorMsg = [];
     
     $scope.selectEndorsement = false;
     $scope.selectCourse = false;
@@ -97,11 +98,6 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.showStudentsCourses = [];
     $scope.allStudents = [];
     
-
-
-
-
-
     
     $scope.getSchools = function(school){
        for (var i = 0; i < $scope.schoolDivisions.length; i++){
@@ -175,6 +171,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         var a = new PracticumAssignment();
         a.student = {};
         a.teacher = {};
+        a.other = undefined;
         a.availability.start = new Date();
         a.availability.start.setHours(7);
         a.availability.start.setMinutes(30);
@@ -182,44 +179,44 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         a.availability.end.setHours(15);
         a.availability.end.setMinutes(30);
         $scope.editingPracticumAssignments.push(a);
+        $scope.practicaErrorMsg.push("");
         // console.log($scope.editingPracticumAssignments);
     }
     
     $scope.deleteEditingPracticumAssignment = function(index){
         $scope.editingPracticumAssignments.splice(index, 1);
+        $scope.practicaErrorMsg.splice(index,1);
     }
     
+    $scope.deletePublishedPracticumAssignment = function(index){
+        //TODO: show modal, emit to server
+    }
+
     $scope.savePracticumAssignment = function(index){
         var prac = angular.copy($scope.editingPracticumAssignments[index]);
-        var publishPrac = angular.copy($scope.editingPracticumAssignments[index]);
+        var publishPrac = $scope.convertToPublishablePracticum(prac);
+        
         $scope.deleteEditingPracticumAssignment(index);
         
-        publishPrac.studentId = publishPrac.student.email;
-        publishPrac.teacherId = publishPrac.teacher.id;
-        delete publishPrac.student;
-        delete publishPrac.teacher;
-        
-        if (Object.prototype.toString.call(publishPrac.availability.start) === "[object Date]"){
-            publishPrac.availability.startTime = publishPrac.availability.start.toLocaleTimeString();
-        }
-        if (Object.prototype.toString.call(publishPrac.availability.end) === "[object Date]"){
-            publishPrac.availability.endTime = publishPrac.availability.end.toLocaleTimeString();
-        }
         if (Object.prototype.toString.call(prac.availability.start) === "[object Date]"){
             prac.availability.startTime = prac.availability.start.toLocaleTimeString();
         }
         if (Object.prototype.toString.call(prac.availability.end) === "[object Date]"){
             prac.availability.endTime = prac.availability.end.toLocaleTimeString();
         }
-        delete publishPrac.availability.start;
-        delete publishPrac.availability.end;
+        
+        if (prac.course === "Other" && prac.other){
+                prac.course = prac.other;
+        }
+        delete prac.other;
         
         // console.log(prac);
-        //TODO: send to database
+        socket.emit('submitPractica', publishPrac);
         
         $scope.publishedPracticumAssignments.push(prac);
         // console.log($scope.publishedPracticumAssignments);
-        $scope.addPracticumAssignment();
+        if ($scope.editingPracticumAssignments.length < 1)
+            $scope.addPracticumAssignment();
     }
     
     $scope.print = function(){
@@ -227,37 +224,43 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     }
     
     //sets the start and end time when a course is selected for the practicum assignment
-    $scope.changeAssignedCourse = function(practicum){
-        var classes = practicum.teacher.elementarySchedule.concat(practicum.teacher.secondarySchedule);
-        for (var i = 0; i < classes.length; i++){
-            if (classes[i].course === practicum.course){
-                var start = classes[i].startTime;
-                var split = start.split(":");
-                var startHrs = parseInt(split[0]);
-                var startMin = parseInt(split[1].substring(0, 2));
-                var mer = split[1].substring(2, 4);
-                if (mer === "PM" && startHrs != 12){
-                    startHrs += 12;
+    $scope.changeAssignedCourse = function(practicum, index){
+        if (practicum.teacher && practicum.teacher.elementarySchedule && practicum.teacher.secondarySchedule){
+            var classes = practicum.teacher.elementarySchedule.concat(practicum.teacher.secondarySchedule);
+            for (var i = 0; i < classes.length; i++){
+                if (classes[i].course === practicum.course){
+                    var start = classes[i].startTime;
+                    var split = start.split(":");
+                    var startHrs = parseInt(split[0]);
+                    var startMin = parseInt(split[1].substring(0, 2));
+                    var mer = split[1].substring(2, 4);
+                    if (mer === "PM" && startHrs != 12){
+                        startHrs += 12;
+                    }
+                    practicum.availability.start = new Date();
+                    practicum.availability.start.setHours(startHrs);
+                    practicum.availability.start.setMinutes(startMin);
+    
+                    var end = classes[i].endTime;
+                    var split = end.split(":");
+                    var endHrs = parseInt(split[0]);
+                    var endMin = parseInt(split[1].substring(0, 2));
+                    var mer = split[1].substring(2, 4);
+                    if (mer === "PM" && endHrs != 12){
+                        endHrs += 12;
+                    }
+                    practicum.availability.end = new Date();
+                    practicum.availability.end.setHours(endHrs);
+                    practicum.availability.end.setMinutes(endMin);
                 }
-                practicum.availability.start = new Date();
-                practicum.availability.start.setHours(startHrs);
-                practicum.availability.start.setMinutes(startMin);
-
-                var end = classes[i].endTime;
-                var split = end.split(":");
-                var endHrs = parseInt(split[0]);
-                var endMin = parseInt(split[1].substring(0, 2));
-                var mer = split[1].substring(2, 4);
-                if (mer === "PM" && endHrs != 12){
-                    endHrs += 12;
-                }
-                practicum.availability.end = new Date();
-                practicum.availability.end.setHours(endHrs);
-                practicum.availability.end.setMinutes(endMin);
+            }
+            // console.log(practicum);
+            if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must enter a course!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
             }
         }
-        // console.log(practicum);
-        
     }
     
     $scope.setCurrentStudent = function(student){
@@ -325,7 +328,9 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             if (course.endTime)
                 str += " - " + course.endTime;
             if (course.course)
-                str += " -> " + course.course;    
+                str += " -> " + course.course;   
+            else 
+                str += course;
         }
         // console.log(str);
         return str;
@@ -343,6 +348,8 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
                 return teacher.secondarySchedule[i];
             }
         }
+        
+        return name;
     }
     
     $scope.togglePracticumMode = function(){
@@ -436,7 +443,188 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             }
         }
     };
+    
+     $scope.validateDays = function(index, updateMsg){
+        var av = $scope.editingPracticumAssignments[index].availability;
+        var invalid = false;
+        
+        if (!av.monday && !av.tuesday && !av.wednesday && !av.thursday && !av.friday){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select at least 1 day of the week!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must select at least 1 day of the week!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select at least 1 day of the week!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must select at least 1 day of the week!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
+            }
+        }
+        
+        return invalid;
+    }
+    
+    $scope.validateTimes = function(index, updateMsg){
+        var av = $scope.editingPracticumAssignments[index].availability;
+        var invalid = false;
+        
+        //start time is before 7:30AM
+        if (av.start && av.end){
+            if (av.start.getHours() < 7){
+                invalid = true;
+                if (updateMsg && $scope.practicaErrorMsg.indexOf("The start time must be after 7:00AM!\n") === -1){
+                    $scope.practicaErrorMsg[index] += "The start time must be after 7:00AM!\n";
+                }
+            } else {
+                if (updateMsg && $scope.practicaErrorMsg[index].indexOf("The start time must be after 7:00AM!\n") != -1){
+                    var msg = $scope.practicaErrorMsg[index];
+                    msg = msg.replace("The start time must be after 7:00AM!\n", "");
+                    $scope.practicaErrorMsg[index] = msg;
+                }
+            }
+            
+            //end time is after 3:30PM
+            if (av.end.getHours() >= 16){
+                invalid = true;
+                if (updateMsg && $scope.practicaErrorMsg.indexOf("The end time must be before 4:00PM!") === -1){
+                    $scope.practicaErrorMsg[index] += "The end time must be before 4:00PM!\n";
+                }
+            } else {
+                if (updateMsg && $scope.practicaErrorMsg[index].indexOf("The end time must be before 4:00PM!\n") != -1){
+                    var msg = $scope.practicaErrorMsg[index];
+                    msg = msg.replace("The end time must be before 4:00PM!\n", "");
+                    $scope.practicaErrorMsg[index] = msg;
+                }
+            }
+            
+            // //end time is not at least 2 hours after start time
+            // var diff = av.end.getTime() - av.start.getTime();
+            // var diffMins = (diff/1000)/60;
+            // if (diffMins < 120){
+            //     invalid = true;
+            //     if (updateMsg && $scope.practicaErrorMsg.indexOf("Timeslots must be at least 2 hours long!") === -1){
+            //         $scope.practicaErrorMsg[index] += "Timeslots must be at least 2 hours long!\n";
+            //     }
+            // } else {
+            //     if (updateMsg && $scope.practicaErrorMsg[index].indexOf("Timeslots must be at least 2 hours long!\n") != -1){
+            //         var msg = $scope.practicaErrorMsg[index];
+            //         msg = msg.replace("Timeslots must be at least 2 hours long!\n", "");
+            //         $scope.practicaErrorMsg[index] = msg;
+            //     }    
+            // }
+        } else {
+            invalid = true;
+        }
+        return invalid;
+        
+    }
+    
+    $scope.validateCourse = function(index, updateMsg){
+        var assignment = $scope.editingPracticumAssignments[index];
+        var course = assignment.course;
+        var invalid = false;
+  
+        if ((course && course==="") || (course && course === "Other" && assignment.other === undefined)){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must enter a course!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must enter a course!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
+            }
+        }
+        return invalid;
+    }
+    
+    $scope.validateStudent = function(index, updateMsg){
+        var assignment = $scope.editingPracticumAssignments[index];
+        var stu = assignment.student;
+        var invalid = false;
+        console.log(stu);
+  
+        if (stu === undefined || $scope.isEmptyObject(stu)){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a student!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must select a student!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a student!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must select a student!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
+            }
+        }
+        return invalid;
+        
+    }
+    
+    $scope.validateTeacher = function(index, updateMsg){
+        var assignment = $scope.editingPracticumAssignments[index];
+        var teach = assignment.student;
+        var invalid = false;
+  
+        if (teach === undefined || $scope.isEmptyObject(teach)){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must select a teacher!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must select a teacher!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
+            }
+        }
+        return invalid;
+    }
+    
+    $scope.practicaIsInvalid = function(index){
+        return ($scope.validateDays(index, false) || $scope.validateTimes(index, false) || 
+        $scope.validateCourse(index, false) || $scope.validateStudent(index, false) || $scope.validateTeacher(index, false));
+    }
 
+    $scope.isEmptyObject = function(obj){
+        return JSON.stringify(obj) === JSON.stringify({});
+    }
+    
+    $scope.editPracticum = function(index){
+        //TODO: move from published to edit, convert to editable
+    }
+    
+    $scope.convertToEditablePracticum = function(prac){
+        
+    }
+    
+    $scope.convertToPublishablePracticum = function(prac){
+        var publishPrac = angular.copy(prac);
+        
+        publishPrac.studentId = publishPrac.student.email;
+        publishPrac.teacherId = publishPrac.teacher.id;
+        delete publishPrac.student;
+        delete publishPrac.teacher;
+        
+        if (Object.prototype.toString.call(publishPrac.availability.start) === "[object Date]"){
+            publishPrac.availability.startTime = publishPrac.availability.start.toLocaleTimeString();
+        }
+        if (Object.prototype.toString.call(publishPrac.availability.end) === "[object Date]"){
+            publishPrac.availability.endTime = publishPrac.availability.end.toLocaleTimeString();
+        }
+       
+        delete publishPrac.availability.start;
+        delete publishPrac.availability.end;
+        
+        if (publishPrac.course === "Other" && publishPrac.other){
+                publishPrac.course = publishPrac.other;
+        }
+        delete publishPrac.other;
+        
+        console.log(publishPrac);
+        
+        return publishPrac;
+    }
     
     $scope.initializeStudents();
     $scope.initializeTeachers();
