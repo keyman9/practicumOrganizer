@@ -168,7 +168,6 @@ CREATE TABLE teachers(
   email varchar(60) NOT NULL default '',
   firstName varchar(60) NOT NULL default '',
   lastName varchar(60) NOT NULL default '',
-  title varchar(30) NOT NULL default '',
   grade integer,
   gradeRange varchar(60),
   hostFall boolean,
@@ -245,6 +244,7 @@ CREATE TABLE practicumArrangement(
   course varchar(60),
   studentEmail varchar(60),
   teacherID serial,
+  PRIMARY KEY(practicum),
   FOREIGN KEY(studentEmail) references students(email),
   FOREIGN KEY(teacherID) references teachers(teacherID)
 );

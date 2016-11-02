@@ -294,11 +294,38 @@ def mainIndex():
 @app.route('/student', methods=['GET'])
 def getStudentData():
     return render_template('student_form.html')
+
+##Teacher Start
+
+selectSchool = """SELECT (schoolid, divisionid) FROM schools WHERE schoolname = '%s'"""
+#if school was not already present, it must be non public school division
+selectDivision = """"""
+insertSchool = """INSERT (schoolname)"""
+teacherInsert = "INSERT (email, firstname, lastname, schoolid, divisionid) VALUES (%s,%s,%s,%s,%s)"
+
+@socketio.on('submit', namespace='/teacher')
+def submitTeacher(data):
+    
+    error = False
+    
+    #retrieve school info
+    try:
+        db = connect_to_db()
+        cur = db.cursor()
+        cur.execute(selectSchool, schoolName)
+        db.commit()
+    except Exception as e:
+        error = True
+        print(e)
+    
+    if(cur.fetchone() == []):
+        pass
+        
     
 @app.route('/teacher', methods=['GET'])
 def getTeacherData():
     return render_template('teacher_form.html')
-    
+##Teacher End    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -478,6 +505,11 @@ def updatePassword(payload):
     
 @socketio.on('getDivisions', namespace='/student')
 def getDivisionsForStudent():
+    divisions = getSchoolDivisions()
+    emit("retrievedDivisions", divisions)
+    
+@socketio.on('getDivisions', namespace='/teacher')
+def getDivisionsForTeacher():
     divisions = getSchoolDivisions()
     emit("retrievedDivisions", divisions)
     
