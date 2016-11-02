@@ -76,24 +76,24 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <span>School Division</span>
                         <select class="form-control" id="division" name="division" ng-model="schoolDivision" ng-change="changeSchoolDivision(schoolDivision)" required>
                             <option ng-repeat="div in schoolDivisions">{{ '{{div.division}}' }}</option>
                         </select>
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <span>School</span>
                         <select class="form-control" id="school" name="school" ng-model="school" ng-change="changeSchool(school)" required>
                             <option ng-repeat="sch in getSchools() | orderBy:sch">{{ '{{sch}}' }}</option>
                             <option>Other</option>
                         </select>
                     </div>
-                    <div class="col-md-2" ng-show="isElementary(school)">
-                        <span>Grade Level</span>
-                        <select class="form-control" id="gradeLevel" name="gradeLevel" ng-model="gradeLevel" required>
-                            <option ng-repeat="grade in getGradeLevels()">{{ '{{grade}}' }}</option>
+                    <div class="col-md-4" ng-show="isElementary(school)">
+                        <span>Grade Level/ Subject Taught</span>
+                        <select class="form-control" id="gradeLevel" name="gradeLevel" ng-model="gradeLevel" ng-change="initializeElemClasses(gradeLevel)" required>
+                            <option ng-repeat="grade in elemGradesAndSubjects">{{ '{{grade}}' }}</option>
                         </select>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
         </div>
     </div>
     
-    <div ng-show="isElementary(school)">
+    <div ng-show="isElementary(school) && gradeLevel.length > 0">
         <div class="row" >
             <div class="col-md-2 col-md-offset-5">
                 <br />
@@ -168,7 +168,7 @@
             </div>
         </div>
         
-        
+        <div ng-show="!isElectiveTeacher"> 
         <div class="row">
         <div class="col-md-2 col-md-offset-5">
             <br />
@@ -230,7 +230,7 @@
             </div>
         </div>
     </div>
-        
+    </div>    
         
         
         

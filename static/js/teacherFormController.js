@@ -42,6 +42,8 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     $scope.lunchBreak = {'startTime' : '', 'endTime': ''}
     
     $scope.gradeLevels = ['K', '1', '2', '3', '4', '5', '6'];
+    $scope.elemSubjects = ['Art', 'Computer', 'Library', 'Music']
+    $scope.elemGradesAndSubjects = $scope.gradeLevels.concat($scope.elemSubjects);
 
     $scope.schoolDivisions = [];
     $scope.practicumBearingClasses = [];
@@ -84,6 +86,9 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     var elemCourses = ['Writing', 'Reading', 'Math', 'Social Studies', 'Science']
     var elemElectives = ['P.E.', 'Art', 'Music', 'Library', 'Computer']
     $scope.semesterHosting = '';
+    $scope.secondaryClasses = [];
+    $scope.isElectiveTeacher = false
+    
         
     //returns schools in selected division (of previous practica)
     $scope.getSchools = function(){
@@ -193,6 +198,9 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
             $scope.otherSchool = '';
             $scope.teacherType = "Secondary";
+            $scope.gradeLevel = '';
+            $scope.elemClasses = [];
+            $scope.elemElectives = [];
             return true;
         } else {
             return false;
@@ -449,7 +457,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     }
     
     $scope.initializeElementaryCourses = function(courses, isElective){
-        
+        $scope.elemClasses = [];
         for(var i = 0; i < courses.length; i++){
             var av = new ElementaryCourse();
             av.startTime = new Date();
@@ -477,6 +485,32 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         av.endTime.setMinutes(30);
         av.course = className;
         return av;
+    }
+    
+    $scope.addElementaryElectiveCourse = function(className){
+        $scope.elemClasses.push($scope.initializeElementaryOther(className));
+        
+    }
+    
+    $scope.initializeElementaryElectiveTeacherCourses = function(className){
+        $scope.elemClasses = []
+        for(var i = 0; i < 8; i++){
+            $scope.addElementaryElectiveCourse(className);
+        }
+    }
+    
+    $scope.initializeElemClasses = function(subject){
+        console.log(subject)
+        $scope.isElectiveTeacher = false
+        for(var i=0; i < $scope.elemSubjects.length; i++){
+            if( $scope.elemSubjects[i] === subject || ( $scope.elemSubjects[i] !== $scope.elemSubjects[i] && subject !== subject ) ){
+                $scope.initializeElementaryElectiveTeacherCourses(subject)
+                $scope.isElectiveTeacher = true;
+            }
+        }
+        if($scope.isElectiveTeacher == false){
+            $scope.initializeElementaryCourses(elemCourses, false);
+        }
     }
     
     $scope.initializeElementary = function(){
