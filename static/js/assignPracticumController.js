@@ -188,35 +188,22 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         $scope.practicaErrorMsg.splice(index,1);
     }
     
+    $scope.deletePublishedPracticumAssignment = function(index){
+        //TODO: show modal, emit to server
+    }
+
     $scope.savePracticumAssignment = function(index){
         var prac = angular.copy($scope.editingPracticumAssignments[index]);
-        var publishPrac = angular.copy($scope.editingPracticumAssignments[index]);
+        var publishPrac = $scope.convertToPublishablePracticum(prac);
+        
         $scope.deleteEditingPracticumAssignment(index);
         
-        publishPrac.studentId = publishPrac.student.email;
-        publishPrac.teacherId = publishPrac.teacher.id;
-        delete publishPrac.student;
-        delete publishPrac.teacher;
-        
-        if (Object.prototype.toString.call(publishPrac.availability.start) === "[object Date]"){
-            publishPrac.availability.startTime = publishPrac.availability.start.toLocaleTimeString();
-        }
-        if (Object.prototype.toString.call(publishPrac.availability.end) === "[object Date]"){
-            publishPrac.availability.endTime = publishPrac.availability.end.toLocaleTimeString();
-        }
         if (Object.prototype.toString.call(prac.availability.start) === "[object Date]"){
             prac.availability.startTime = prac.availability.start.toLocaleTimeString();
         }
         if (Object.prototype.toString.call(prac.availability.end) === "[object Date]"){
             prac.availability.endTime = prac.availability.end.toLocaleTimeString();
         }
-        delete publishPrac.availability.start;
-        delete publishPrac.availability.end;
-        
-        if (publishPrac.course === "Other" && publishPrac.other){
-                publishPrac.course = publishPrac.other;
-        }
-        delete publishPrac.other;
         
         if (prac.course === "Other" && prac.other){
                 prac.course = prac.other;
@@ -558,7 +545,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         var invalid = false;
         console.log(stu);
   
-        if (stu === undefined || isEmptyObject(stu)){
+        if (stu === undefined || $scope.isEmptyObject(stu)){
             invalid = true;
             if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a student!\n") === -1){
                 $scope.practicaErrorMsg[index] += "You must select a student!\n";
@@ -579,7 +566,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         var teach = assignment.student;
         var invalid = false;
   
-        if (teach === undefined || isEmptyObject(teach)){
+        if (teach === undefined || $scope.isEmptyObject(teach)){
             invalid = true;
             if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") === -1){
                 $scope.practicaErrorMsg[index] += "You must select a teacher!\n";
@@ -599,8 +586,44 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         $scope.validateCourse(index, false) || $scope.validateStudent(index, false) || $scope.validateTeacher(index, false));
     }
 
-    var isEmptyObject = function(obj){
+    $scope.isEmptyObject = function(obj){
         return JSON.stringify(obj) === JSON.stringify({});
+    }
+    
+    $scope.editPracticum = function(index){
+        //TODO: move from published to edit, convert to editable
+    }
+    
+    $scope.convertToEditablePracticum = function(prac){
+        
+    }
+    
+    $scope.convertToPublishablePracticum = function(prac){
+        var publishPrac = angular.copy(prac);
+        
+        publishPrac.studentId = publishPrac.student.email;
+        publishPrac.teacherId = publishPrac.teacher.id;
+        delete publishPrac.student;
+        delete publishPrac.teacher;
+        
+        if (Object.prototype.toString.call(publishPrac.availability.start) === "[object Date]"){
+            publishPrac.availability.startTime = publishPrac.availability.start.toLocaleTimeString();
+        }
+        if (Object.prototype.toString.call(publishPrac.availability.end) === "[object Date]"){
+            publishPrac.availability.endTime = publishPrac.availability.end.toLocaleTimeString();
+        }
+       
+        delete publishPrac.availability.start;
+        delete publishPrac.availability.end;
+        
+        if (publishPrac.course === "Other" && publishPrac.other){
+                publishPrac.course = publishPrac.other;
+        }
+        delete publishPrac.other;
+        
+        console.log(publishPrac);
+        
+        return publishPrac;
     }
     
     $scope.initializeStudents();

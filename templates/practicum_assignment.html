@@ -273,7 +273,7 @@
                             <div class="list-group-item btn student" ng-repeat="student in students" 
                             ng-class="{active : currentStudent === student}" ng-model="student" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
-                            jqyoui-draggable="{placeholder:false, animate:true}" data-template-url="popover.student.tpl.html" 
+                            jqyoui-draggable="{placeholder:'keep', animate:true}" data-template-url="popover.student.tpl.html" 
                             container="body" placement="left" auto-close="true" data-html="true"
                             ng-click="setCurrentStudent(student)" bs-popover>
                                 <span ng-bind="student.firstName"></span>&nbsp; 
@@ -323,7 +323,7 @@
                             <div class="list-group-item btn teacher" ng-repeat="teacher in teachers" 
                             ng-class="{active : currentTeacher === teacher}" ng-model="teacher" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
-                            jqyoui-draggable="{placeholder:false, animate:true}"
+                            jqyoui-draggable="{placeholder:'keep', animate:true}"
                             data-template-url="popover.teacher.tpl.html" container="body" placement="left" auto-close="true" data-html="true" 
                             ng-click="setCurrentTeacher(teacher)" bs-popover>
                                 <span ng-bind="teacher.firstName"></span>&nbsp;
@@ -393,9 +393,14 @@
                                         <br/>
                                         <div class="thumbnail" ng-model="item.student"
                                         data-drop="true" data-jqyoui-options="{accept:'.student'}" ng-change="validateStudent(editingPracticumAssignments.indexOf(item),true)" jqyoui-droppable>
-                                            <div class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                            <div ng-if="!isEmptyObject(item.student)" class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                             ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
                                             container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                                <span ng-bind="item.student.firstName"></span>&nbsp;
+                                                <span ng-bind="item.student.lastName"></span>
+                                            </div>
+                                            <div ng-if="isEmptyObject(item.student)" class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                            ng-model="item.student" jqyoui-draggable="{animate:true}">
                                                 <span ng-bind="item.student.firstName"></span>&nbsp;
                                                 <span ng-bind="item.student.lastName"></span>
                                             </div>
@@ -405,9 +410,13 @@
                                         <br/>
                                         <div class="thumbnail" ng-model="item.teacher" 
                                             data-drop="true" data-jqyoui-options="{accept:'.teacher'}"  ng-change="validateTeacher(editingPracticumAssignments.indexOf(item),true)" jqyoui-droppable>
-                                            <div class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                            <div ng-if="!isEmptyObject(item.teacher)" class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                             ng-model="item.teacher" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedteacher.tpl.html" 
-                                            container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                            container="body" placement="top" auto-close="true" data-html="true"  bs-popover>
+                                                <span ng-bind="item.teacher.lastName"></span>
+                                            </div>
+                                            <div ng-if="isEmptyObject(item.teacher)" class="btn btn-draggable" ng-show="item.teacher" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                            ng-model="item.teacher" jqyoui-draggable="{animate:true}">
                                                 <span ng-bind="item.teacher.lastName"></span>
                                             </div>
                                         </div>
@@ -523,7 +532,7 @@
                 <tr class="practica" ng-repeat="item in publishedPracticumAssignments"> 
                     <td>
                         <div>
-                            <button class="btn btn-danger" ng-click="">&nbsp;-&nbsp;</button>
+                            <button class="btn btn-danger" ng-click="deletePublishedPracticumAssignment(publishedPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
                         </div>
                     </td>
                     <td ng-bind="item.student.firstName + ' ' + item.student.lastName"></td>
