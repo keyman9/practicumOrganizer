@@ -88,6 +88,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     $scope.semesterHosting = '';
     $scope.secondaryClasses = [];
     $scope.isElectiveTeacher = false
+    $scope.blockSchedule = ''
     
         
     //returns schools in selected division (of previous practica)
@@ -179,6 +180,13 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         }
     };
     
+    $scope.isBlockSchedule = function(schedule){
+        if(schedule === 'Yes'){
+            return true;
+        }
+        return false;
+    }
+    
     
     $scope.isElementary = function(school){
         
@@ -190,6 +198,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         } else {
             return false;
         }
+        
     };
     
     $scope.isSecondary = function(school){
@@ -472,6 +481,46 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
             } else {
                 $scope.elemElectives.push(av);
             }
+        }
+    }
+    
+    $scope.initializeSecondaryCourses = function(){
+        console.log("TEST")
+        $scope.secondaryClasses = [];
+        $scope.numCourses = 4;
+        if($scope.isBlockSchedule($scope.blockSchedule)){
+            console.log("GOT HERE")
+            $scope.numCourses = 8
+        }
+        
+        var blockNum = 1;
+        var isBDay = false;
+        for(var i = 0; i < $scope.numCourses; i++){
+            var av = new SecondaryCourse();
+            av.startTime = new Date();
+            av.startTime.setHours(7);
+            av.startTime.setMinutes(30);
+            av.endTime = new Date();
+            av.endTime.setHours(15);
+            av.endTime.setMinutes(30);
+            av.course = ''
+            av.dayType = undefined
+            if($scope.numCourses == 8){
+                av.dayType = 'A/X'
+                if(isBDay == true){
+                    av.dayType = 'B/Y'
+                }
+                
+            }
+            
+            av.block = blockNum;
+            blockNum++;
+            if(blockNum == 5){
+                isBDay = true;
+                blockNum = 1;
+            }
+            $scope.secondaryClasses.push(av)
+            
         }
     }
     

@@ -122,10 +122,9 @@
                         <br/>
                         <div class="form-group">
                             <span>Does your school use an A/B or X/Y day schedule?</span>
-                            <select class="form-control" id="semesterHosting" name="semesterHosting" ng-model="semesterHosting" required>
+                            <select class="form-control" id="blockSchedule" name="blockSchedule" ng-model="blockSchedule" ng-change="initializeSecondaryCourses()" required>
                                 <option>Yes</option>
                                 <option>No</option>
-                                
                             </select>
                         </div>
                     </div>
@@ -317,20 +316,35 @@
     
     <div ng-show="isSecondary(school)">
         <div class="row" >
-            <div class="col-md-2 col-md-offset-5">
+            <div class="col-md-2 col-md-offset-5" ng-show="secondaryClasses.length > 0">
                 <br />
                 <h4>Class Times<span ng-if="invalidAvailability"><small class="error">&nbsp;&nbsp;*</small></span></h4>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 col-md-offset-2" id="elemClasses">
-                <div class="form-group" ng-repeat="item in elemClasses">
+            <div class="col-md-8 col-md-offset-2" id="secondaryClasses">
+                <div class="form-group" ng-repeat="item in secondaryClasses">
                     <div class="row">
                         
-                        <div class="col-md-1"></div>
+                        <div class="col-md-2" ng-show="numCourses==8">
+                            
+                            <span>Day Type</span>
+                            <input class="form-control" type="text" name="dayType" id="dayType" ng-model="item.dayType" disabled>
+                            
+                        </div>
+                        
+                        <div class="col-md-1">
+                            
+                            <span>Block</span>
+                            <input class="form-control" type="text" name="block" id="block" ng-model="item.block" disabled>
+                            
+                        </div>
+                        
                         <div class="col-md-3">
                             <span>Subject</span>
-                            <input  class="form-control" type="text" name="elemCourse" id="elemCourse" ng-model="item.course" disabled>
+                            <select class="form-control" id="course" name="course" ng-model="item.course" >
+                                <option ng-repeat="c in courses | orderBy:c">{{ '{{c}}' }}</option>
+                            </select>
                         </div>
                         
                         <div class="col-md-3">
@@ -343,77 +357,12 @@
                             <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                 bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
-                        <div class="col-md-1"></div>
+                        
+                        
                     </div>
                 </div>
             </div>
         </div>
-        
-        
-        <div class="row">
-        <div class="col-md-2 col-md-offset-5">
-            <br />
-            <h4>Elective Times and Days<span ><small class="error">&nbsp;&nbsp;*</small></span></h4>
-        </div>
-        </div>
-        
-        <div class="row">
-        <div class="col-md-8 col-md-offset-2" id="elemElectives">
-            <div class="form-group" ng-repeat="item in elemElectives">
-                <div class="row">
-                    
-                    <div class="col-md-3">
-                            <span>Subject</span>
-                            <input  class="form-control" type="text" name="elemElective" id="elemElective" ng-model="item.course" disabled>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <span>From</span>
-                        <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.startTime" data-time-format="h:mm a"  required bs-timepicker 
-                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="30" data-autoclose="1" ng-change="validateTimes(availability.indexOf(item), true)" 
-                        bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <span>To</span>
-                        <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.endTime" data-time-format="h:mm a"  required bs-timepicker  
-                        data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="30" data-autoclose="1" ng-change="validateTimes(availability.indexOf(item), true)"  
-                         bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="row">
-                            <div class="col-md-1">
-                                <span>M</span><br />
-                                <input type="checkbox" value="true" ng-model="item.monday" >  
-                            </div>
-                            <div class="col-md-1">
-                                <span>T</span><br />
-                                <input type="checkbox" value="true" ng-model="item.tuesday">  
-                            </div>
-                            <div class="col-md-1">
-                                <span>W</span><br />
-                                <input type="checkbox" value="true" ng-model="item.wednesday">  
-                            </div>
-                            <div class="col-md-1">
-                                <span>Th</span><br />
-                                <input type="checkbox" value="true" ng-model="item.thursday">  
-                            </div>
-                            <div class="col-md-1">
-                                <span>F</span><br />
-                                <input type="checkbox" value="true" ng-model="item.friday" >  
-                            </div>
-                            
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-        
-        
-        
         
         
         <div class="row" >
@@ -483,6 +432,12 @@
                 </div>
             </div>
         </div>
+        
+        
+        
+        
+        
+        
         
     </div>
                     <!--<div class="col-md-3" >-->
