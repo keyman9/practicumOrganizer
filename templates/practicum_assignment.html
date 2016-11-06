@@ -435,8 +435,8 @@
                                         <span>Class</span>
                                         <select class="form-control" id="course" name="course" ng-model="item.course" ng-change="changeAssignedCourse(item, editingPracticumAssignments.indexOf(item))">
                                             <option></option>
-                                            <option ng-repeat="c in item.teacher.elementarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
-                                            <option ng-repeat="c in item.teacher.secondarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)"></option>
+                                            <option ng-repeat="c in item.teacher.elementarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)" ng-selected="item.course == c.course"></option>
+                                            <option ng-repeat="c in item.teacher.secondarySchedule" ng-value="c.course" ng-bind="getScheduleString(c)" ng-selected="item.course == c.course"></option>
                                             <option>Other</option>
                                         </select>
                                     </div>
@@ -547,7 +547,7 @@
                     <td ng-bind="getAvailabilityString(item.availability)"></td>
                     <td>
                         <div>
-                            <button class="btn btn-primary" ng-click="">
+                            <button class="btn btn-primary" ng-click="editPracticum(publishedPracticumAssignments.indexOf(item))">
                                 <i class="glyphicon glyphicon-pencil"></i>
                             </button>
                         </div>

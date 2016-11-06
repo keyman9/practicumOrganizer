@@ -231,28 +231,10 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
             for (var i = 0; i < classes.length; i++){
                 if (classes[i].course === practicum.course){
                     var start = classes[i].startTime;
-                    var split = start.split(":");
-                    var startHrs = parseInt(split[0]);
-                    var startMin = parseInt(split[1].substring(0, 2));
-                    var mer = split[1].substring(2, 4);
-                    if (mer === "PM" && startHrs != 12){
-                        startHrs += 12;
-                    }
-                    practicum.availability.start = new Date();
-                    practicum.availability.start.setHours(startHrs);
-                    practicum.availability.start.setMinutes(startMin);
-    
+                    practicum.availability.start = getDateObjectFromString(start);
+ 
                     var end = classes[i].endTime;
-                    var split = end.split(":");
-                    var endHrs = parseInt(split[0]);
-                    var endMin = parseInt(split[1].substring(0, 2));
-                    var mer = split[1].substring(2, 4);
-                    if (mer === "PM" && endHrs != 12){
-                        endHrs += 12;
-                    }
-                    practicum.availability.end = new Date();
-                    practicum.availability.end.setHours(endHrs);
-                    practicum.availability.end.setMinutes(endMin);
+                    practicum.availability.end = getDateObjectFromString(end);
                 }
             }
             // console.log(practicum);
@@ -544,7 +526,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         var assignment = $scope.editingPracticumAssignments[index];
         var stu = assignment.student;
         var invalid = false;
-        console.log(stu);
+        // console.log(stu);
   
         if (stu === undefined || $scope.isEmptyObject(stu)){
             invalid = true;
@@ -591,16 +573,59 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         return JSON.stringify(obj) === JSON.stringify({});
     }
     
-    $scope.editPracticum = function(index){
-        //TODO: move from published to edit, convert to editable
+    var getDateObjectFromString = function(str){
+        var split = str.split(":");
+        var hrs = parseInt(split[0]);
+        var mins = parseInt(split[1].substring(0, 2));
+        var mer = split[1].substring(2, 4);
+        if (mer === "PM" && hrs != 12){
+            hrs += 12;
+        }
+        var date = new Date();
+        date.setHours(hrs);
+        date.setMinutes(mins);
+        
+        return date;
     }
     
-    $scope.convertToEditablePracticum = function(prac){
+    $scope.editPracticum = function(index){
+        //TODO: move from published to edit, convert to editable
+        var prac = $scope.publishedPracticumAssignments[index];
+        var editable = $scope.convertToEditablePracticum(prac);
+        $scope.editingPracticumAssignments.push(editable);
         
     }
     
-    $scope.convertToPublishablePracticum = function(prac){
-        var publishPrac = angular.copy(prac);
+    $scope.convertToEditablePracticum = function(practicum){
+        var editPrac = angular.copy(practicum);
+        if (editPrac.teacher && editPrac.teacher.elementarySchedule && editPrac.teacher.secondarySchedule){
+            var classes = editPrac.teacher.elementarySchedule.concat(editPrac.teacher.secondarySchedule);
+            var inList = false;
+            for (var i = 0; i < classes.length; i++){
+                if (classes[i].course === editPrac.course){
+                    inList = true;
+                    break;
+                }
+            }
+            if (!inList){
+                editPrac.other = editPrac.course; 
+                editPrac.course = "Other";
+            }
+        }
+        if (editPrac.availability.startTime && editPrac.availability.endTime){
+            var start = editPrac.availability.startTime;
+            editPrac.availability.start = getDateObjectFromString(start);
+
+            var end = editPrac.availability.endTime;
+            editPrac.availability.end = getDateObjectFromString(end);
+        }
+        
+        console.log(editPrac);
+        return editPrac;
+    }
+    
+    $scope.convertToPublishablePracticum = function(practicum){
+        var publishPrac = angular.copy(practicum);
         
         publishPrac.studentId = publishPrac.student.email;
         publishPrac.teacherId = publishPrac.teacher.id;
