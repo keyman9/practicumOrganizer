@@ -75,6 +75,14 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="form-group">
+                <span class="text-primary"><p><strong>
+                    If you travel between multiple schools, please specify the School Division you work for and mark your school as "Other"!
+                </strong></p></span>
+                
+                <span class="text-primary"><p><strong>
+                    If your school division or school is not listed, please select "Other" for both fields!
+                </strong></p></span>
+                
                 <div class="row">
                     <div class="col-md-4">
                         <span>School Division</span>
@@ -96,14 +104,26 @@
                             <option ng-repeat="grade in elemGradesAndSubjects">{{ '{{grade}}' }}</option>
                         </select>
                     </div>
+                    <div class="col-md-4" ng-if="school==='Other'">
+                        <span>Do you work at multiple schools?</span>
+                        <select class="form-control" id="travelTeacher" name="travelTeacher" ng-model="$parent.travelTeacher" ng-change="initializeElemClasses(gradeLevel)" required>
+                            <option>Yes</option>
+                            <option>No</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12" ng-if="school==='Other'">
+                    <div class="col-md-12" ng-if="travelTeacher==='No' && school==='Other' && division==='Other'">
                         <br/>
-                        <div class="form-group">
-                            <span>Enter School Name:</span>
-                            <input type="text" class="form-control" name="otherSchool" id="otherSchool" ng-model="$parent.otherSchool" ng-change="print(otherSchool)" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>
+                        <div class="form-group" ng-class="{'has-error': invalidSchool}">
+                            <span>Enter School Name:</span><span ng-if="school===undefined || invalidSchool"><small class="error">&nbsp;&nbsp;*</small></span>
+                            <input type="school" class="form-control" name="otherSchool" id="otherSchool" ng-model="$parent.otherSchool" ng-blur="validateOtherSchool()" required>
+                            <span class="error" ng-if="invalidSchool"><em>Invalid School</em></span>
                         </div>
+                        <!--<div class="form-group">-->
+                        <!--    <span>Enter School Name:</span>-->
+                        <!--    <input type="text" class="form-control" name="otherSchool" id="otherSchool" ng-model="$parent.otherSchool" ng-change="print(otherSchool)" ng-blur="validatePracticum(previousPractica.indexOf(item), true)" required>-->
+                        <!--</div>-->
                     </div>
                 </div>
                 <div class="row">
@@ -148,7 +168,7 @@
                         <div class="col-md-1"></div>
                         <div class="col-md-3">
                             <span>Subject</span>
-                            <input  class="form-control" type="text" name="elemCourse" id="elemCourse" ng-model="item.course" disabled>
+                            <input class="form-control" type="text" name="elemCourse" id="elemCourse" ng-model="item.course" disabled>
                         </div>
                         
                         <div class="col-md-3">
@@ -171,7 +191,7 @@
         <div class="row">
         <div class="col-md-2 col-md-offset-5">
             <br />
-            <h4>Elective Times and Days<span ><small class="error">&nbsp;&nbsp;*</small></span></h4>
+            <h4>Specials Days and Times<span ><small class="error">&nbsp;&nbsp;*</small></span></h4>
         </div>
         </div>
         
@@ -182,7 +202,7 @@
                     
                     <div class="col-md-3">
                             <span>Subject</span>
-                            <input  class="form-control" type="text" name="elemElective" id="elemElective" ng-model="item.course" disabled>
+                            <input class="form-control" type="text" name="elemElective" id="elemElective" ng-model="item.course" disabled>
                     </div>
                     
                     <div class="col-md-3">
@@ -314,7 +334,7 @@
     <!---->
     
     
-    <div ng-show="isSecondary(school)">
+    <div ng-show="isSecondary(school) && blockSchedule.length > 0">
         <div class="row" >
             <div class="col-md-2 col-md-offset-5" ng-show="secondaryClasses.length > 0">
                 <br />
@@ -327,26 +347,21 @@
                     <div class="row">
                         
                         <div class="col-md-2" ng-show="numCourses==8">
-                            
                             <span>Day Type</span>
                             <input class="form-control" type="text" name="dayType" id="dayType" ng-model="item.dayType" disabled>
-                            
                         </div>
-                        
                         <div class="col-md-1">
-                            
                             <span>Block</span>
                             <input class="form-control" type="text" name="block" id="block" ng-model="item.block" disabled>
-                            
                         </div>
                         
                         <div class="col-md-3">
                             <span>Subject</span>
                             <select class="form-control" id="course" name="course" ng-model="item.course" >
                                 <option ng-repeat="c in courses | orderBy:c">{{ '{{c}}' }}</option>
+                                <option>Other</option>
                             </select>
                         </div>
-                        
                         <div class="col-md-3">
                             <span>From</span>
                             <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
@@ -357,43 +372,44 @@
                             <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                 bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
-                        
-                        
                     </div>
                 </div>
             </div>
         </div>
         
         
+        
+        
+        
         <div class="row" >
             <div class="col-md-2 col-md-offset-5">
                 <br />
-                <h4>Recess Time<span><small class="error">&nbsp;&nbsp;*</small></span></h4>
+                <h4>Planning Period<span><small class="error">&nbsp;&nbsp;*</small></span></h4>
             </div>
         </div>
         
         <div class="row">
             <div class="col-md-8 col-md-offset-2" id="recessTime">
                 <div class="form-group">
+                    <div class="form-group" ng-repeat="item in secondaryPlanning">
                     <div class="row">
                         
-                        <div class="col-md-1"></div>
-                        <!--<div class="col-md-3">-->
-                        <!--    <span>Subject</span>-->
-                        <!--    <input  class="form-control" type="text" name="elemClass" id="elemClass" ng-model="item.elemClass">-->
-                        <!--</div>-->
-                        
+                        <div class="col-md-2" ng-show="numCourses==8">
+                            <span>Day Type</span>
+                            <input class="form-control" type="text" name="dayType" id="dayType" ng-model="item.dayType" disabled>
+                        </div>
                         <div class="col-md-3">
                             <span>From</span>
-                            <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="recess.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
+                            <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                  bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
                         <div class="col-md-3">
                             <span>To</span>
-                            <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="recess.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
+                            <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                 bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
                         <div class="col-md-1"></div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -409,25 +425,25 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2" id="lunchBreak">
                 <div class="form-group">
+                    <div class="form-group" ng-repeat="item in secondaryLunch">
                     <div class="row">
                         
-                        <div class="col-md-1"></div>
-                        <!--<div class="col-md-3">-->
-                        <!--    <span>Subject</span>-->
-                        <!--    <input  class="form-control" type="text" name="elemClass" id="elemClass" ng-model="item.elemClass">-->
-                        <!--</div>-->
-                        
+                        <div class="col-md-2" ng-show="numCourses==8">
+                            <span>Day Type</span>
+                            <input class="form-control" type="text" name="dayType" id="dayType" ng-model="item.dayType" disabled>
+                        </div>
                         <div class="col-md-3">
                             <span>From</span>
-                            <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="lunchBreak.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
+                            <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="item.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                  bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
                         <div class="col-md-3">
                             <span>To</span>
-                            <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="lunchBreak.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
+                            <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                 bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
                         <div class="col-md-1"></div>
+                    </div>
                     </div>
                 </div>
             </div>

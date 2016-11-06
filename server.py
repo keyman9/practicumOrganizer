@@ -122,6 +122,89 @@ def submitStudent(data):
     
     emit("submissionResult", {"error": error, "msg": msg})
     
+
+@socketio.on('submit', namespace='/teacher')
+def submitTeacher(data):
+    print(data)
+    print(data['email'])
+    studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
+    #print(studentData)
+    error = False
+    msg = ""
+    
+    #student Table
+    try:
+        db = connect_to_db()
+        cur = db.cursor()
+        #cur.mogrify(studentTable, studentData)
+        cur.execute(studentTable, studentData)
+        db.commit()
+    except Exception as e:
+        error = True
+        print(e)
+    
+    #endorsement Table
+    for endorsement in data['endorsements']:
+        try:
+            endorsementData = [endorsement, data['email']]
+            #cur.mogrify(endorseTable, endorsementData)
+            cur.execute(endorseTable, endorsementData)
+            print("inserted into endorsements table")
+            db.commit()
+        except Exception as e:
+            error = True
+            print(e)
+    
+    #previousPractica Table
+    for practica in data['previousPractica']:
+        try:
+            grade = 0
+            course = ''
+            if 'grade' in practica:
+                grade = practica['grade']
+            if 'course' in practica:
+                course = practica['course']
+            
+            practicaData = [practica['school'], grade, course ,data['email']]
+            cur.execute(prevPracTable, practicaData)
+            print("inserted into prev practica table")
+            db.commit()
+        except Exception as e:
+            error = True
+            print(e)
+            
+    #enrolledCourses Table
+    for enrolledIn in data['enrolledClasses']:
+       try:
+            coursesData = [enrolledIn, data['email']]       
+            cur.execute(enrolledCourseTable, coursesData)
+            print("inserted into enrolled courses")
+       except Exception as e:
+            error = True
+            print(e)
+       
+    #meetingDays Table 
+    #availableTimes Table
+    for times in data['availability']:
+        try:
+            meetingData = [times['monday'], times['tuesday'], times['wednesday'], times['thursday'], times['friday']]
+            cur.execute(meetingInsert, meetingData)
+            meetingID = cur.fetchone()[0]
+            
+            availabilityData = [times['startTime'], times['endTime'], meetingID, data['email']]       
+            cur.execute(availableInsert, availabilityData)
+            db.commit()
+            print("inserted into meeting table and availabletimes tables")
+        except Exception as e:
+            error = True
+            print(e)
+    
+    if not error:
+        msg = "Your information has been submitted!"
+    else:
+        msg = "There was an error submitting your information. Try again."
+    
+    emit("submissionResult", {"error": error, "msg": msg})
  
 
 selectStudents = "SELECT * FROM students"

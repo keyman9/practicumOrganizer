@@ -42,7 +42,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     $scope.lunchBreak = {'startTime' : '', 'endTime': ''}
     
     $scope.gradeLevels = ['K', '1', '2', '3', '4', '5', '6'];
-    $scope.elemSubjects = ['Art', 'Computer', 'Library', 'Music']
+    $scope.elemSubjects = ['Art', 'Music']
     $scope.elemGradesAndSubjects = $scope.gradeLevels.concat($scope.elemSubjects);
 
     $scope.schoolDivisions = [];
@@ -83,12 +83,15 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     $scope.gradeLevel = '';
     $scope.elemClasses = []
     $scope.elemElectives = [];
+    $scope.travelTeacher = '';
     var elemCourses = ['Writing', 'Reading', 'Math', 'Social Studies', 'Science']
-    var elemElectives = ['P.E.', 'Art', 'Music', 'Library', 'Computer']
+    var elemElectives = ['Art','Computer', 'Library', 'Music', 'P.E.']
     $scope.semesterHosting = '';
     $scope.secondaryClasses = [];
     $scope.isElectiveTeacher = false
     $scope.blockSchedule = ''
+    $scope.secondaryPlanning = [];
+    $scope.secondaryLunch = [];
     
         
     //returns schools in selected division (of previous practica)
@@ -263,102 +266,61 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     
     $scope.submit = function(){
         var teacher = {}
-        // console.log($scope.school)
-        // console.log($scope.schoolDivision)
-        // console.log($scope.firstName)
-        // console.log($scope.lastName)
-        // console.log($scope.email)
         
-        teacher['school'] = $scope.school
-        teacher['firstName'] = $scope.firstName
-        teacher['lastName'] = $scope.lastName
-        teacher['email'] = $scope.email
-        teacher['schoolDivision'] = $scope.schoolDivision
-        teacher['grade'] = $scope.gradeLevel;
-        teacher['semesterHosting'] = $scope.semesterHosting;
+    
+    this.id = undefined;
+    
+    
+    
+    this.elementarySchedule = [];
+    this.secondarySchedule = [];
+    
+        var teacher = new Teacher();
         
+        teacher.firstName = $scope.firstName
+        teacher.school = $scope.school
+        teacher.lastName = $scope.lastName
+        teacher.email = $scope.email
+        teacher.schoolDivision = $scope.schoolDivision
+        
+        if($scope.semesterHosting == 'Fall'){
+            teacher.hostFall = true;
+            teacher.hostSpring = false;
+        } else if($scope.semesterHosting == "Spring"){
+            teacher.hostFall = false;
+            teacher.hostSpring = true;
+        } else {
+            teacher.hostFall = true;
+            teacher.hostSpring = true;
+        }
+        
+        if($scope.gradeLevel.length > 0){
+            teacher.grade = $scope.gradeLevel;
+        }
+        
+        var classes = {}
+        if($scope.teacherType == "Elementary"){
+            classes['elemClasses'] = $scope.elemClasses;
+            classes['elemElectives'] = $scope.elemElectives;
+            classes['recess'] = $scope.recess;
+            classes['lunchBreak'] = $scope.lunchBreak;
+            teacher.elementarySchedule = classes;
+        } else if($scope.teacherType == "Secondary"){
+            classes['secondaryClasses'] = $scope.secondaryClasses;
+            classes['planning'] = $scope.secondaryPlanning;
+            classes['secondaryLunch'] = $scope.secondaryLunch;
+            teacher.secondarySchedule = classes;
+        }
         
         
         if($scope.otherSchool.length > 0){
             $scope.teacherType = "Other";
         }
-        teacher['teacherType'] = $scope.teacherType
-        console.log(teacher)
-        console.log($scope.elemClasses)
-        console.log($scope.elemElectives)
-        console.log($scope.recess)
-        console.log($scope.lunchBreak)
-        
-        
-        
-        // var stu = new Student();
-        
-        // stu.firstName = $scope.firstName;
-        // stu.lastName = $scope.lastName;
-        // stu.email = $scope.email;
-    //     stu.endorsements = $scope.endorsementSought;
-    //     stu.enrolledClasses = $scope.enrolledClasses; 
        
-    //     for (var i = 0; i < $scope.availability.length; i++){
-    //         // console.log($scope.availability[i]);
-    //         var av = $scope.availability[i];
-    //         if (Object.prototype.toString.call(av.start) === "[object Date]"){
-    //             av.startTime = av.start.toLocaleTimeString();
-    //         }
-    //         if (Object.prototype.toString.call(av.end) === "[object Date]"){
-    //             av.endTime = av.end.toLocaleTimeString();
-    //         }
-            
-    //         delete $scope.availability[i].start;
-    //         delete $scope.availability[i].end;
-            
-    //     }
-    //     stu.availability = $scope.availability;
         
-    //     for (var i = 0; i < $scope.previousPractica.length; i++){
-    //         var current = $scope.previousPractica[i]; 
-    //         delete current.schoolDivision;
-            
-    //         if (current.school === "Other"){
-    //             current.school = current.otherSchool;
-    //         }
-            
-    //         if ((current.course && current.course === "Other")){
-    //             current.course = current.other;
-    //             current.grade = undefined;
-    //         }
-            
-    //         if (current.course && inGrades(current.course)){
-    //             var temp = getGradeValue(current.course);
-    //             current.grade = temp;
-    //             current.course = undefined;
-    //         } else if (current.grade && current.grade.value === -1){
-    //             current.course = current.grade.displayName;
-    //             current.grade = undefined;
-    //         } else if (current.grade){
-    //             var temp = current.grade.value;
-    //             current.grade = temp;
-    //         }
-    //         delete current.other;
-    //         delete current.otherSchool;
-    //     }
-    //     stu.previousPractica = $scope.previousPractica;
+        console.log(teacher)
         
-    //     if ($scope.transportation === "none"){
-    //         stu.hasCar = false;
-    //     } else {
-    //         stu.hasCar = true;
-    //     }
-        
-    //     if ($scope.transportation === "none" || $scope.transportation != "self"){
-    // 		$scope.passengerNum = 0;
-    // 	} 
-        
-    //     stu.passengers = $scope.passengerNum;
-        
-    //     console.log(stu);
-        
-    //     socket.emit('submit', stu);
+         socket.emit('submit', teacher);
     };
     
     var inGrades = function(name){
@@ -418,6 +380,17 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     	}
     }
     
+        $scope.validateOtherSchool = function(){
+        var schoolpat = /(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)/;
+    	var school = $scope.otherSchool;
+    	var testschool = schoolpat.test(school);
+    	if (!testschool){
+    		$scope.invalidSchool = true;
+    	} else {
+            $scope.invalidSchool = false;
+        }
+    }
+    
     // $scope.formIsInvalid = function(){
     //     //$scope.validateTransportation();
     //     //$scope.validateEndorsement();
@@ -430,8 +403,9 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     // }
 
     $scope.goToTop = function() {
-        $location.hash('top');
-        $anchorScroll();
+        // $location.hash('top');
+        // $anchorScroll();
+        $(window).scrollTop(0);
     };
     
     $scope.resetForm = function(){
@@ -522,7 +496,45 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
             $scope.secondaryClasses.push(av)
             
         }
+        console.log($scope.secondaryClasses)
+        $scope.secondaryPlanning = $scope.initializeSecondaryOther("Planning");
+        $scope.secondaryLunch = $scope.initializeSecondaryOther("Lunch");
     }
+    
+    $scope.initializeSecondaryOther = function(className){
+        
+        var extraClasses = [];
+        var numExtraCourses = 1
+        //$scope.numCourses = 4;
+        if($scope.isBlockSchedule($scope.blockSchedule)){
+            
+            numExtraCourses = 2
+        }
+        var bDayCounter = 1;
+        for(var i = 0; i < numExtraCourses; i++){
+            var av = new SecondaryCourse();
+            av.startTime = new Date();
+            av.startTime.setHours(7);
+            av.startTime.setMinutes(30);
+            av.endTime = new Date();
+            av.endTime.setHours(15);
+            av.endTime.setMinutes(30);
+            av.course = ''
+            av.dayType = undefined
+            
+            av.dayType = 'A/X'
+            if(bDayCounter % 2 == 0){
+                av.dayType = 'B/Y'
+            }
+            bDayCounter++;
+            
+            extraClasses.push(av)
+            
+        }
+        return extraClasses
+    }
+    
+   
     
     $scope.initializeElementaryOther = function(className){
         var av = new ElementaryCourse();
@@ -566,13 +578,20 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         $scope.initializeElementaryCourses(elemCourses, false);
         $scope.initializeElementaryCourses(elemElectives, true);
         $scope.recess = $scope.initializeElementaryOther("Recess");
-        $scope.lunchBreak = $scope.initializeElementaryOther("Lunch Break");
+        $scope.lunchBreak = $scope.initializeElementaryOther("Lunch");
+    }
+    
+    $scope.initializeSecondary = function(className){
+        $scope.initializeSecondaryCourses();
+        $scope.secondaryPlanning = $scope.initializeSecondaryOther("Planning");
+        $scope.secondaryLunch = $scope.initializeSecondaryOther("Lunch");
     }
     
     $scope.resetForm();
     $scope.getPracticumBearing()
     $scope.getSchoolDivisions();
-    $scope.initializeElementary()
+    $scope.initializeElementary();
+    
     
 });
 
