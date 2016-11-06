@@ -85,6 +85,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     $scope.editingPracticumAssignments = [];
     $scope.publishedPracticumAssignments = [];
     $scope.showAssignedTeachers = false;
+    $scope.showAssignedStudents = false;
     $scope.practicaErrorMsg = [];
     
     $scope.selectEndorsement = false;
