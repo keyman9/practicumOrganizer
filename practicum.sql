@@ -168,8 +168,7 @@ CREATE TABLE teachers(
   email varchar(60) NOT NULL default '',
   firstName varchar(60) NOT NULL default '',
   lastName varchar(60) NOT NULL default '',
-  grade integer,
-  gradeRange varchar(60),
+  grade varchar(10),
   hostFall boolean,
   hostSpring boolean,
   schoolID serial,
@@ -199,8 +198,10 @@ CREATE TABLE elementarySchedule(
   endTime timestamp,
   teacherID serial,
   schoolID serial,
+  meetingId serial,
   FOREIGN KEY(teacherID) references teachers(teacherID),
-  FOREIGN KEY(schoolID) references schools(schoolID)
+  FOREIGN KEY(schoolID) references schools(schoolID),
+  FOREIGN KEY(meetingID) references meetingDays(meetingID)
 );
 
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_normal;
