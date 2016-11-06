@@ -538,8 +538,9 @@ POBoxApp.controller('StudentFormController', function($scope, $window, $location
     }
 
     $scope.goToTop = function() {
-        $location.hash('top');
-        $anchorScroll();
+        // $location.hash('top');
+        // $anchorScroll();
+        $(window).scrollTop(0);
     };
     
     $scope.resetForm = function(){
