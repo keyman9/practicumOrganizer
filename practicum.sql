@@ -165,7 +165,7 @@ GRANT ALL ON schools_schoolid_seq TO practicum_admin;
 DROP TABLE IF EXISTS teachers;
 CREATE TABLE teachers(
   teacherID serial,
-  email varchar(60) NOT NULL default '',
+  email varchar(60) NOT NULL UNIQUE,
   firstName varchar(60) NOT NULL default '',
   lastName varchar(60) NOT NULL default '',
   grade varchar(10),
@@ -178,8 +178,8 @@ CREATE TABLE teachers(
   FOREIGN KEY(divisionID) references schoolDivisions(divisionID)
 );
   
-GRANT SELECT, INSERT ON teachers TO practicum_normal;
-GRANT SELECT, INSERT ON teachers TO practicum_admin;
+GRANT SELECT, INSERT, UPDATE ON teachers TO practicum_normal;
+GRANT SELECT, INSERT, UPDATE ON teachers TO practicum_admin;
 
 GRANT ALL ON teachers_divisionid_seq TO practicum_normal;
 GRANT ALL ON teachers_divisionid_seq TO practicum_admin;
