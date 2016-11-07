@@ -123,14 +123,6 @@ def submitStudent(data):
     
     emit("submissionResult", {"error": error, "msg": msg})
     
-    
-##Teacher Start
-
-selectSchool = """SELECT schoolid FROM schools WHERE schoolname = '%s'"""
-selectDivision = """SELECT (divisionid) FROM schoolDivisions"""
-teacherInsert = """INSERT INTO teachers(email, firstname, lastname, schoolid, divisionid, hostSpring, hostFall, grade) VALUES (%s,%s,%s,%s,%s) RETURNING teacherid"""
-
-
 ##Teacher Start
 
 selectSchool = """SELECT schoolid FROM schools WHERE schoolname = '%s'"""
@@ -138,12 +130,14 @@ selectDivision = """SELECT (divisionid) FROM schoolDivisions WHERE divisionId = 
 schoolIdByDivision = """SELECT (schoolid,divisionid) FROM schools WHERE schoolName = %s""" 
 teacherInsert = """INSERT INTO teachers(email, firstname, lastname, hostSpring, hostFall, grade, schoolid, divisionid) \
                                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING teacherid"""
-
+insertClass = """INSERT INTO elementarySchedule(course, startTime, endTime, teacherID, schoolID, meetingID) \
+                                            VALUES (%s,%s,%s,%s,%s,%s)"""
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
     print(data)
     if 'grade' not in data:
         data['grade'] = 'Other'
+    
     teacherData = [data['email'], data['firstName'], data['lastName'], data['hostSpring'], data['hostFall'], data['grade']]
 
     error = False
@@ -181,7 +175,6 @@ def submitTeacher(data):
             print(e)    
         #print(schoolIdDivId)
         
-        
     else:
         print("Else")
         schoolDiv = data['schoolDivision']
@@ -194,17 +187,18 @@ def submitTeacher(data):
             print(cur.mogrify(schoolIdByDivision,(data['school'],)))
             #get schoolId
             cur.execute(schoolIdByDivision,(data['school'],))
-            db.commit()
             schoolIdDivId = cur.fetchone()[0]
             #remove braces and comma
             schoolIdDivId = schoolIdDivId[1:-1].split(',')
             #insert teacher
+            print(schoolIdDivId)
             try:
                 cur = db.cursor()
                 #print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
                 cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
                 db.commit()
                 teacherId = cur.fetchone()[0]
+                print(teacherId)
             except Exception as e:
                 error = True
                 print(e)
@@ -213,12 +207,13 @@ def submitTeacher(data):
             print(e)
 
         #if it has a grade, it will be an elementary school teacher
-        if data['grade'] in elementaryGrades:
+        #print(data['grade'])
+        if 'Elementary' in data['school']:
             #elementary schedule has meetingDays, not X/Y
             #courseName, start, end, teacherid, schoolid
             
             meetingId = []
-            
+            print("elementary")
             #get meetingDaysID for all non-electives
             try:
                 db = connect_to_db()
@@ -235,21 +230,56 @@ def submitTeacher(data):
                     print(courseInfo['course'])
                     print(courseInfo['startTime'])
                     print(courseInfo['endTime'])
+                    try:
+                        db = connect_to_db()
+                        cur = db.cursor()
+                        cur.execute(insertClass,(courseInfo['course'],courseInfo['startTime'],courseInfo['endTime'],teacherId,schoolIdDivId[0],meetingId))
+                        db.commit()
+                    except Exception as e:
+                        error = True
+                        print(e)
                 elif classType == 'elemElectives':
                     #for each course
+                    for electiveCourse in courseInfo:
+                        print(electiveCourse)
+                        days = ['monday','tuesday','wednesday','thursday','friday']
+                        courseDays = []
+                        for day in days:
+                            if day in electiveCourse:
+                                courseDays.append(electiveCourse[day])
+                            else:
+                                courseDays.append(False)
+                        print(courseDays)    
                         #insert days returning meetingid
-                        #insert elementarySchedule
-                    pass
+                        try:
+                            db = connect_to_db()
+                            cur = db.cursor()
+                            print(cur.mogrify(meetingInsert,(courseDays)))
+                            cur.execute(meetingInsert,(courseDays))
+                            db.commit()
+                            courseId = cur.fetchone()[0] ##meetingid,
+                        except Exception as e:
+                            error = True
+                            print(e)
+                        #insert elementarySchedule    
+                        try:
+                            db = connect_to_db()
+                            cur = db.cursor()
+                            print(cur.mogrify(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId)))
+                            cur.execute(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId))
+                            db.commit()
+                        except Exception as e:
+                            error = True
+                            print(e)
                 else:
                     #insert items from 'elemClasses'
                     for course in courseInfo:
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            insertClass = """INSERT (course, startTime, endTime, teacherID, schoolID, meetingID) INTO elementarySchedule \
-                                            VALUES (%s,%s,%s,%s,%s,%s)"""
                             print(cur.mogrify(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId)))
-                            #db.commit()
+                            cur.execute(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId))
+                            db.commit()
                         except Exception as e:
                             error = True
                             print(e)
@@ -278,7 +308,6 @@ def submitTeacher(data):
              #dayType,block,course,start,end,teacherid,schoolid
             for course in data['secondarySchedule']:
                 print(course)
-             
     
     
     if not error:

@@ -329,6 +329,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         teacher.email = $scope.email
         teacher.schoolDivision = $scope.schoolDivision
         
+        
         if($scope.semesterHosting == 'Fall'){
             teacher.hostFall = true;
             teacher.hostSpring = false;
@@ -340,8 +341,10 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
             teacher.hostSpring = true;
         }
         
+        console.log($scope.gradeLevel);
         if($scope.gradeLevel.length > 0){
             teacher.grade = $scope.gradeLevel;
+            console.log(teacher.grade);
         }
         
         var classes = {}
@@ -364,7 +367,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         }
        
         
-        console.log(teacher)
+        console.log(teacher);
         
          socket.emit('submit', teacher);
     };
@@ -488,10 +491,11 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         //$scope.validateEnrolledClass();
         //$scope.validateAvailability(); 
         //$scope.validateAllPractica();
-        return ($scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
-        $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
-        $scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
-        $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
+        return (false);
+            //$scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
+        //$scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
+        //$scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
+        //$scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
 
     $scope.goToTop = function() {
