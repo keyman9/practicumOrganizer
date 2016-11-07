@@ -38,8 +38,9 @@
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{submissionMsg}}' }}
     </div>
     <div class="row">
-        <div class="col-md-6 col-md-offset-4">
-            <h3>Teacher Practicum Form</h3>
+        <a class="pull-left btn btn-primary" href="/">Back to Home Page</a>
+        <div class="col-md-9">
+            <h3 class="text-center">Teacher Practicum Form</h3>
         </div>
         <br /><br /><br />
     </div>
@@ -85,10 +86,10 @@
                 
                 <div class="row">
                     <div class="col-md-4">
-                        <span>School Division</span><span ng-if="division===undefined || invalidDivision || division===''"><small class="error">&nbsp;&nbsp;*</small></span>
+                        <span>School Division</span><span ng-if="schoolDivision===undefined || invalidDivision || schoolDivision===''"><small class="error">&nbsp;&nbsp;*</small></span>
                         <select class="form-control" id="division" name="division" ng-model="schoolDivision" ng-change="changeSchoolDivision(schoolDivision)" required>
                             <option ng-repeat="div in schoolDivisions">{{ '{{div.division}}' }}</option>
-                            <!--<span class="error" ng-if="invalidDivision"><em>Invalid Division</em></span>-->
+                            <span class="error" ng-if="invalidDivision"><em>Invalid Division</em></span>
                         </select>
                     </div>
 
@@ -97,19 +98,18 @@
                         <select class="form-control" id="school" name="school" ng-model="school" ng-change="changeSchool(school)" required>
                             <option ng-repeat="sch in getSchools() | orderBy:sch">{{ '{{sch}}' }}</option>
                             <option>Other</option>
-                            <!--<span class="error" ng-if="invalidSchool"><em>Invalid School</em></span> -->
+                            <span class="error" ng-if="invalidSchool"><em>Invalid School</em></span> 
                         </select>
                     </div>
                     <div class="col-md-4" ng-show="isElementary(school)">
-                        <span>Grade Level/ Subject Taught</span><span ng-if="gradeLevel===undefined || invalidGrade || gradeLevel===''"><small class="error">&nbsp;&nbsp;*</small></span>
-                        <select class="form-control" id="gradeLevel" name="gradeLevel" ng-model="gradeLevel" ng-change="initializeElemClasses(gradeLevel)" required>
+                        <span>Grade Level/ Subject Taught</span><span ng-if="$parent.gradeLevel===undefined || invalidGrade || $parent.gradeLevel===''"><small class="error">&nbsp;&nbsp;*</small></span>
+                        <select class="form-control" id="gradeLevel" name="gradeLevel" ng-model="$parent.gradeLevel" ng-change="initializeElemClasses($parent.gradeLevel)" required>
                             <option ng-repeat="grade in elemGradesAndSubjects">{{ '{{grade}}' }}</option>
                             <span class="error" ng-if="invalidGrade"><em>Invalid Grade</em></span>
                         </select>
                     </div>
                     <div class="col-md-4" ng-show="isOther(school)">
-                        <span>Do you work at multiple schools?<span ng-if="travelTeacher===undefined || invalidTravel"></span><small class="error">&nbsp;&nbsp;*</small></span>
-                        <!--<span ng-if="travelTeacher===undefined || invalidTravel || travelTeacher=''"><small class="error">&nbsp;&nbsp;*</small></span>-->
+                        <span>Do you work at multiple schools?<span ng-if="$parent.travelTeacher===undefined || invalidTravel || $parent.travelTeacher===''"></span><small class="error">&nbsp;&nbsp;*</small></span>
                         <select class="form-control" id="travelTeacher" name="travelTeacher" ng-model="$parent.travelTeacher" ng-change="isTravelTeacherCheck($parent.travelTeacher)" required>
                             <option>Yes</option>
                             <option>No</option>
@@ -120,8 +120,8 @@
                     <div class="col-md-12" ng-hide="isTravelTeacher">
                         <br/>
                         <div class="form-group" ng-class="{'has-error': invalidSchool}">
-                            <span>Enter School Name:</span><span ng-if="school===undefined || invalidSchool"><small class="error">&nbsp;&nbsp;*</small></span>
-                            <input type="school" class="form-control" name="otherSchool" id="otherSchool" ng-model="otherSchool" ng-blur="validateOtherSchool()" required>
+                            <span>Enter School Name:</span><span ng-if="otherSchool===undefined || invalidSchool || otherSchool===''"><small class="error">&nbsp;&nbsp;*</small></span>
+                            <input type="school" class="form-control" name="otherSchool" id="otherSchool" ng-model="$parent.otherSchool" ng-change="print($parent.otherSchool)" ng-blur="validateOtherSchool()" required>
                             <span class="error" ng-if="invalidSchool"><em>Invalid School</em></span>
                         </div>
                         <!--<div class="form-group">-->
@@ -134,7 +134,7 @@
                     <div class="col-md-6">
                         <br/>
                         <div class="form-group">
-                            <span>Which semesters will you host students?</span><small class="error">&nbsp;&nbsp;*</small></span>
+                            <span>Which semesters will you host students?</span><span ng-if="semesterHosting===undefined || invalidHosting || semesterHosting===''"><small class="error">&nbsp;&nbsp;*</small></span>
                             <select class="form-control" id="semesterHosting" name="semesterHosting" ng-model="semesterHosting" required>
                                 <option>Fall</option>
                                 <option>Spring</option>
@@ -157,7 +157,7 @@
         </div>
     </div>
     
-    <div ng-show="isElementary(school) && gradeLevel.length > 0">
+    <div ng-show="isElementary(school) && $parent.gradeLevel.length > 0">
         <div class="row" >
             <div class="col-md-2 col-md-offset-5">
                 <br />
@@ -185,12 +185,12 @@
                             <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="item.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                 bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
-                        <div class="col-md-1">
-                            <br />
-                            <div ng-if="availability.indexOf(item) > 0">
-                                <button class="btn btn-danger" ng-click="deleteElemClass(item)">-</button>
-                            </div>
-                        </div>
+                        <!--<div class="col-md-1">-->
+                        <!--    <br />-->
+                        <!--    <div ng-if="elemClasses.indexOf(item) > 0">-->
+                        <!--        <button class="btn btn-danger" ng-click="deleteElemClass(item)">-</button>-->
+                        <!--    </div>-->
+                        <!--</div>-->
                     </div>
                 </div>
             </div>
@@ -284,12 +284,12 @@
                         
                         <div class="col-md-3">
                             <span>From</span>
-                            <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="recess.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
+                            <input type="text" onkeydown="return false" class="form-control" name="start" id="start" ng-model="$parent.recess.startTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                  bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
                         <div class="col-md-3">
                             <span>To</span>
-                            <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="recess.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
+                            <input type="text" onkeydown="return false" class="form-control" name="end" id="end" ng-model="$parent.recess.endTime" data-time-format="h:mm a" required bs-timepicker data-min-time="7:30 am" data-max-time="3:30 pm" size="8" minute-step="1" data-autoclose="1"
                                 bs-tooltip="{'title': 'Please enter a time between 7:30AM and 3:30PM'}">
                         </div>
                         <div class="col-md-1"></div>
