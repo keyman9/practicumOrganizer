@@ -42,7 +42,7 @@ DROP TABLE IF EXISTS previousPractica;
 CREATE TABLE previousPractica(
   id serial,
   school varchar(60) NOT NULL default '',
-  grade integer NOT NULL,
+  grade varchar(10) NOT NULL,
   course varchar(60) NOT NULL default '',
   studentEmail varchar(60) NOT NULL default '',
   PRIMARY KEY (id),
@@ -165,7 +165,7 @@ GRANT ALL ON schools_schoolid_seq TO practicum_admin;
 DROP TABLE IF EXISTS teachers;
 CREATE TABLE teachers(
   teacherID serial,
-  email varchar(60) NOT NULL default '',
+  email varchar(60) NOT NULL UNIQUE,
   firstName varchar(60) NOT NULL default '',
   lastName varchar(60) NOT NULL default '',
   grade varchar(10),
@@ -178,8 +178,8 @@ CREATE TABLE teachers(
   FOREIGN KEY(divisionID) references schoolDivisions(divisionID)
 );
   
-GRANT SELECT, INSERT ON teachers TO practicum_normal;
-GRANT SELECT, INSERT ON teachers TO practicum_admin;
+GRANT SELECT, INSERT, UPDATE ON teachers TO practicum_normal;
+GRANT SELECT, INSERT, UPDATE ON teachers TO practicum_admin;
 
 GRANT ALL ON teachers_divisionid_seq TO practicum_normal;
 GRANT ALL ON teachers_divisionid_seq TO practicum_admin;
@@ -198,7 +198,7 @@ CREATE TABLE elementarySchedule(
   endTime timestamp,
   teacherID serial,
   schoolID serial,
-  meetingId serial,
+  meetingID serial,
   FOREIGN KEY(teacherID) references teachers(teacherID),
   FOREIGN KEY(schoolID) references schools(schoolID),
   FOREIGN KEY(meetingID) references meetingDays(meetingID)
@@ -206,6 +206,9 @@ CREATE TABLE elementarySchedule(
 
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_normal;
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_admin;
+
+GRANT ALL ON elementaryschedule_meetingid_seq TO practicum_normal;
+GRANT ALL ON elementaryschedule_meetingid_seq TO practicum_admin;
 
 GRANT ALL ON elementaryschedule_schoolid_seq TO practicum_normal;
 GRANT ALL ON elementaryschedule_schoolid_seq TO practicum_admin;
@@ -666,6 +669,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Odyssey Montessori',
 INSERT INTO schools(schoolName,divisionId) VALUES ('Head Start',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Friends of the Rappahannock',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Other',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 
 --Practicum Bearing Courses--
