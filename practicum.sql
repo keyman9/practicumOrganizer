@@ -198,10 +198,15 @@ CREATE TABLE elementarySchedule(
   endTime timestamp,
   teacherID serial,
   schoolID serial,
+<<<<<<< HEAD
   meetingID serial,
   FOREIGN KEY(meetingID) references meetingDays(meetingID),
+=======
+  meetingId serial,
+>>>>>>> 616c82f68ef350fe36111651f523e4a989cdc7f8
   FOREIGN KEY(teacherID) references teachers(teacherID),
-  FOREIGN KEY(schoolID) references schools(schoolID)
+  FOREIGN KEY(schoolID) references schools(schoolID),
+  FOREIGN KEY(meetingID) references meetingDays(meetingID)
 );
 
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_normal;

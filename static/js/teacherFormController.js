@@ -67,6 +67,8 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     $scope.invalidTransportation= false;
     $scope.invalidAvailability = true;
     $scope.invalidPractica = true;
+    $scope.isTravelTeacher = true;
+    $scope.invalidDivision= false;
     $scope.availabilityErrorMsg = ["", "", ""];
     $scope.practicaErrorMsg = [];
     $scope.submissionSuccess = false;
@@ -92,6 +94,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     $scope.blockSchedule = ''
     $scope.secondaryPlanning = [];
     $scope.secondaryLunch = [];
+
     
         
     //returns schools in selected division (of previous practica)
@@ -190,13 +193,47 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         return false;
     }
     
+    $scope.resetSchoolType = function(schoolLevel){
+        $scope.otherSchool = '';
+        $scope.teacherType = schoolLevel;
+        $scope.gradeLevel = '';
+        $scope.elemClasses = [];
+        $scope.elemElectives = [];
+        $scope.travelTeacher = '';
+        $scope.secondaryClasses = [];
+        $scope.secondaryPlanning = [];
+        $scope.secondaryLunch = [];
+    }
+    
+    $scope.isTravelTeacherCheck = function(travelTeacher){
+        console.log(travelTeacher)
+        console.log($scope.travelTeacher)
+        $scope.travelTeacher = travelTeacher;
+        if(travelTeacher == "No"){
+            $scope.isTravelTeacher = false;
+        } else {
+            $scope.isTravelTeacher = true;
+        }
+        
+    };
     
     $scope.isElementary = function(school){
         
         var sch = String(school);
         if (sch.indexOf("Elementary School") > 0){
-            $scope.otherSchool = '';
-            $scope.teacherType = "Elementary";
+            $scope.resetSchoolType("Elementary");
+            return true;
+        } else {
+            return false;
+        }
+        
+    };
+    
+    $scope.isOther = function(school){
+        
+        var sch = String(school);
+        if (sch === "Other"){
+            $scope.resetSchoolType("Other");
             return true;
         } else {
             return false;
@@ -208,11 +245,7 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         
         var sch = String(school);
         if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
-            $scope.otherSchool = '';
-            $scope.teacherType = "Secondary";
-            $scope.gradeLevel = '';
-            $scope.elemClasses = [];
-            $scope.elemElectives = [];
+            $scope.resetSchoolType("Secondary");
             return true;
         } else {
             return false;
@@ -391,16 +424,28 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         }
     }
     
-    // $scope.formIsInvalid = function(){
-    //     //$scope.validateTransportation();
-    //     //$scope.validateEndorsement();
-    //     //$scope.validateEnrolledClass();
-    //     //$scope.validateAvailability(); 
-    //     //$scope.validateAllPractica();
-    //     return ($scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
-    //     $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
-    //     $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
-    // }
+        $scope.validateOtherDistrict = function(){
+        var schoolpat = /(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)/;
+    	var district = $scope.otherSchool;
+    	var testDistrict = schoolpat.test(district);
+    	if (!testschool){
+    		$scope.invalidDistrict = true;
+    	} else {
+            $scope.invalidDistrict = false;
+        }
+    }
+    
+    $scope.formIsInvalid = function(){
+        //$scope.validateTransportation();
+        //$scope.validateEndorsement();
+        //$scope.validateEnrolledClass();
+        //$scope.validateAvailability(); 
+        //$scope.validateAllPractica();
+        return ($scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
+        $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
+        $scope.invalidSchool || $scope.invaldDistrict ||
+        $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
+    }
 
     $scope.goToTop = function() {
         // $location.hash('top');
@@ -586,6 +631,14 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
         $scope.secondaryPlanning = $scope.initializeSecondaryOther("Planning");
         $scope.secondaryLunch = $scope.initializeSecondaryOther("Lunch");
     }
+    
+    $scope.deleteElemClass = function(av){
+        for (var i = 0; i < $scope.availability.length; i++){
+            if ($scope.elemClasses[i] === av){
+                $scope.elemClasses.splice(i,1);
+            }
+        }
+    };
     
     $scope.resetForm();
     $scope.getPracticumBearing()

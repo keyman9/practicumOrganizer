@@ -123,6 +123,13 @@ def submitStudent(data):
     
     emit("submissionResult", {"error": error, "msg": msg})
     
+    
+##Teacher Start
+
+selectSchool = """SELECT schoolid FROM schools WHERE schoolname = '%s'"""
+selectDivision = """SELECT (divisionid) FROM schoolDivisions"""
+teacherInsert = """INSERT INTO teachers(email, firstname, lastname, schoolid, divisionid, hostSpring, hostFall, grade) VALUES (%s,%s,%s,%s,%s) RETURNING teacherid"""
+
 
 ##Teacher Start
 
@@ -134,14 +141,20 @@ selectDivision = """SELECT (divisionid) FROM schoolDivisions WHERE divisionId = 
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
     print(data)
+<<<<<<< HEAD
     #print(data['email'])
     if 'grade' not in data:
         data['grade'] = 'Other'
     teacherData = [data['email'], data['firstName'], data['lastName'], data['hostSpring'], data['hostFall'], data['grade']]
+=======
+    print(data['email'])
+    teacherData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
+>>>>>>> 616c82f68ef350fe36111651f523e4a989cdc7f8
     #print(studentData)
     error = False
     msg = ""
     
+<<<<<<< HEAD
     schoolIdDivId = []
     teacherId = ""
     
@@ -149,6 +162,40 @@ def submitTeacher(data):
     if data['school'] == "Other":
         #get school id
         schoolIdByDivision = """SELECT (schoolid,divisionid) FROM schools WHERE schoolName = %s""" 
+=======
+    ###edge case -- Other School Division, Other School
+    #if data['schoolDivision'] is 'Other' and data['school'] is 'Other':
+    #    
+        
+    
+    #select divisionid
+    schoolDiv = data['schoolDivision']
+        #add to teacherData object
+    #select school else insert school
+        #add to teacherData object
+    #insert teacher object
+        #firstname, lastname, email,schoolid,divid,grade,hostfall,hostspring
+    #teacher Table
+    try:
+        db = connect_to_db()
+        cur = db.cursor()
+        #cur.mogrify(studentTable, studentData)
+        cur.execute(studentTable, studentData)
+        db.commit()
+    except Exception as e:
+        error = True
+        print(e)
+    
+    #select teacher id
+    
+    #elementary schedule select, else insert to reduce database load
+        #courseName, start, end, teacherid, schoolid
+    #secondary schedule select, else insert to reduce database load
+        #dayType,block,course,start,end,teacherid,schoolid
+    
+    #endorsement Table
+    for endorsement in data['endorsements']:
+>>>>>>> 616c82f68ef350fe36111651f523e4a989cdc7f8
         try:
             db = connect_to_db()
             cur = db.cursor()
@@ -438,7 +485,31 @@ def mainIndex():
 def getStudentData():
     return render_template('student_form.html')
 
+<<<<<<< HEAD
 
+=======
+
+
+#@socketio.on('submit', namespace='/teacher')
+#def submitTeacher(data):
+    
+#    error = False
+    
+    #retrieve school info
+#    try:
+#        db = connect_to_db()
+#        cur = db.cursor()
+#        cur.execute(selectSchool, schoolName)
+#        db.commit()
+#    except Exception as e:
+#        error = True
+#        print(e)
+    
+#    if(cur.fetchone() == []):
+#        pass
+        
+    
+>>>>>>> 616c82f68ef350fe36111651f523e4a989cdc7f8
 @app.route('/teacher', methods=['GET'])
 def getTeacherData():
     return render_template('teacher_form.html')
