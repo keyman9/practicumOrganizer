@@ -7,6 +7,7 @@ from flask_socketio import SocketIO, emit
 import psycopg2
 import psycopg2.extras
 from collections import OrderedDict
+from collections import defaultdict
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -123,88 +124,147 @@ def submitStudent(data):
     emit("submissionResult", {"error": error, "msg": msg})
     
 
+##Teacher Start
+
+selectSchool = """SELECT schoolid FROM schools WHERE schoolname = '%s'"""
+selectDivision = """SELECT (divisionid) FROM schoolDivisions WHERE divisionId = '%s'"""
+
+
+
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
     print(data)
-    print(data['email'])
-    studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
+    #print(data['email'])
+    if 'grade' not in data:
+        data['grade'] = 'Other'
+    teacherData = [data['email'], data['firstName'], data['lastName'], data['hostSpring'], data['hostFall'], data['grade']]
     #print(studentData)
     error = False
     msg = ""
     
-    #student Table
-    try:
-        db = connect_to_db()
-        cur = db.cursor()
+    schoolIdDivId = []
+    teacherId = ""
+    
+    ###edge case -- Other School, no course info
+    if data['school'] == "Other":
+        #get school id
+        schoolIdByDivision = """SELECT (schoolid,divisionid) FROM schools WHERE schoolName = %s""" 
+        try:
+            db = connect_to_db()
+            cur = db.cursor()
+            print(cur.mogrify(schoolIdByDivision,(data['school'],)))
+            cur.execute(schoolIdByDivision,(data['school'],))
+            schoolIdDivId = cur.fetchone()[0]
+            schoolIdDivId = schoolIdDivId[1:-1].split(',')
+            #insert teacher
+            print(teacherData)
+            print(schoolIdDivId)
+            print(schoolIdDivId[0])
+            try:
+                cur = db.cursor()
+                teacherInsert = """INSERT INTO teachers(email, firstname, lastname, hostSpring, hostFall, grade, schoolid, divisionid) VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING teacherid"""
+                print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
+                cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
+                teacherId = cur.fetchall()
+                print(teacherId)
+            except Exception as e:
+                error = True
+                print(e)
+        except Exception as e:
+            error = True
+            print(e)    
+        #print(schoolIdDivId)
+        
+        
+    else:
+    #select divisionid
+        print("Else")
+        schoolDiv = data['schoolDivision']
+        #add to teacherData object
+    #select school else insert school
+        #add to teacherData object
+    #insert teacher object
+        #firstname, lastname, email,schoolid,divid,grade,hostfall,hostspring
+    #teacher Table
+    #try:
+    #    db = connect_to_db()
+    #    cur = db.cursor()
         #cur.mogrify(studentTable, studentData)
-        cur.execute(studentTable, studentData)
-        db.commit()
-    except Exception as e:
-        error = True
-        print(e)
+    #    cur.execute(studentTable, studentData)
+    #    db.commit()
+    #except Exception as e:
+    #    error = True
+    #    print(e)
+#    
+    #select teacher id
+    
+    #elementary schedule select, else insert to reduce database load
+        #courseName, start, end, teacherid, schoolid
+    #secondary schedule select, else insert to reduce database load
+        #dayType,block,course,start,end,teacherid,schoolid
     
     #endorsement Table
-    for endorsement in data['endorsements']:
-        try:
-            endorsementData = [endorsement, data['email']]
+    #for endorsement in data['endorsements']:
+    #    try:
+    #        endorsementData = [endorsement, data['email']]
             #cur.mogrify(endorseTable, endorsementData)
-            cur.execute(endorseTable, endorsementData)
-            print("inserted into endorsements table")
-            db.commit()
-        except Exception as e:
-            error = True
-            print(e)
+    #        cur.execute(endorseTable, endorsementData)
+    #        print("inserted into endorsements table")
+    #        db.commit()
+    #    except Exception as e:
+    #        error = True
+    #        print(e)
     
     #previousPractica Table
-    for practica in data['previousPractica']:
-        try:
-            grade = 0
-            course = ''
-            if 'grade' in practica:
-                grade = practica['grade']
-            if 'course' in practica:
-                course = practica['course']
+    #for practica in data['previousPractica']:
+    #    try:
+    #        grade = 0
+    #        course = ''
+    #        if 'grade' in practica:
+    #            grade = practica['grade']
+    #        if 'course' in practica:
+    #            course = practica['course']
             
-            practicaData = [practica['school'], grade, course ,data['email']]
-            cur.execute(prevPracTable, practicaData)
-            print("inserted into prev practica table")
-            db.commit()
-        except Exception as e:
-            error = True
-            print(e)
+    #        practicaData = [practica['school'], grade, course ,data['email']]
+    #        cur.execute(prevPracTable, practicaData)
+    #        print("inserted into prev practica table")
+    #        db.commit()
+    #    except Exception as e:
+    #        error = True
+    #        print(e)
             
     #enrolledCourses Table
-    for enrolledIn in data['enrolledClasses']:
-       try:
-            coursesData = [enrolledIn, data['email']]       
-            cur.execute(enrolledCourseTable, coursesData)
-            print("inserted into enrolled courses")
-       except Exception as e:
-            error = True
-            print(e)
+    #for enrolledIn in data['enrolledClasses']:
+    #   try:
+    #        coursesData = [enrolledIn, data['email']]       
+    #        cur.execute(enrolledCourseTable, coursesData)
+    #        print("inserted into enrolled courses")
+    #   except Exception as e:
+    #        error = True
+    #        print(e)
        
     #meetingDays Table 
     #availableTimes Table
-    for times in data['availability']:
-        try:
-            meetingData = [times['monday'], times['tuesday'], times['wednesday'], times['thursday'], times['friday']]
-            cur.execute(meetingInsert, meetingData)
-            meetingID = cur.fetchone()[0]
-            
-            availabilityData = [times['startTime'], times['endTime'], meetingID, data['email']]       
-            cur.execute(availableInsert, availabilityData)
-            db.commit()
-            print("inserted into meeting table and availabletimes tables")
-        except Exception as e:
-            error = True
-            print(e)
+    #for times in data['availability']:
+    #    try:
+    #        meetingData = [times['monday'], times['tuesday'], times['wednesday'], times['thursday'], times['friday']]
+    #        cur.execute(meetingInsert, meetingData)
+    #        meetingID = cur.fetchone()[0]
+    #        
+    #        availabilityData = [times['startTime'], times['endTime'], meetingID, data['email']]       
+    #        cur.execute(availableInsert, availabilityData)
+    #        db.commit()
+    #        print("inserted into meeting table and availabletimes tables")
+    #    except Exception as e:
+    #        error = True
+    #        print(e)
     
-    if not error:
-        msg = "Your information has been submitted!"
-    else:
-        msg = "There was an error submitting your information. Try again."
+    #if not error:
+    #    msg = "Your information has been submitted!"
+    #else:
+    #    msg = "There was an error submitting your information. Try again."
     
-    emit("submissionResult", {"error": error, "msg": msg})
+    #emit("submissionResult", {"error": error, "msg": msg})
  
 
 selectStudents = "SELECT * FROM students"
@@ -378,33 +438,7 @@ def mainIndex():
 def getStudentData():
     return render_template('student_form.html')
 
-##Teacher Start
 
-selectSchool = """SELECT (schoolid, divisionid) FROM schools WHERE schoolname = '%s'"""
-#if school was not already present, it must be non public school division
-selectDivision = """"""
-insertSchool = """INSERT (schoolname)"""
-teacherInsert = "INSERT (email, firstname, lastname, schoolid, divisionid) VALUES (%s,%s,%s,%s,%s)"
-
-@socketio.on('submit', namespace='/teacher')
-def submitTeacher(data):
-    
-    error = False
-    
-    #retrieve school info
-    try:
-        db = connect_to_db()
-        cur = db.cursor()
-        cur.execute(selectSchool, schoolName)
-        db.commit()
-    except Exception as e:
-        error = True
-        print(e)
-    
-    if(cur.fetchone() == []):
-        pass
-        
-    
 @app.route('/teacher', methods=['GET'])
 def getTeacherData():
     return render_template('teacher_form.html')

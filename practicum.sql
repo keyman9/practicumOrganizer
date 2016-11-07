@@ -42,7 +42,7 @@ DROP TABLE IF EXISTS previousPractica;
 CREATE TABLE previousPractica(
   id serial,
   school varchar(60) NOT NULL default '',
-  grade integer NOT NULL,
+  grade varchar(10) NOT NULL,
   course varchar(60) NOT NULL default '',
   studentEmail varchar(60) NOT NULL default '',
   PRIMARY KEY (id),
@@ -168,8 +168,7 @@ CREATE TABLE teachers(
   email varchar(60) NOT NULL default '',
   firstName varchar(60) NOT NULL default '',
   lastName varchar(60) NOT NULL default '',
-  grade integer,
-  gradeRange varchar(60),
+  grade varchar(10),
   hostFall boolean,
   hostSpring boolean,
   schoolID serial,
@@ -199,12 +198,17 @@ CREATE TABLE elementarySchedule(
   endTime timestamp,
   teacherID serial,
   schoolID serial,
+  meetingID serial,
+  FOREIGN KEY(meetingID) references meetingDays(meetingID),
   FOREIGN KEY(teacherID) references teachers(teacherID),
   FOREIGN KEY(schoolID) references schools(schoolID)
 );
 
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_normal;
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_admin;
+
+GRANT ALL ON elementaryschedule_meetingid_seq TO practicum_normal;
+GRANT ALL ON elementaryschedule_meetingid_seq TO practicum_admin;
 
 GRANT ALL ON elementaryschedule_schoolid_seq TO practicum_normal;
 GRANT ALL ON elementaryschedule_schoolid_seq TO practicum_admin;
@@ -665,6 +669,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Odyssey Montessori',
 INSERT INTO schools(schoolName,divisionId) VALUES ('Head Start',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Friends of the Rappahannock',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Other',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 
 --Practicum Bearing Courses--
