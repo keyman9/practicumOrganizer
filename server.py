@@ -797,15 +797,13 @@ def submitPractica(assignment):
     print(meetingId)
         
     practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
-    start = assignment['availability']['startTime']
-    end = assignment['availability']['endTime']
     #insert into practicumArrangement
     try:
         print("trying...")
         db = connect_to_db()
         cur = db.cursor()
         print(practicaInsert)
-        cur.execute(practicaInsert,(start,end,assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
+        cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
         db.commit()
         result = cur.fetchone()[0]
         print(result)
