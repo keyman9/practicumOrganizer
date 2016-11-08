@@ -15,6 +15,7 @@ from db import *
 import uuid
 import string
 import random
+import ast
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
@@ -33,9 +34,9 @@ updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE
 
 studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
 endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
-meetingTable = "SELECT meetingid from meetinday where "
-meetingAddon = "%s = %s"
 meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
+meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
+
 prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
 enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
 availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"
@@ -528,7 +529,6 @@ def getStudentData():
 @app.route('/teacher', methods=['GET'])
 def getTeacherData():
     return render_template('teacher_form.html')
-##Teacher End    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -771,6 +771,47 @@ def getPracticumBearing():
 def submitPractica(assignment):
     print(assignment)
     #TODO: insert/update in database
+    result = defaultdict(list)
+    #meetingDays table
+    meetingPresent = False
+    try:
+        db = connect_to_db()
+        cur = db.cursor()
+        #select meetingId
+        query = cur.mogrify(meetingSelect,(assignment['availability']['monday'],assignment['availability']['tuesday'],assignment['availability']['wednesday'],assignment['availability']['thursday'],assignment['availability']['friday']))
+        cur.execute(query)
+        result = cur.fetchone()[0]
+    except Exception as e:
+        print("meetingSelect error")
+        print(e)
+    
+    if not result:
+        try:
+            query = cur.mogrify(meetingInsert,(assignment['availability']['monday'],assignment['availability']['tuesday'],assignment['availability']['wednesday'],assignment['availability']['thursday'],assignment['availability']['friday']))
+            cur.execute(query)
+            db.commit()
+            result = cur.fetchone()[0]
+        except Exception as e:
+            print(e)
+    meetingId = result 
+    print(meetingId)
+        
+    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
+    start = assignment['availability']['startTime']
+    end = assignment['availability']['endTime']
+    #insert into practicumArrangement
+    try:
+        print("trying...")
+        db = connect_to_db()
+        cur = db.cursor()
+        print(practicaInsert)
+        cur.execute(practicaInsert,(start,end,assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
+        db.commit()
+        result = cur.fetchone()[0]
+        print(result)
+    except Exception as e:
+        print(e)
+    print("inserted..")    
     
 @socketio.on('deletePractica', namespace='/practica')
 def deletePractica(assignment):

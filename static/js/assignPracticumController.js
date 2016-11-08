@@ -211,7 +211,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
         }
         delete prac.other;
         
-        // console.log(prac);
+        console.log(prac);
         socket.emit('submitPractica', publishPrac);
         
         $scope.publishedPracticumAssignments.push(prac);
@@ -255,7 +255,7 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
                     practicum.availability.end.setMinutes(endMin);
                 }
             }
-            // console.log(practicum);
+            console.log(practicum);
             if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
                 var msg = $scope.practicaErrorMsg[index];
                 msg = msg.replace("You must enter a course!\n", "");
@@ -266,12 +266,12 @@ POBoxApp.controller('AssignPracticumController', function($scope, $window, $popo
     
     $scope.setCurrentStudent = function(student){
         $scope.currentStudent = student;
-        // console.log($scope.currentStudent);
+        console.log($scope.currentStudent);
     };
     
     $scope.setCurrentTeacher = function(teacher){
         $scope.currentTeacher = teacher;
-        // console.log($scope.currentTeacher);
+        console.log($scope.currentTeacher);
     };
     
     $scope.getAvailabilityString = function(av){
