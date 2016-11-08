@@ -248,13 +248,15 @@ CREATE TABLE practicumArrangement(
   course varchar(60),
   studentEmail varchar(60),
   teacherID serial,
+  meetingID serial,
   PRIMARY KEY(practicum),
   FOREIGN KEY(studentEmail) references students(email),
-  FOREIGN KEY(teacherID) references teachers(teacherID)
+  FOREIGN KEY(teacherID) references teachers(teacherID),
+  FOREIGN KEY(meetingID) references meetingDays(meetingID)
 );
 
-GRANT SELECT, INSERT ON practicumArrangement TO practicum_normal;
-GRANT SELECT, INSERT ON practicumArrangement TO practicum_admin;
+GRANT SELECT, INSERT, UPDATE ON practicumArrangement TO practicum_normal;
+GRANT SELECT, INSERT, UPDATE ON practicumArrangement TO practicum_admin;
 
 GRANT ALL ON practicumarrangement_practicum_seq TO practicum_normal;
 GRANT ALL ON practicumarrangement_practicum_seq TO practicum_admin;
@@ -262,6 +264,9 @@ GRANT ALL ON practicumarrangement_practicum_seq TO practicum_admin;
 GRANT ALL ON practicumarrangement_teacherid_seq TO practicum_normal;
 GRANT ALL ON practicumarrangement_teacherid_seq TO practicum_admin;
 
+GRANT ALL ON practicumarrangement_meetingid_seq TO practicum_normal;
+GRANT ALL ON practicumarrangement_meetingid_seq TO practicum_admin;
+ 
 ---Login---
 DROP TABLE IF EXISTS login;
 CREATE TABLE login(
