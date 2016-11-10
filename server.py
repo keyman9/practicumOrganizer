@@ -612,64 +612,6 @@ def forgotPassword():
             
     emit('forgotPassword')
     
-# @app.route('/forgotpassword', methods=['GET', 'POST'])
-# def forgotPassword():
-#     loggedIn = False
-#     passChanged = False
-#     passFailed = False
-#     wrongUsername = False
-#     if request.method=="POST":
-#         receiver=['sheldonmcclung@gmail.com']#[request.form['email']]
-#         sender = ['buymybooks350@gmail.com']
-        
-#         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-#         accessCode = ''.join(random.choice(chars) for _ in range(10))
-#         print accessCode
-        
-#         emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
-#         #msg = MIMEText(emailMSG)
-#         #msg['Subject'] = 'Reset password'
-#         #msg['From'] = 'buymybooks350@gmail.com'
-#         #msg['To'] = 'sheldonmcclung@gmail.com'#request.form['email']
-        
-#         #conn = connectToDB()
-#         #cur = conn.cursor()
-        
-#         # query = cur.mogrify("""SELECT * FROM users WHERE email = %s;""", ('sheldonmcclung@gmail.com',))#(request.form['email'],))
-#         # print query
-#         # cur.execute(query)
-#         # results = cur.fetchall()
-#         # print results
-#         # if results != []:
-#         #     try:
-#         #         query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (accessCode, 'sheldonmcclung@gmail.com'))#request.form['email'])) 
-#         #         print query
-#         #         cur.execute(query)
-#         #         conn.commit()
-#         #         passChanged = True
-#         #         print "Password changed"
-#         try:
-#             smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
-#             #server.set_debuglevel(1)
-#             smtpObj.ehlo()
-#             smtpObj.starttls()
-#             smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
-#             smtpObj.sendmail('buymybooks350@gmail.com', 'sheldonmcclung@gmail.com', emailMSG.as_string())         
-#             print "Successfully sent email"
-#         except Exception as e:
-#             print(e)
-#             # except:
-#             #     print("Error changing password")
-#             #     conn.rollback()
-#             #     passFailed = True
-#         else:
-#             wrongUsername = True
-#             print "Incorrect email"
-#     return render_template('forgotpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed,
-#     wrongUsername=wrongUsername)
-    
-
-
 @socketio.on('resetPassword', namespace='/login') 
 def resetPassword(payload):
     print("Payload: %s", payload['accessCode'])
@@ -815,46 +757,6 @@ def submitPractica(assignment):
 def deletePractica(assignment):
     print(assignment)
     #TODO: delete from database, resend assignments
-    
-    
-
-    
-# @app.route('/resetpassword', methods=['GET', 'POST'])
-# def resetPassword():
-#     loggedIn = False
-#     passChanged = False
-#     passFailed = False
-#     wrongPass = False
-#     if 'user' in session:
-#         currentUser = session['user']
-#         loggedIn = True
-#     if request.method=="POST":
-#         oldpass = request.form['oldpassword']
-#         newpass = request.form['password1']
-#         conn = connectToDB()
-#         cur = conn.cursor()
-#         query = cur.mogrify("""SELECT * FROM users WHERE email = %s AND password = crypt(%s, password);""", (currentUser, oldpass)) 
-#         print(query)
-#         cur.execute(query)
-#         results = cur.fetchall()
-#         print results
-#         if results != []:
-#             try:
-#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (newpass, currentUser)) 
-#                 print query
-#                 cur.execute(query)
-#                 conn.commit()
-#                 passChanged = True
-#                 print "Password changed"
-#             except:
-#                 print("Error changing password")
-#                 conn.rollback()
-#                 passFailed = True
-#         else:
-#             wrongPass = True
-#             print "Incorrect password"
-#     return render_template('resetpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed, 
-#     wrongPass=wrongPass)
     
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)

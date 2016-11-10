@@ -99,8 +99,8 @@ GRANT ALL ON meetingdays_meetingid_seq TO practicum_admin;
 ---Available Times---
 DROP TABLE IF EXISTS availableTimes;
 CREATE TABLE availableTimes(
-  startTime varchar(60) NOT NULL,
-  endTime varchar(60) NOT NULL,
+  startTime varchar(40),
+  endTime varchar(40),
   meetingID serial NOT NULL,
   studentEmail varchar(60) NOT NULL,
   FOREIGN KEY(meetingID) references meetingDays(meetingID),
@@ -243,8 +243,8 @@ GRANT ALL ON middleschoolschedule_teacherid_seq TO practicum_admin;
 DROP TABLE IF EXISTS practicumArrangement;
 CREATE TABLE practicumArrangement(
   practicum serial,
-  startTime timestamp,
-  endTime timestamp,
+  startTime varchar(40),
+  endTime varchar(40),
   course varchar(60),
   studentEmail varchar(60),
   teacherID serial,
