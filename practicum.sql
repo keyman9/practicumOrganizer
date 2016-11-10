@@ -290,7 +290,7 @@ INSERT INTO schoolDivisions(divisionName) VALUES ('Spotsylvania');
 INSERT INTO schoolDivisions(divisionName) VALUES ('Stafford');
 INSERT INTO schoolDivisions(divisionName) VALUES ('Fauquier');
 INSERT INTO schoolDivisions(divisionName) VALUES ('Prince William');
-INSERT INTO schoolDivisions(divisionName) VALUES ('Faith Based');
+INSERT INTO schoolDivisions(divisionName) VALUES ('Non-Public');
 INSERT INTO schoolDivisions(divisionName) VALUES ('Montessori');
 INSERT INTO schoolDivisions(divisionName) VALUES ('Other');
 
@@ -650,17 +650,17 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Woodbridge Middle School',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
  
     
---Faith Based--    
+--Non-Public--    
 INSERT INTO schools(schoolName,divisionId) VALUES ('Holy Cross Academy',
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('St. Patrick''s School',
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Grace Preparatory',
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Temple Baptist',
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Faith Baptist',
- (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Faith Based'));
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
     
 --Montessori--    
 INSERT INTO schools(schoolName,divisionId) VALUES ('Children''s House of Old Town',

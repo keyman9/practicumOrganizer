@@ -44,9 +44,9 @@ availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, st
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
     print(data)
-    print(data['email'])
+    #print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
-    #print(studentData)
+    print(studentData)
     error = False
     msg = ""
     
