@@ -758,45 +758,5 @@ def deletePractica(assignment):
     print(assignment)
     #TODO: delete from database, resend assignments
     
-    
-
-    
-# @app.route('/resetpassword', methods=['GET', 'POST'])
-# def resetPassword():
-#     loggedIn = False
-#     passChanged = False
-#     passFailed = False
-#     wrongPass = False
-#     if 'user' in session:
-#         currentUser = session['user']
-#         loggedIn = True
-#     if request.method=="POST":
-#         oldpass = request.form['oldpassword']
-#         newpass = request.form['password1']
-#         conn = connectToDB()
-#         cur = conn.cursor()
-#         query = cur.mogrify("""SELECT * FROM users WHERE email = %s AND password = crypt(%s, password);""", (currentUser, oldpass)) 
-#         print(query)
-#         cur.execute(query)
-#         results = cur.fetchall()
-#         print results
-#         if results != []:
-#             try:
-#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (newpass, currentUser)) 
-#                 print query
-#                 cur.execute(query)
-#                 conn.commit()
-#                 passChanged = True
-#                 print "Password changed"
-#             except:
-#                 print("Error changing password")
-#                 conn.rollback()
-#                 passFailed = True
-#         else:
-#             wrongPass = True
-#             print "Incorrect password"
-#     return render_template('resetpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed, 
-#     wrongPass=wrongPass)
-    
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)

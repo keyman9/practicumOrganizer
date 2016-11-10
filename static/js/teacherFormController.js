@@ -486,16 +486,16 @@ POBoxApp.controller('TeacherFormController', function($scope, $window, $location
     }
     
     $scope.formIsInvalid = function(){
-        //$scope.validateTransportation();
-        //$scope.validateEndorsement();
-        //$scope.validateEnrolledClass();
-        //$scope.validateAvailability(); 
-        //$scope.validateAllPractica();
-        return (false);
-            //$scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
-        //$scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
-        //$scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
-        //$scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
+        // $scope.validateTransportation();
+        // $scope.validateEndorsement();
+        // $scope.validateEnrolledClass();
+        // $scope.validateAvailability(); 
+        // $scope.validateAllPractica();
+        //return (false);
+        return( $scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
+                $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
+                $scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
+                $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
 
     $scope.goToTop = function() {

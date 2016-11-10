@@ -120,7 +120,7 @@
                     <div class="col-md-12" ng-hide="isTravelTeacher">
                         <br/>
                         <div class="form-group" ng-class="{'has-error': invalidSchool}">
-                            <span>Enter School Name:</span><span ng-if="otherSchool===undefined || invalidSchool || otherSchool===''"><small class="error">&nbsp;&nbsp;*</small></span>
+                            <span>Enter School Name:</span><span ng-if="$parent.otherSchool===undefined || invalidSchool || $parent.otherSchool===''"><small class="error">&nbsp;&nbsp;*</small></span>
                             <input type="school" class="form-control" name="otherSchool" id="otherSchool" ng-model="$parent.otherSchool" ng-change="print($parent.otherSchool)" ng-blur="validateOtherSchool()" required>
                             <span class="error" ng-if="invalidSchool"><em>Invalid School</em></span>
                         </div>
@@ -145,7 +145,7 @@
                     <div class="col-md-6" ng-show="isSecondary(school)">
                         <br/>
                         <div class="form-group">
-                            <span>Does your school use an A/B or X/Y day schedule?</span>
+                            <span>Does your school use an A/B or X/Y day schedule?</span><span ng-if="blockSchedule===undefined || invalidSchedule || blockSchedule===''"><small class="error">&nbsp;&nbsp;*</small></span>
                             <select class="form-control" id="blockSchedule" name="blockSchedule" ng-model="blockSchedule" ng-change="initializeSecondaryCourses()" required>
                                 <option>Yes</option>
                                 <option>No</option>
@@ -171,7 +171,7 @@
                         
                         <div class="col-md-1"></div>
                         <div class="col-md-3">
-                            <span>Subject</span>
+                            <span>Subject</span><span ng-if="elemCourse===undefined || invalidCourse || elemCourse===''"><small class="error">&nbsp;&nbsp;*</small></span>
                             <input class="form-control" type="text" name="elemCourse" id="elemCourse" ng-model="item.course" disabled>
                         </div>
                         
