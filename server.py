@@ -702,7 +702,6 @@ def assignPractica():
     hasRedirect = False
     error = ''
     if request.method == "POST":
-        
         if 'password' in request.form:
             pd = request.form['password']
             hasRedirect = True
@@ -727,9 +726,12 @@ def assignPractica():
         if hasRedirect:
             return render_template('practicum_assignment.html')
         return redirect(url_for('login'))
-        
-    flash('Please log in to access practica')
-    return redirect(url_for('login'))
+    else:
+        if session and 'loggedIn' in session:
+            return render_template('practicum_assignment.html')
+        else:
+            flash('Please log in to access practica')
+            return redirect(url_for('login'))
 
 @socketio.on('forgotPassword', namespace='/login') 
 def forgotPassword():
@@ -949,18 +951,13 @@ def downloadReport(reportType):
 
 @socketio.on("deleteReport", namespace="/reports")
 def deleteReport():
-    print("in delete report")
     directory = os.path.dirname(__file__)
-    print(directory)
-    coursefile = os.path.join(directory, '/static/reports/coursereport.xlsx')
-    schoolfile = os.path.join(directory, '/static/reports/schoolreport.xlsx')
-    divisionfile = os.path.join(directory, '/static/reports/divisionreport.xlsx')
-    if os.path.isfile(coursefile):
-        os.remove(coursefile)
-    if os.path.isfile(divisionfile):
-        os.remove(divisionfile)
-    if os.path.exists(schoolfile):
-        os.remove(schoolfile)
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx'))
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
     
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
