@@ -16,6 +16,7 @@ import uuid
 import string
 import random
 import ast
+import shutil
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
@@ -914,10 +915,52 @@ def deletePractica(assignment):
     print(assignment)
     #TODO: delete from database, resend assignments
     
-@app.route('/reports')
-def downloadReport():
-    return send_from_directory(app.static_folder + "/reports", "553spring16SW.xlsx", as_attachment=True, 
-    mimetype="	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+@socketio.on('createReport', namespace='/reports')
+def createReport(reportType, limit):
+    if reportType == "school":
+        print("school")
+        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/schoolreport.xlsx')
+    elif reportType == "division":
+        print("division")
+        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/divisionreport.xlsx')
+    elif reportType == "course":
+        print("course")
+        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
+    else:
+        print("invalid report type")
+    emit("reportCreated", reportType)
+        
+    
+    
+@app.route('/reports/<reportType>')
+def downloadReport(reportType):
+    filename = ""
+    if reportType == "school":
+        filename = "schoolreport.xlsx"
+    elif reportType == "division":
+        filename = "divisionreport.xlsx"
+    elif reportType == "course":
+        filename = "coursereport.xlsx"
+    else:
+        print("invalid report type")
+    return send_from_directory(app.static_folder + "/reports", filename, as_attachment=True, 
+    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+@socketio.on("deleteReport", namespace="/reports")
+def deleteReport():
+    print("in delete report")
+    directory = os.path.dirname(__file__)
+    print(directory)
+    coursefile = os.path.join(directory, '/static/reports/coursereport.xlsx')
+    schoolfile = os.path.join(directory, '/static/reports/schoolreport.xlsx')
+    divisionfile = os.path.join(directory, '/static/reports/divisionreport.xlsx')
+    if os.path.isfile(coursefile):
+        os.remove(coursefile)
+    if os.path.isfile(divisionfile):
+        os.remove(divisionfile)
+    if os.path.exists(schoolfile):
+        os.remove(schoolfile)
     
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
