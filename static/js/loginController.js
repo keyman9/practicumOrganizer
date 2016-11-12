@@ -1,6 +1,5 @@
-var POBoxApp= angular.module('POBoxApp',[])
-
-POBoxApp.controller('LoginController', function($scope, $window){
+'use strict';
+angular.module('POBoxApp').controller('LoginController', function($scope, $window){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/login')
     
     $scope.accessCode = '';

@@ -1,6 +1,5 @@
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll']);
-
-POBoxApp.controller('StudentFormController', function($scope, $window, $location, $anchorScroll){
+'use strict';
+angular.module('POBoxApp').controller('StudentFormController', function($scope, $window, $location, $anchorScroll){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/student')
     
     

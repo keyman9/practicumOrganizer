@@ -720,3 +720,4 @@ INSERT INTO practicumCourses(courseName) VALUES ('EDSE 521');
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 539');
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 541');
 INSERT INTO practicumCourses(courseName) VALUES ('TESL 515');
+

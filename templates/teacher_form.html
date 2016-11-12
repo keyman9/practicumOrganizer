@@ -109,15 +109,15 @@
                         </select>
                     </div>
                     <div class="col-md-4" ng-show="isOther(school)">
-                        <span>Do you work at multiple schools?<span ng-if="$parent.travelTeacher===undefined || invalidTravel || $parent.travelTeacher===''"></span><small class="error">&nbsp;&nbsp;*</small></span>
-                        <select class="form-control" id="travelTeacher" name="travelTeacher" ng-model="$parent.travelTeacher" ng-change="isTravelTeacherCheck($parent.travelTeacher)" required>
-                            <option>Yes</option>
-                            <option>No</option>
+                        <span>Do you work at multiple schools?<span ng-if="$parent.isTravelTeacher===undefined || invalidTravel"></span><small class="error">&nbsp;&nbsp;*</small></span>
+                        <select class="form-control" id="travelTeacher" name="travelTeacher" ng-model="$parent.isTravelTeacher" ng-change="print($parent.isTravelTeacher)" required>
+                            <option ng-value="true">Yes</option>
+                            <option ng-value="false">No</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12" ng-hide="isTravelTeacher">
+                    <div class="col-md-12" ng-hide="isTravelTeacher===false">
                         <br/>
                         <div class="form-group" ng-class="{'has-error': invalidSchool}">
                             <span>Enter School Name:</span><span ng-if="$parent.otherSchool===undefined || invalidSchool || $parent.otherSchool===''"><small class="error">&nbsp;&nbsp;*</small></span>
@@ -540,7 +540,7 @@
             <div class="form-group">
                 <br />
                 <!--<input type="submit" class="btn btn-primary" value="Submit" ng-disabled="formIsInvalid()">-->
-                <input type="button" class="btn btn-primary" value="Submit" ng-click="submit()" ng-disabled="formIsInvalid()">
+                <input type="button" class="btn btn-primary" value="Submit" ng-click="submit()" ng-disabled="">
             </div>
         </div>
     </div>
