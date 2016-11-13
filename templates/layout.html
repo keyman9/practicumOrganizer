@@ -114,27 +114,33 @@
               <div class="modal-body">
                     <div class="col-xs-6 col-xs-offset-3">
                         <ul class="list-group" ng-if="reportType === 'division'">
-                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}">
-                                <span ng-click="createReport('division', 'none')">All</span>
+                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}" 
+                            ng-click="createReport('division', 'none')">
+                                <span>All</span>
                             </div>
-                            <div class="list-group-item btn" ng-repeat="div in schoolDivisions | orderBy:div" ng-class="{active : selected === div}">
-                                <span ng-bind="div" ng-click="createReport('division', div)"></span>
+                            <div class="list-group-item btn" ng-repeat="div in schoolDivisions | orderBy:div" 
+                            ng-class="{active : selected === div}" ng-click="createReport('division', div)">
+                                <span ng-bind="div"></span>
                             </div>
                         </ul>
                         <ul class="list-group" ng-if="reportType === 'school'">
-                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}">
-                                <span ng-click="createReport('school', 'none')">All</span>
+                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}" 
+                            ng-click="createReport('school', 'none')">
+                                <span>All</span>
                             </div>
-                            <div class="list-group-item btn" ng-repeat="sch in schools | orderBy:sch" ng-class="{active : selected === sch}">
-                                <span ng-bind="sch" ng-click="createReport('school', sch)"></span>
+                            <div class="list-group-item btn" ng-repeat="sch in schools | orderBy:sch" 
+                            ng-class="{active : selected === sch}" ng-click="createReport('school', sch)">
+                                <span ng-bind="sch"></span>
                             </div>
                         </ul>
                         <ul class="list-group" ng-if="reportType === 'course'">
-                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}">
-                                <span ng-click="createReport('course', 'none')">All</span>
+                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}" 
+                            ng-click="createReport('course', 'none')">
+                                <span>All</span>
                             </div>
-                            <div class="list-group-item btn" ng-repeat="prac in practicumBearingClasses | orderBy:prac" ng-class="{active : selected === prac}">
-                                <span ng-bind="prac" ng-click="createReport('course', prac)"></span>
+                            <div class="list-group-item btn" ng-repeat="prac in practicumBearingClasses | orderBy:prac" 
+                            ng-class="{active : selected === prac}" ng-click="createReport('course', prac)">
+                                <span ng-bind="prac"></span>
                             </div>
                         </ul>
                     </div>
