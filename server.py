@@ -822,6 +822,11 @@ def getDivisionsForPractica():
     divisions = getSchoolDivisions()
     emit("retrievedDivisions", divisions)
 
+@socketio.on('getDivisions', namespace='/reports')
+def getDivisionsForReports():
+    divisions = getSchoolDivisions()
+    emit("retrievedDivisions", divisions)
+
 def getSchoolDivisions():
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -849,6 +854,11 @@ def getPracticumBearingForStudent():
     
 @socketio.on('getPracticumBearing', namespace='/practica')
 def getPracticumBearingForAssignment():
+    courses = getPracticumBearing()
+    emit("retrievedPracticumBearing", courses)
+
+@socketio.on('getPracticumBearing', namespace='/reports')
+def getPracticumBearingForReports():
     courses = getPracticumBearing()
     emit("retrievedPracticumBearing", courses)
 
@@ -920,6 +930,7 @@ def deletePractica(assignment):
 
 @socketio.on('createReport', namespace='/reports')
 def createReport(reportType, limit):
+    print(limit);
     if reportType == "school":
         print("school")
         shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/schoolreport.xlsx')

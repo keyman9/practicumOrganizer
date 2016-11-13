@@ -17,6 +17,14 @@
     .navbar-brand:hover, .navbar-brand:active, .nav-link:hover, .nav-link:active{
         color:#2a9fd6 !important;
     }
+    .modal-dialog{
+        overflow-y: initial !important
+    }
+    .modal-body{
+        height: 400px;
+        overflow-y: auto;
+    }
+    
 </style>
 <meta name="viewport" content="width=device-width">
 
@@ -37,8 +45,11 @@
 <script src="static/node_modules/angular-slimscroll/angular-slimScroll.js"></script>
 <script src="static/node_modules/angular-dragdrop/src/angular-dragdrop.min.js"></script>
 
+
+
 <body>
     {% if session['loggedIn'] %}
+    <div ng-controller="ReportsController">
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -56,12 +67,27 @@
                         <a class="navbar-brand nav-link" href="/practica">Assign</a>
                     </li>
                     <li class="nav-item dropdown col-xs-6 col-xs-offset-1">
-                        <a class="navbar-brand nav-link dropdown-toggle" data-toggle="dropdown" href="">Create Reports
+                        <a class="navbar-brand nav-link dropdown-toggle" data-toggle="dropdown" ng-click="prepForReports()">Create Reports
                         <span class="caret"></span></a>
-                        <ul class="dropdown-menu" ng-controller="ReportsController">
-                            <li><a class="dropdown-item" href="" ng-click="createReport('division', 'none')">By School Division</a></li>
-                            <li><a class="dropdown-item" href="" ng-click="createReport('school', 'none')">By Individual School</a></li>
-                            <li><a class="dropdown-item" href="" ng-click="createReport('course', 'none')">By Course</a></li>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" data-toggle="modal" data-target="#createReportsModal" ng-click="setReportType('division')">By School Division </a>
+                                <!--<ul class="dropdown-menu" uib-dropdown-menu role="menu">-->
+                                <!--     <li role="menuitem"><a class="dropdown-item" href="" ng-click="createReport('division', 'none')">All</a></li>-->
+                                <!--    <li role="menuitem"><a class="dropdown-item" href="" ng-repeat="div in schoolDivisions" ng-bind="div" ng-click="createReport('division', div)"></a></li>-->
+                                <!--</ul>-->
+                            </li>
+                            <li uib-dropdown><a class="dropdown-item" data-toggle="modal" data-target="#createReportsModal" ng-click="setReportType('school')">By Individual School </a>
+                                <!--<ul class="dropdown-menu" uib-dropdown-menu role="menu">-->
+                                <!--     <li role="menuitem"><a ng-click="createReport('school', 'none')">All</a></li>-->
+                                <!--    <li role="menuitem"><a ng-repeat="sch in schools" ng-bind="sch" ng-click="createReport('school', sch)"></a></li>-->
+                                <!--</ul>-->
+                            </li>
+                            <li uib-dropdown><a class="dropdown-item" data-toggle="modal" data-target="#createReportsModal" ng-click="setReportType('course')">By Course </a>
+                                <!--<ul class="dropdown-menu" uib-dropdown-menu role="menu">-->
+                                <!--     <li role="menuitem"><a ng-click="createReport('course', 'none')">All</a></li>-->
+                                <!--    <li role="menuitem"><a ng-repeat="prac in practicumBearingClasses" ng-bind="prac" ng-click="createReport('course', prac)"></a></li>-->
+                                <!--</ul>-->
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -75,6 +101,48 @@
             </div>
         </div>
     </nav>
+    
+    <div id="createReportsModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" ng-click="deleteReports()">&times;</button>
+                <h4 class="modal-title" ng-if="reportType === 'division'">By School Division</h4>
+                <h4 class="modal-title" ng-if="reportType === 'school'">By Individual School</h4>
+                <h4 class="modal-title" ng-if="reportType === 'course'">By Course</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="col-xs-6 col-xs-offset-3">
+                        <ul class="list-group" ng-if="reportType === 'division'">
+                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}">
+                                <span ng-click="createReport('division', 'none')">All</span>
+                            </div>
+                            <div class="list-group-item btn" ng-repeat="div in schoolDivisions | orderBy:div" ng-class="{active : selected === div}">
+                                <span ng-bind="div" ng-click="createReport('division', div)"></span>
+                            </div>
+                        </ul>
+                        <ul class="list-group" ng-if="reportType === 'school'">
+                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}">
+                                <span ng-click="createReport('school', 'none')">All</span>
+                            </div>
+                            <div class="list-group-item btn" ng-repeat="sch in schools | orderBy:sch" ng-class="{active : selected === sch}">
+                                <span ng-bind="sch" ng-click="createReport('school', sch)"></span>
+                            </div>
+                        </ul>
+                        <ul class="list-group" ng-if="reportType === 'course'">
+                            <div class="list-group-item btn" ng-class="{active : selected === 'none'}">
+                                <span ng-click="createReport('course', 'none')">All</span>
+                            </div>
+                            <div class="list-group-item btn" ng-repeat="prac in practicumBearingClasses | orderBy:prac" ng-class="{active : selected === prac}">
+                                <span ng-bind="prac" ng-click="createReport('course', prac)"></span>
+                            </div>
+                        </ul>
+                    </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    </div>
     {% endif %}
     
     
@@ -83,7 +151,6 @@
     
     <script src="{{ url_for('static', filename='js/npm.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    
     
 </body>
 
