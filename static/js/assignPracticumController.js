@@ -1,8 +1,5 @@
-
-var POBoxApp= angular.module('POBoxApp',['ui.bootstrap','mgcrea.ngStrap', 'ngSlimScroll','ngSanitize', 'dndLists', 'ngDragDrop'])
-
-
-POBoxApp.controller('AssignPracticumController', function($scope, $window, $popover){
+'use strict';
+angular.module('POBoxApp').controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
     
     var teacher = {'firstName': 'Minerva', 

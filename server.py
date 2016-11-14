@@ -16,11 +16,12 @@ import uuid
 import string
 import random
 import ast
+import shutil
 
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 socketio = SocketIO(app)
 
 app.secret_key= os.urandom(24).encode('hex')
@@ -44,9 +45,9 @@ availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, st
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
     print(data)
-    print(data['email'])
+    #print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
-    #print(studentData)
+    print(studentData)
     error = False
     msg = ""
     
@@ -521,6 +522,162 @@ def loadStudents():
     
     emit('loadStudents', listOfStudents)
 
+"""selectTeachers = "SELECT * FROM teachers"
+availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
+selectTeacherElem = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
+selectTeacherSec = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
+
+@socketio.on('loadTeachers', namespace='/practica') 
+def loadTeachers():
+    
+    teachers = []
+    teachersFromDB = []
+    
+    hasError = False
+    
+    db = connect_to_db()
+    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    
+    # Grab all students
+    try:
+        query = cur.mogrify(selectStudents) 
+        
+        cur.execute(query)
+        studentsFromDB = cur.fetchall()
+        print("Students", studentsFromDB)
+        
+    except Exception as e:
+        print("Error: Invalid SELECT on 'students' table: %s" % e)
+        db.rollback()
+        hasError = True
+    
+    if not hasError:
+        # Grab all students practicas
+        try:
+            query = cur.mogrify(selectStudentPractica) 
+            
+            cur.execute(query)
+            studentsPractica = cur.fetchall()
+            print("Previous Pactica", studentsPractica)
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    if not hasError:    
+        # Grab all students availablities
+        try:
+            query = cur.mogrify(selectStudentAvailability) 
+            
+            cur.execute(query)
+            studentsAvailability = cur.fetchall()
+            print("Availability", studentsAvailability)
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    if not hasError:
+        # Grab all students endorsements
+        try:
+            query = cur.mogrify(selectStudentEndorsements) 
+            
+            cur.execute(query)
+            studentsEndorsements = cur.fetchall()
+            print("Endorsements", studentsEndorsements)
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
+            db.rollback()
+            hasError = True
+    
+    if not hasError:
+        # Grab all students enrolled courses
+        try:
+            query = cur.mogrify(selectStudentCourses) 
+            
+            cur.execute(query)
+            studentsCourses = cur.fetchall()
+            print("Courses", studentsCourses)
+            
+        except Exception as e:
+            print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
+            db.rollback()
+            hasError = True
+            
+    listOfStudents = []
+    
+    for student in studentsFromDB:
+        newStudent = {}
+        newStudent['email'] = student['email']
+        newStudent['firstName'] = student['firstname']#
+        newStudent['lastName'] = student['lastname']#
+        newStudent['hasCar'] = student['hascar']#
+        newStudent['passengers'] = student['passengers'] #
+        newStudent['previousPractica'] = []#
+        newStudent['availability'] = []#
+        newStudent['endorsements'] = []#
+        newStudent['enrolledClasses'] = []#
+        
+        ###
+        for student in studentsPractica:
+            if newStudent['email'] == student['studentemail']:
+                payload = {}
+                payload['school'] = student['school']
+                if student['grade'] == 0:
+                    payload['course'] = student['course']
+                else:
+                    payload['course'] = student['grade']
+                
+                
+                #col.remove(newStudent['email'])
+                newStudent['previousPractica'].append(payload)
+        
+        print(newStudent['previousPractica'])
+        
+        
+        ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
+        for student in studentsAvailability:
+            if newStudent['email'] == student['studentemail']:
+                payload = {}
+                payload['startTime'] = student['starttime']
+                payload['endTime'] = student['endtime']
+                payload['monday'] = student['monday']
+                payload['tuesday'] = student['tuesday']
+                payload['wednesday'] = student['wednesday']
+                payload['thursday'] = student['thursday']
+                payload['friday'] = student['friday']
+                
+            
+                newStudent['availability'].append(payload)
+        
+        print(newStudent['availability'])
+        
+        endorsementPayload = []   
+        for student in studentsEndorsements:
+            
+            if newStudent['email'] == student['studentemail']:
+                endorsementPayload.append(student['endorsementname'])
+                
+        newStudent['endorsements'] = endorsementPayload
+        print(newStudent['endorsements'])
+                
+        
+        enrolledPayload = []
+        for student in studentsCourses:
+            if newStudent['email'] == student['studentemail']:
+                enrolledPayload.append(student['coursename'])
+        
+        print(newStudent['enrolledClasses'])
+        newStudent['enrolledClasses'] = enrolledPayload
+                
+        listOfStudents.append(newStudent)
+    
+    print(listOfStudents)
+    
+    emit('loadStudents', listOfStudents)"""
     
 @app.route('/')
 def mainIndex():
@@ -549,7 +706,6 @@ def assignPractica():
     hasRedirect = False
     error = ''
     if request.method == "POST":
-        
         if 'password' in request.form:
             pd = request.form['password']
             hasRedirect = True
@@ -574,9 +730,12 @@ def assignPractica():
         if hasRedirect:
             return render_template('practicum_assignment.html')
         return redirect(url_for('login'))
-        
-    flash('Please log in to access practica')
-    return redirect(url_for('login'))
+    else:
+        if session and 'loggedIn' in session:
+            return render_template('practicum_assignment.html')
+        else:
+            flash('Please log in to access practica')
+            return redirect(url_for('login'))
 
 @socketio.on('forgotPassword', namespace='/login') 
 def forgotPassword():
@@ -616,64 +775,6 @@ def forgotPassword():
             
     emit('forgotPassword')
     
-# @app.route('/forgotpassword', methods=['GET', 'POST'])
-# def forgotPassword():
-#     loggedIn = False
-#     passChanged = False
-#     passFailed = False
-#     wrongUsername = False
-#     if request.method=="POST":
-#         receiver=['sheldonmcclung@gmail.com']#[request.form['email']]
-#         sender = ['buymybooks350@gmail.com']
-        
-#         chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-#         accessCode = ''.join(random.choice(chars) for _ in range(10))
-#         print accessCode
-        
-#         emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
-#         #msg = MIMEText(emailMSG)
-#         #msg['Subject'] = 'Reset password'
-#         #msg['From'] = 'buymybooks350@gmail.com'
-#         #msg['To'] = 'sheldonmcclung@gmail.com'#request.form['email']
-        
-#         #conn = connectToDB()
-#         #cur = conn.cursor()
-        
-#         # query = cur.mogrify("""SELECT * FROM users WHERE email = %s;""", ('sheldonmcclung@gmail.com',))#(request.form['email'],))
-#         # print query
-#         # cur.execute(query)
-#         # results = cur.fetchall()
-#         # print results
-#         # if results != []:
-#         #     try:
-#         #         query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (accessCode, 'sheldonmcclung@gmail.com'))#request.form['email'])) 
-#         #         print query
-#         #         cur.execute(query)
-#         #         conn.commit()
-#         #         passChanged = True
-#         #         print "Password changed"
-#         try:
-#             smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
-#             #server.set_debuglevel(1)
-#             smtpObj.ehlo()
-#             smtpObj.starttls()
-#             smtpObj.login('buymybooks350@gmail.com', 'zacharski350')
-#             smtpObj.sendmail('buymybooks350@gmail.com', 'sheldonmcclung@gmail.com', emailMSG.as_string())         
-#             print "Successfully sent email"
-#         except Exception as e:
-#             print(e)
-#             # except:
-#             #     print("Error changing password")
-#             #     conn.rollback()
-#             #     passFailed = True
-#         else:
-#             wrongUsername = True
-#             print "Incorrect email"
-#     return render_template('forgotpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed,
-#     wrongUsername=wrongUsername)
-    
-
-
 @socketio.on('resetPassword', namespace='/login') 
 def resetPassword(payload):
     print("Payload: %s", payload['accessCode'])
@@ -725,6 +826,11 @@ def getDivisionsForPractica():
     divisions = getSchoolDivisions()
     emit("retrievedDivisions", divisions)
 
+@socketio.on('getDivisions', namespace='/reports')
+def getDivisionsForReports():
+    divisions = getSchoolDivisions()
+    emit("retrievedDivisions", divisions)
+
 def getSchoolDivisions():
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -752,6 +858,11 @@ def getPracticumBearingForStudent():
     
 @socketio.on('getPracticumBearing', namespace='/practica')
 def getPracticumBearingForAssignment():
+    courses = getPracticumBearing()
+    emit("retrievedPracticumBearing", courses)
+
+@socketio.on('getPracticumBearing', namespace='/reports')
+def getPracticumBearingForReports():
     courses = getPracticumBearing()
     emit("retrievedPracticumBearing", courses)
 
@@ -820,45 +931,48 @@ def deletePractica(assignment):
     print(assignment)
     #TODO: delete from database, resend assignments
     
-    
 
+@socketio.on('createReport', namespace='/reports')
+def createReport(reportType, limit):
+    print(limit);
+    if reportType == "school":
+        print("school")
+        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/schoolreport.xlsx')
+    elif reportType == "division":
+        print("division")
+        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/divisionreport.xlsx')
+    elif reportType == "course":
+        print("course")
+        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
+    else:
+        print("invalid report type")
+    emit("reportCreated", reportType)
+        
     
-# @app.route('/resetpassword', methods=['GET', 'POST'])
-# def resetPassword():
-#     loggedIn = False
-#     passChanged = False
-#     passFailed = False
-#     wrongPass = False
-#     if 'user' in session:
-#         currentUser = session['user']
-#         loggedIn = True
-#     if request.method=="POST":
-#         oldpass = request.form['oldpassword']
-#         newpass = request.form['password1']
-#         conn = connectToDB()
-#         cur = conn.cursor()
-#         query = cur.mogrify("""SELECT * FROM users WHERE email = %s AND password = crypt(%s, password);""", (currentUser, oldpass)) 
-#         print(query)
-#         cur.execute(query)
-#         results = cur.fetchall()
-#         print results
-#         if results != []:
-#             try:
-#                 query = cur.mogrify("""UPDATE users SET password=crypt(%s, gen_salt('bf')) WHERE email = %s;""", (newpass, currentUser)) 
-#                 print query
-#                 cur.execute(query)
-#                 conn.commit()
-#                 passChanged = True
-#                 print "Password changed"
-#             except:
-#                 print("Error changing password")
-#                 conn.rollback()
-#                 passFailed = True
-#         else:
-#             wrongPass = True
-#             print "Incorrect password"
-#     return render_template('resetpassword.html', loggedIn=loggedIn, passChanged=passChanged, passFailed=passFailed, 
-#     wrongPass=wrongPass)
+    
+@app.route('/reports/<reportType>')
+def downloadReport(reportType):
+    filename = ""
+    if reportType == "school":
+        filename = "schoolreport.xlsx"
+    elif reportType == "division":
+        filename = "divisionreport.xlsx"
+    elif reportType == "course":
+        filename = "coursereport.xlsx"
+    else:
+        print("invalid report type")
+    return send_from_directory(app.static_folder + "/reports", filename, as_attachment=True, 
+    mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+@socketio.on("deleteReport", namespace="/reports")
+def deleteReport():
+    directory = os.path.dirname(__file__)
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx'))
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
     
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
