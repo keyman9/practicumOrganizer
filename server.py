@@ -246,7 +246,7 @@ def submitTeacher(data):
             try:
                 db = connect_to_db()
                 cur = db.cursor()
-                cur.execute(meetingInsert,('True','True','True','True','True'))
+                cur.execute(meetingInsert,('True','True','True','True','True')) #ALL True here means every day of the week, since elementary
                 db.commit()
                 meetingId = cur.fetchone()[0]
             except Exception as e:
@@ -355,6 +355,21 @@ def submitTeacher(data):
         msg = "There was an error submitting your information. Try again."
     
     emit("submissionResult", {"error": error, "msg": msg})
+<<<<<<< HEAD
+=======
+ 
+#@socketio.on('loadTeachers', namespace='/practica') 
+#def loadTeachers(): 
+##TODO:SIMILAR TO BELOW
+##     POPULATE TEACHER LIST IN PRACTICA PAGE
+
+selectStudents = "SELECT * FROM students"
+selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
+availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
+selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
+selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
+selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
+>>>>>>> a3ad822cdf696edad5ddf495fbc18a4baaa4648d
 
 @socketio.on('loadStudents', namespace='/practica') 
 def loadStudents():
