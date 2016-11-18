@@ -33,95 +33,16 @@ globalDict = {'accessCode': ''}
 loginQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
 updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE passwordid = 1"
 
-
-studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
-endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
-meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
-meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
-
-prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
-enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
-availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"
-
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
-    print(data)
-    #print(data['email'])
-    studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
-    print(studentData)
     error = False
-    msg = ""
-    
-    #student Table
+    msg = ''
     try:
-        db = connect_to_db()
-        cur = db.cursor()
-        #cur.mogrify(studentTable, studentData)
-        cur.execute(studentTable, studentData)
-        db.commit()
-    except Exception as e:
-        error = True
-        print(e)
-    
-    #endorsement Table
-    for endorsement in data['endorsements']:
-        try:
-            endorsementData = [endorsement, data['email']]
-            #cur.mogrify(endorseTable, endorsementData)
-            cur.execute(endorseTable, endorsementData)
-            print("inserted into endorsements table")
-            db.commit()
-        except Exception as e:
-            error = True
-            print(e)
-    
-    #previousPractica Table
-    for practica in data['previousPractica']:
-        try:
-            grade = 0
-            course = ''
-            if 'grade' in practica:
-                grade = practica['grade']
-            if 'course' in practica:
-                course = practica['course']
-            
-            practicaData = [practica['school'], grade, course ,data['email']]
-            cur.execute(prevPracTable, practicaData)
-            print("inserted into prev practica table")
-            db.commit()
-        except Exception as e:
-            error = True
-            print(e)
-            
-    #enrolledCourses Table
-    for enrolledIn in data['enrolledClasses']:
-       try:
-            coursesData = [enrolledIn, data['email']]       
-            cur.execute(enrolledCourseTable, coursesData)
-            print("inserted into enrolled courses")
-       except Exception as e:
-            error = True
-            print(e)
-       
-    #meetingDays Table 
-    #availableTimes Table
-    for times in data['availability']:
-        try:
-            meetingData = [times['monday'], times['tuesday'], times['wednesday'], times['thursday'], times['friday']]
-            cur.execute(meetingInsert, meetingData)
-            meetingID = cur.fetchone()[0]
-            
-            availabilityData = [times['startTime'], times['endTime'], meetingID, data['email']]       
-            cur.execute(availableInsert, availabilityData)
-            db.commit()
-            print("inserted into meeting table and availabletimes tables")
-        except Exception as e:
-            error = True
-            print(e)
-    
-    if not error:
+        submit_student(data)
         msg = "Your information has been submitted!"
-    else:
+    except Exception as e:
+        print(e)
+        error = True
         msg = "There was an error submitting your information. Try again."
     
     emit("submissionResult", {"error": error, "msg": msg})
@@ -545,42 +466,43 @@ def logout():
     session.clear()
     flash('You have successfully logged out!')
     return redirect(url_for('login'))
+
+
     
 @app.route('/practica', methods=['GET', 'POST'])
-def assignPractica():
+def practica():
+    selectPasswordQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
     hasRedirect = False
     error = ''
+    
     if request.method == "POST":
         if 'password' in request.form:
             pd = request.form['password']
             hasRedirect = True
-        
-        db = connect_to_db()
-        cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-        cur.execute("""SELECT passwordid FROM login WHERE password = crypt(%s, password)""",(pd,))
-        results = cur.fetchone()
+        results = select_query_db(selectPasswordQuery , (pd,), True)
+        
         if not results:
-            error+= 'Incorrect Password.\n'
+            error += 'Incorrect Password.\n'
             flash('Invalid Password')
-            
             hasRedirect = False
+            
         else:
             session['userid'] = results['passwordid']
             session['loggedIn'] = True
-            
-        
-        cur.close()
-        db.close()
+
         if hasRedirect:
             return render_template('practicum_assignment.html')
-        return redirect(url_for('login'))
+        else:    
+            return redirect(url_for('login'))
+        
     else:
-        if session and 'loggedIn' in session:
+        if session and session['loggedIn']:
             return render_template('practicum_assignment.html')
         else:
             flash('Please log in to access practica')
             return redirect(url_for('login'))
+        
 
 @socketio.on('forgotPassword', namespace='/login') 
 def forgotPassword():
@@ -633,92 +555,57 @@ def updatePassword(payload):
     print("Payload: %s", payload)
     newpass = payload['password']
     
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
-    try:
-        query = cur.mogrify(updatePasswordQuery, (newpass, )) 
-        print query
-        cur.execute(query)
-        db.commit()
-        print "Password changed"
-    except Exception as e:
-        print("Error: Invalid UPDATE in 'login' table: %s" % e)
-        db.rollback()
+    write_query_db(updatePasswordQuery, (payload['password'], ))
     
     emit('updatePassword')
     
+#################################    
+
+selectSchoolDivisions = "SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) FROM \
+        schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
+        GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName"
+
 @socketio.on('getDivisions', namespace='/student')
 def getDivisionsForStudent():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
     
 @socketio.on('getDivisions', namespace='/teacher')
 def getDivisionsForTeacher():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
     
 @socketio.on('getDivisions', namespace='/practica')
 def getDivisionsForPractica():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
 
 @socketio.on('getDivisions', namespace='/reports')
 def getDivisionsForReports():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
 
-def getSchoolDivisions():
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    schoolDivisions = []
-    
-    # Grab all school divisions
-    try:
-        query = cur.mogrify("SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) FROM \
-        schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
-        GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName")
-        print query
-        cur.execute(query)
-        schoolDivisions = cur.fetchall()
-        print schoolDivisions
-    except Exception as e:
-        print("Error: Invalid SELECT on 'schoolDivision' table: %s" % e)
-        db.rollback()
-    return schoolDivisions
+######################################################
 
+selectPracticumCourses = "SELECT practicumCourses.courseName FROM practicumCourses"
 
 @socketio.on('getPracticumBearing', namespace='/student')
 def getPracticumBearingForStudent():
-    courses = getPracticumBearing()
+    courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
     
 @socketio.on('getPracticumBearing', namespace='/practica')
 def getPracticumBearingForAssignment():
-    courses = getPracticumBearing()
+    courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
 
 @socketio.on('getPracticumBearing', namespace='/reports')
 def getPracticumBearingForReports():
-    courses = getPracticumBearing()
+    courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
+    
+##########################################################
 
-def getPracticumBearing():
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    courses = []
-    
-    # Grab all school divisions
-    try:
-        query = cur.mogrify("SELECT practicumCourses.courseName FROM practicumCourses")
-        cur.execute(query)
-        courses = cur.fetchall()
-        print courses
-    except Exception as e:
-        print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
-        db.rollback()
-    return courses
-    
 @socketio.on('submitPractica', namespace='/practica')
 def submitPractica(assignment):
     print(assignment)

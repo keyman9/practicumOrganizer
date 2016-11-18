@@ -109,7 +109,7 @@
          <div class="col-md-4" ng-show="transportation==='others'">
             <div class="form-group">
                 <span>How many passengers could you take?</span>
-                <select class="form-control" id="passengers" name="passengers" ng-model="passengerNum">
+                <select class="form-control" id="passengers" name="passengers" ng-model="passengerNum" ng-change="printPassNum(passengerNum)">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
