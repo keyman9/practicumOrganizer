@@ -66,7 +66,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.invalidTransportation= false;
     $scope.invalidAvailability = true;
     $scope.invalidPractica = true;
-    $scope.isTravelTeacher = true;
+    $scope.isTravelTeacher = undefined;
     $scope.invalidDivision= false;
     $scope.invalidGrade= false;
     $scope.invalidTravel= false;
@@ -115,14 +115,15 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     
     $scope.getSchoolDivisions = function(){
         socket.emit('getDivisions');
-    }
+    };
     
     $scope.getElemClasses = function(){
         return $scope.elemClasses;
-    }
+    };
+    
     $scope.getGradeLevels = function(){
         return $scope.gradeLevels;
-    }
+    };
     
     socket.on("retrievedDivisions", function(divisions){
         if (divisions.length > 0){
@@ -145,7 +146,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     
     $scope.getPracticumBearing = function(){
         socket.emit('getPracticumBearing');
-    }
+    };
     
     socket.on("retrievedPracticumBearing", function(courses){
         if (courses.length > 0){
@@ -197,7 +198,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             return true;
         }
         return false;
-    }
+    };
     
     $scope.resetSchoolType = function(schoolLevel){
         $scope.otherSchool = '';
@@ -208,7 +209,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         
         
         
-    }
+    };
     
     $scope.isTravelTeacherCheck = function(travelTeacher){
         console.log(travelTeacher)
@@ -248,6 +249,40 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         
     };
     
+    $scope.allOther = function(school, division, isTravelTeacher){
+        var div= String(division);
+        var sch =String(school);
+        
+        if(div==='Other' && sch === "Other" && isTravelTeacher === "false"){
+            return true;
+        }
+        return false;
+    };
+    
+    $scope.otherCheck= function(gradeLevel, invalidGrade)
+    {
+        console.log("before");
+        console.log(gradeLevel);
+        var grade= String(gradeLevel);
+        console.log("Hey im here. Why don't you look here");
+        console.log(grade);
+        
+        if(gradeLevel !== undefined && gradeLevel !== "" && invalidGrade === "false")
+        {
+            return true;
+        }
+        return false;
+    };
+    
+    $scope.isTravelTeacherUndefined = function()
+    {
+        
+        if($scope.isTravelTeacher === undefined){
+            return true;
+        }
+        return false;
+    };
+    
     $scope.isSecondary = function(school){
         
         var sch = String(school);
@@ -258,30 +293,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             return false;
         }
     };
-    
-    $scope.changeGrade = function(item){
-        item.course = undefined;
-        item.other = undefined;
-        var index = $scope.previousPractica.indexOf(item);
-        console.log($scope.previousPractica[index]);
-        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
-            var msg = $scope.practicaErrorMsg[index];
-            msg = msg.replace("You must enter a course!\n", "");
-            $scope.practicaErrorMsg[index] = msg;
-        }
-    }
-    
-    $scope.changeCourse = function(item){
-        item.grade = undefined;
-        item.other = undefined;
-        var index = $scope.previousPractica.indexOf(item);
-        console.log($scope.previousPractica[index]);
-        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
-            var msg = $scope.practicaErrorMsg[index];
-            msg = msg.replace("You must enter a course!\n", "");
-            $scope.practicaErrorMsg[index] = msg;
-        }
-    }
     
     $scope.changeSchool = function(item){
         console.log(item)
@@ -295,30 +306,29 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         //$scope.changeCourse(item);
         //$scope.changeGrade(item);
         
-    }
+    };
     
     $scope.changeSchoolDivision = function(item){
         console.log(item)
         $scope.changeSchool(item);
-        
-    }
+    };
 
     $scope.print = function(item){
-        
         console.log(item);
-        
+        console.log("TEST")
+        console.log(typeof $scope.isTravelTeacher)
     };
     
     $scope.submit = function(){
-        var teacher = {}
+        // var teacher = {}
         
     
-    this.id = undefined;
+        // this.id = undefined;
     
     
     
-    this.elementarySchedule = [];
-    this.secondarySchedule = [];
+        // this.elementarySchedule = [];
+        // this.secondarySchedule = [];
     
         var teacher = new Teacher();
         
@@ -339,10 +349,12 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             teacher.hostFall = true;
             teacher.hostSpring = true;
         }
-        
+        console.log("Im here. Look right beneath me")
         console.log($scope.gradeLevel);
-        if($scope.gradeLevel.length > 0){
+        //teacher.grade = $scope.gradeLevel;
+        if($scope.gradeLevel !== undefined){
             teacher.grade = $scope.gradeLevel;
+            console.log("Look here bro")
             console.log(teacher.grade);
         }
         
@@ -429,13 +441,25 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     }
     
     $scope.validateOtherSchool = function(){
-        var schoolpat = /(^[A-Z]{1})([A-Za-z\'\-\.\s]+$)/;
-    	var school = $scope.otherSchool;
-    	var testschool = schoolpat.test(school);
-    	if (!testschool){
-    		$scope.invalidSchool = true;
-    	} else {
+        //var schoolpat = /(^[A-Z]{1})([A-Za-z\'\-\.\s]+$)/;
+    // 	var school = $scope.otherSchool;
+    // 	var testschool = schoolpat.test(school);
+    // 	if (!testschool){
+    // 		$scope.invalidSchool = true;
+    // 	} else {
+    //         $scope.invalidSchool = false;
+    //     }
+        var letter= $scope.otherSchool[0];
+        console.log(letter);
+        console.log($scope.otherSchool);
+        console.log($scope.otherSchool[0]);
+        if(letter!== undefined && letter === letter.toUpperCase())
+        {
             $scope.invalidSchool = false;
+        }
+        else
+        {
+            $scope.invalidSchool = true;
         }
     }
     
@@ -663,8 +687,8 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     }
     
     $scope.initializeElemClasses = function(subject){
-        $scope.gradeLevel = subject
-        console.log(subject)
+        $scope.gradeLevel = subject;
+        console.log($scope.gradeLevel);
         $scope.isElectiveTeacher = false
         for(var i=0; i < $scope.elemSubjects.length; i++){
             if( $scope.elemSubjects[i] === subject || ( $scope.elemSubjects[i] !== $scope.elemSubjects[i] && subject !== subject ) ){
