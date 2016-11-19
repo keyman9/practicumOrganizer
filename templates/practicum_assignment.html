@@ -68,7 +68,7 @@
         margin-left: 10px;
     }
     .practica-table{
-        height: 400px;
+        height: 4git 00px;
         overflow-y: scroll;
     }
     .practica{
@@ -331,9 +331,12 @@
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
                             jqyoui-draggable="{placeholder:'keep', animate:true}"
                             data-template-url="popover.teacher.tpl.html" container="body" placement="left" auto-close="true" data-html="true" 
-                            ng-click="setCurrentTeacher(teacher)" bs-popover>
+                            bs-popover>
+                                <span ng-click="setCurrentTeacher(teacher)">
                                 <span ng-bind="teacher.firstName"></span>&nbsp;
                                 <span ng-bind="teacher.lastName"></span>
+                                </span>
+                                <button type="button" class="close" ng-click="deleteTeacher(teachers.indexOf(teacher))">&times;</button>
                             </div>
                         </ul>
                     </div>
@@ -556,7 +559,35 @@
             </table>
         </div>
     </div>
+    <div id="deleteModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Confirm Delete</h4>
+              </div>
+              <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <br/>
+                            <h4 class="text-center">Are you sure you want to delete <span ng-bind="deleteString"></span>?
+                            This action cannot be undone.
+                            </h4>
+                            <br/><br/><br/><br/><br/><br/>
+                        </div>
+                        
+                        <div class="col-xs-2 col-xs-offset-2">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="delete()">Delete</button>
+                        </div>
+                        <div class="col-xs-2 col-xs-offset-4">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
 

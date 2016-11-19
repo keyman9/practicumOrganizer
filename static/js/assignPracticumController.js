@@ -84,6 +84,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.showAssignedTeachers = false;
     $scope.showAssignedStudents = false;
     $scope.practicaErrorMsg = [];
+    $scope.deleteString = "";
     
     $scope.selectEndorsement = false;
     $scope.selectCourse = false;
@@ -164,6 +165,15 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         }
         // console.log($scope.teachers);
     };
+    
+    $scope.deleteTeacher = function(index){
+        console.log("in delete teacher");
+        var teacher = $scope.teachers[index];
+        var id = teacher.id
+        $scope.deleteString = teacher.firstName + " " + teacher.lastName;
+        console.log($scope.deleteString);
+        $('#deleteModal').modal('show');
+    }
     
     $scope.addPracticumAssignment = function(){
         var a = new PracticumAssignment();

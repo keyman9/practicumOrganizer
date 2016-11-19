@@ -1,5 +1,5 @@
 import psycopg2
-import student as stu
+#import student as stu
 
 def connect_to_db():
     return psycopg2.connect('dbname=practicum user=practicum_normal password=password host=localhost')

@@ -12,7 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from db import *
-import report as Report
+#import report as Report
 import uuid
 import string
 import random
