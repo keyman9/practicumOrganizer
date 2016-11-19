@@ -451,7 +451,7 @@ def deleteTeacher(teachId):
     print(teachId)
     error = False
     deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
-    db = connect_to_db()
+    db = connect_to_db_admin()
     cur = db.cursor()
     try:
         query = cur.mogrify(deleteTeacherQuery, (teachId,))
@@ -629,10 +629,10 @@ def getPracticumBearingForReports():
     
 ##########################################################
 
+#TODO: make this update if match already exists
 @socketio.on('submitPractica', namespace='/practica')
 def submitPractica(assignment):
     print(assignment)
-    #TODO: insert/update in database
     result = defaultdict(list)
     #meetingDays table
     meetingPresent = False
@@ -657,28 +657,51 @@ def submitPractica(assignment):
             print(e)
     meetingId = result 
     print(meetingId)
-        
-    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
-    #insert into practicumArrangement
+    
+    practicumPresent = False
+    if assignment['id']:
+        practicumPresent = True
+    
+    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""  
+    practicaUpdate = """UPDATE practicumArrangement SET startTime=%s, endTime=%s, course=%s, studentEmail=%s, teacherId=%s, meetingId=%s WHERE practicum=%s RETURNING practicum"""
     try:
-        print("trying...")
-        db = connect_to_db()
-        cur = db.cursor()
-        print(practicaInsert)
-        cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
-        db.commit()
-        result = cur.fetchone()[0]
-        print(result)
+        if practicumPresent:
+            print("practicumPresent")
+            try:
+                print(practicaUpdate)
+                cur.execute(practicaUpdate,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId, assignment['id']))
+                db.commit()
+                result = cur.fetchone()
+                print(result)
+            except Exception as e:
+                print(e)
+        else:   
+            print("practicumNotPresent")
+            #insert into practicumArrangement
+            try:
+                print("trying...")
+                print(practicaInsert)
+                cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
+                db.commit()
+                result = cur.fetchone()
+                print(result)
+            except Exception as e:
+                print(e)
+            print("inserted..")   
     except Exception as e:
+        error = True
         print(e)
-    print("inserted..")    
+    cur.close()
+    db.close()
+
+    
     
 @socketio.on('deletePracticum', namespace='/practica')
 def deletePracticum(pracId):
     print(pracId)
     error = False
     deletePracticumQuery = """DELETE FROM practicumArrangement WHERE practicum=%s;"""
-    db = connect_to_db()
+    db = connect_to_db_admin()
     cur = db.cursor()
     try:
         query = cur.mogrify(deletePracticumQuery, (pracId,))

@@ -179,7 +179,7 @@ CREATE TABLE teachers(
 );
   
 GRANT SELECT, INSERT, UPDATE ON teachers TO practicum_normal;
-GRANT SELECT, INSERT, UPDATE ON teachers TO practicum_admin;
+GRANT SELECT, INSERT, UPDATE, DELETE ON teachers TO practicum_admin;
 
 GRANT ALL ON teachers_divisionid_seq TO practicum_normal;
 GRANT ALL ON teachers_divisionid_seq TO practicum_admin;
@@ -205,7 +205,7 @@ CREATE TABLE elementarySchedule(
 );
 
 GRANT SELECT, INSERT ON elementarySchedule TO practicum_normal;
-GRANT SELECT, INSERT ON elementarySchedule TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON elementarySchedule TO practicum_admin;
 
 GRANT ALL ON elementaryschedule_meetingid_seq TO practicum_normal;
 GRANT ALL ON elementaryschedule_meetingid_seq TO practicum_admin;
@@ -231,7 +231,7 @@ CREATE TABLE middleSchoolSchedule(
 );
 
 GRANT SELECT, INSERT ON middleSchoolSchedule TO practicum_normal;
-GRANT SELECT, INSERT ON middleSchoolSchedule TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON middleSchoolSchedule TO practicum_admin;
 
 GRANT ALL ON middleschoolschedule_schoolid_seq TO practicum_normal;
 GRANT ALL ON middleschoolschedule_schoolid_seq TO practicum_admin;
@@ -256,7 +256,7 @@ CREATE TABLE practicumArrangement(
 );
 
 GRANT SELECT, INSERT, UPDATE ON practicumArrangement TO practicum_normal;
-GRANT SELECT, INSERT, UPDATE ON practicumArrangement TO practicum_admin;
+GRANT SELECT, INSERT, UPDATE, DELETE ON practicumArrangement TO practicum_admin;
 
 GRANT ALL ON practicumarrangement_practicum_seq TO practicum_normal;
 GRANT ALL ON practicumarrangement_practicum_seq TO practicum_admin;
