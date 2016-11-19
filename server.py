@@ -444,7 +444,30 @@ def loadTeachers():
     print(listOfStudents)
     
     emit('loadStudents', listOfStudents)"""
-    
+
+
+@socketio.on('deleteTeacher', namespace='/practica') 
+def deleteTeacher(teachId):
+    print(teachId)
+    error = False
+    deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
+    db = connect_to_db()
+    cur = db.cursor()
+    try:
+        query = cur.mogrify(deleteTeacherQuery, (teachId,))
+        print query
+        cur.execute(query)
+    except Exception as e:
+        print(e)
+        error = True
+        db.rollback()
+    db.commit()
+    cur.close()
+    db.close()
+    emit("deletedTeacher", error)
+
+#################################  
+
 @app.route('/')
 def mainIndex():
     return render_template('index.html', currentPage='home')
@@ -467,7 +490,7 @@ def logout():
     flash('You have successfully logged out!')
     return redirect(url_for('login'))
 
-
+#################################  
     
 @app.route('/practica', methods=['GET', 'POST'])
 def practica():
@@ -650,11 +673,29 @@ def submitPractica(assignment):
         print(e)
     print("inserted..")    
     
-@socketio.on('deletePractica', namespace='/practica')
-def deletePractica(assignment):
-    print(assignment)
-    #TODO: delete from database, resend assignments
+@socketio.on('deletePracticum', namespace='/practica')
+def deletePracticum(pracId):
+    print(pracId)
+    error = False
+    deletePracticumQuery = """DELETE FROM practicumArrangement WHERE practicum=%s;"""
+    db = connect_to_db()
+    cur = db.cursor()
+    try:
+        query = cur.mogrify(deletePracticumQuery, (pracId,))
+        print query
+        cur.execute(query)
+    except Exception as e:
+        print(e)
+        error = True
+        db.rollback()
+    db.commit()
+    cur.close()
+    db.close()
+    emit("deletedPracticum", error)
     
+    
+    
+##########################################################
 
 @socketio.on('createReport', namespace='/reports')
 def createReport(reportType, limit):

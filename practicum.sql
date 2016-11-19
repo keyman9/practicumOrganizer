@@ -199,7 +199,7 @@ CREATE TABLE elementarySchedule(
   teacherID serial,
   schoolID serial,
   meetingID serial,
-  FOREIGN KEY(teacherID) references teachers(teacherID),
+  FOREIGN KEY(teacherID) references teachers(teacherID) ON DELETE CASCADE,
   FOREIGN KEY(schoolID) references schools(schoolID),
   FOREIGN KEY(meetingID) references meetingDays(meetingID)
 );
@@ -226,7 +226,7 @@ CREATE TABLE middleSchoolSchedule(
   endTime timestamp,
   teacherID serial,
   schoolID serial,
-  FOREIGN KEY(teacherID) references teachers(teacherID),
+  FOREIGN KEY(teacherID) references teachers(teacherID) ON DELETE CASCADE,
   FOREIGN KEY(schoolID) references schools(schoolID)
 );
 
@@ -251,7 +251,7 @@ CREATE TABLE practicumArrangement(
   meetingID serial,
   PRIMARY KEY(practicum),
   FOREIGN KEY(studentEmail) references students(email),
-  FOREIGN KEY(teacherID) references teachers(teacherID),
+  FOREIGN KEY(teacherID) references teachers(teacherID) ON DELETE CASCADE,
   FOREIGN KEY(meetingID) references meetingDays(meetingID)
 );
 

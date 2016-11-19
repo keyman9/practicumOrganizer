@@ -59,7 +59,6 @@ def write_query_db(query, data, returnOne=False):
         return results
     
 
-
 studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
 endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
 meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
