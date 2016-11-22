@@ -286,89 +286,11 @@ def submitTeacher(data):
 def loadStudents():
     students = load_students()
     emit('loadStudents', students)
-
-selectTeachers = "SELECT * FROM teachers"
-availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
-selectTeacherElem = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
-selectTeacherSec = "SELECT * FROM middleSchoolSchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
-
+    
 @socketio.on('loadTeachers', namespace='/practica') 
 def loadTeachers():
-    
-    teachers = []
-    teachersFromDB = defaultdict(list)
-    
-    hasError = False
-    
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
-    # Grab all teachers
-    try:
-        query = cur.mogrify(selectTeachers) 
-        
-        cur.execute(query)
-        teachersFromDB = cur.fetchall()
-        print(teachersFromDB)
-        
-    except Exception as e:
-        print("Error: Invalid SELECT on 'teachers' table: %s" % e)
-        db.rollback()
-        hasError = True
-    
-    #Elementary Schedules
-    if not hasError:
-        try:
-            query = cur.mogrify(selectTeacherElem)
-            cur.execute(query)
-            teachersElementary = cur.fetchall()
-            print("Teachers Elementary", teachersElementary)
-        except Exception as e:
-            print("Error: Invalid SELECT on 'elementarySchedule': %s", e)
-            hasError = True
-
-    #Secondary Schedules
-    if not hasError:
-        try:
-            query = cur.mogrify(selectTeacherSec)
-            cur.execute(query)
-            teachersSecondary = cur.fetchall()
-            print("Teachers Secondary", teachersSecondary)
-        except Exception as e:
-            print("Error: Invalid SELECT on 'middleSchoolSchedule': %s", e)
-            hasError = True
-    
-    #
-    #if not hasError:
-    #    try:
-            #query = cur.mogrify()
-            
-
-        
-"""        endorsementPayload = []   
-        for student in studentsEndorsements:
-            
-            if newStudent['email'] == student['studentemail']:
-                endorsementPayload.append(student['endorsementname'])
-                
-        newStudent['endorsements'] = endorsementPayload
-        print(newStudent['endorsements'])
-                
-        
-        enrolledPayload = []
-        for student in studentsCourses:
-            if newStudent['email'] == student['studentemail']:
-                enrolledPayload.append(student['coursename'])
-        
-        print(newStudent['enrolledClasses'])
-        newStudent['enrolledClasses'] = enrolledPayload
-                
-        listOfStudents.append(newStudent)
-    
-    print(listOfStudents)
-    
-    emit('loadStudents', listOfStudents)"""
-    #emit('loadTeachers',)
+    teachers = load_teachers()
+    emit('loadTeachers', teachers)
     
 @app.route('/')
 def mainIndex():

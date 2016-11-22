@@ -1,5 +1,6 @@
 import psycopg2
 import student as stu
+import teacher as teach
 
 def connect_to_db():
     return psycopg2.connect('dbname=practicum user=practicum_normal password=password host=localhost')
@@ -159,5 +160,33 @@ def load_students():
     }
     
     listOfStudents = [stu.zip_students(student, queryResults) for student in studentsFromDB]
+    #print(listOfStudents)
     return listOfStudents
     
+selectTeacherCols = "t.teacherid as teacherid, t.email, t.firstname, t.lastname, t.grade, t.hostfall, t.hostspring, sch.schoolname as schoolname, sd.divisionname as divisionname"
+selectTeachers = "SELECT + "+ selectTeacherCols + " FROM teachers AS t JOIN schools AS sch ON t.schoolid = sch.schoolid JOIN schoolDivisions AS sd ON t.divisionId = sd.divisionId"
+availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
+selectTeacherElem = "select * from elementarySchedule join meetingDays Using (meetingId) WHERE teacherId in (select teacherId from teachers)"
+selectTeacherSec = "SELECT * FROM middleSchoolSchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
+    
+def load_teachers():
+
+    #Select Teachers
+    teachersFromDB = select_query_db(selectTeachers)    
+        
+    #Elementary Schedules
+    teachersElementary = select_query_db(selectTeacherElem)
+
+    #Secondary Schedules
+    teachersSecondary = select_query_db(selectTeacherSec)
+    
+    queryResults = {
+        'elemSched' : teachersElementary,
+        'secondSched' : teachersSecondary,
+    }
+    
+    #print(queryResults)
+    
+    listOfTeachers = [teach.zip_teachers(teacher, queryResults) for teacher in teachersFromDB]
+    print(listOfTeachers)
+    return listOfTeachers    
