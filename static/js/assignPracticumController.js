@@ -154,14 +154,15 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     });
     
     $scope.initializeTeachers = function(){
-        for (var i = 0; i < 5; i++){
-            var t = new Teacher();
-            t.initialize(teacher);
-            $scope.teachers.push(t);
-            var t2 = new Teacher();
-            t2.initialize(teacher1);
-            $scope.teachers.push(t2);
-        }
+        socket.emit('loadTeachers')
+        //for (var i = 0; i < 5; i++){
+        //    var t = new Teacher();
+        //    t.initialize(teacher);
+        //    $scope.teachers.push(t);
+        //    var t2 = new Teacher();
+        //    t2.initialize(teacher1);
+        //    $scope.teachers.push(t2);
+        //}
         // console.log($scope.teachers);
     };
     
