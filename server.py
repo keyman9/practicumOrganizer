@@ -375,21 +375,8 @@ def loadTeachers():
 @socketio.on('deleteTeacher', namespace='/practica') 
 def deleteTeacher(teachId):
     print(teachId)
-    error = False
     deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
-    db = connect_to_db_admin()
-    cur = db.cursor()
-    try:
-        query = cur.mogrify(deleteTeacherQuery, (teachId,))
-        print query
-        cur.execute(query)
-    except Exception as e:
-        print(e)
-        error = True
-        db.rollback()
-    db.commit()
-    cur.close()
-    db.close()
+    error = delete_query_db(deleteTeacherQuery, teachId)
     emit("deletedTeacher", error)
 
 #################################  
@@ -627,21 +614,8 @@ def submitPractica(assignment):
 @socketio.on('deletePracticum', namespace='/practica')
 def deletePracticum(pracId):
     print(pracId)
-    error = False
     deletePracticumQuery = """DELETE FROM practicumArrangement WHERE practicum=%s;"""
-    db = connect_to_db_admin()
-    cur = db.cursor()
-    try:
-        query = cur.mogrify(deletePracticumQuery, (pracId,))
-        print query
-        cur.execute(query)
-    except Exception as e:
-        print(e)
-        error = True
-        db.rollback()
-    db.commit()
-    cur.close()
-    db.close()
+    error = delete_query_db(deletePracticumQuery, pracId)
     emit("deletedPracticum", error)
     
 ##########################################################
