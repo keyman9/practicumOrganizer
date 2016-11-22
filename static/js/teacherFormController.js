@@ -181,18 +181,10 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         $scope.otherSchool = '';
         $scope.otherDivision='';
         $scope.travelTeacher = '';
-<<<<<<< HEAD
         if (schoolLevel === "Elementary")
             $scope.teacherType = schoolLevel;
         if (schoolLevel === "Secondary")
             $scope.gradeLevel = '';
-=======
-        if(schoolLevel === "Elementary")
-            $scope.teacherType = schoolLevel;
-        if(schoolLevel === "Secondary")
-        $scope.gradeLevel = gradeLevel;
->>>>>>> aaa0b8e31bdbf565276158454882a53792abf2df
-        
     };
     
     $scope.isTravelTeacherCheck = function(travelTeacher){
@@ -545,8 +537,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         $scope.firstName = undefined;
         $scope.lastName = undefined;
         $scope.email = undefined;
-<<<<<<< HEAD
-=======
         $scope.schoolDivision= undefined;
         $scope.school = undefined;
         $scope.gradeLevel= '';
@@ -558,11 +548,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         //$scope.item.startTime=undefined;
         //$scope.item.endTime=undefined;
         
-        $scope.availability = [];
-        $scope.previousPractica = [];
-        $scope.noPreviousPractica = false;
->>>>>>> aaa0b8e31bdbf565276158454882a53792abf2df
-    
         $scope.invalidFirstName = false;
         $scope.invalidLastName = false;
         $scope.invalidEmail = false;
