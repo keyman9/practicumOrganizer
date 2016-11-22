@@ -187,6 +187,10 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.deletePrac = undefined;
     }
     
+    socket.on('loadTeachers', function(results){
+        console.log(results);
+    });
+    
     $scope.addPracticumAssignment = function(){
         var a = new PracticumAssignment();
         a.student = {};

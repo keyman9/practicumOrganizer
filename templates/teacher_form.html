@@ -101,10 +101,10 @@
                             <span class="error" ng-if="invalidSchool"><em>Invalid School</em></span> 
                         </select>
                     </div>
-                    <div class="col-md-4" ng-show="isElementary(school)">
+                    <div class="col-md-4" ng-show="isElementary(school,$parent.gradeLevel)">
                         <span>Grade Level/ Subject Taught</span><span ng-show="otherCheck($parent.gradeLevel, invalidGrade)"><small class="error">&nbsp;&nbsp;*</small></span>
                         <select class="form-control" id="gradeLevel" name="gradeLevel" ng-model="$parent.gradeLevel" ng-change="initializeElemClasses($parent.gradeLevel)" required>
-                            <option ng-repeat="grade in elemGradesAndSubjects">{{ '{{grade}}' }}</option>
+                            <option></option><option ng-selected= "grade === $parent.gradeLevel" ng-repeat="grade in elemGradesAndSubjects">{{ '{{grade}}' }}</option>
                             <span class="error" ng-if="invalidGrade"><em>Invalid Grade</em></span>
                         </select>
                     </div>
