@@ -35,13 +35,6 @@ updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE
 
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
-<<<<<<< HEAD
-    print(data)
-    #print(data['email'])
-    studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
-    #print(studentData)
-=======
->>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
     error = False
     msg = ''
     try:
@@ -49,70 +42,6 @@ def submitStudent(data):
         msg = "Your information has been submitted!"
     except Exception as e:
         print(e)
-<<<<<<< HEAD
-    
-    #endorsement Table
-    for endorsement in data['endorsements']:
-        try:
-            endorsementData = [endorsement, data['email']]
-            #cur.mogrify(endorseTable, endorsementData)
-            cur.execute(endorseTable, endorsementData)
-    #        print("inserted into endorsements table")
-            db.commit()
-        except Exception as e:
-            error = True
-            print(e)
-    
-    #previousPractica Table
-    for practica in data['previousPractica']:
-        try:
-            grade = 0
-            course = ''
-            if 'grade' in practica:
-                grade = practica['grade']
-            if 'course' in practica:
-                course = practica['course']
-            
-            practicaData = [practica['school'], grade, course ,data['email']]
-            cur.execute(prevPracTable, practicaData)
-     #       print("inserted into prev practica table")
-            db.commit()
-        except Exception as e:
-            error = True
-            print(e)
-            
-    #enrolledCourses Table
-    for enrolledIn in data['enrolledClasses']:
-       try:
-            coursesData = [enrolledIn, data['email']]       
-            cur.execute(enrolledCourseTable, coursesData)
-    #        print("inserted into enrolled courses")
-       except Exception as e:
-            error = True
-            print(e)
-       
-    #meetingDays Table 
-    #availableTimes Table
-    for times in data['availability']:
-        try:
-            meetingData = [times['monday'], times['tuesday'], times['wednesday'], times['thursday'], times['friday']]
-            cur.execute(meetingInsert, meetingData)
-            meetingID = cur.fetchone()[0]
-            
-            availabilityData = [times['startTime'], times['endTime'], meetingID, data['email']]       
-            cur.execute(availableInsert, availabilityData)
-            db.commit()
-     #       print("inserted into meeting table and availabletimes tables")
-        except Exception as e:
-            error = True
-            print(e)
-    
-    if not error:
-        msg = "Your information has been submitted!"
-    else:
-=======
-        error = True
->>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
         msg = "There was an error submitting your information. Try again."
     
     emit("submissionResult", {"error": error, "msg": msg})
@@ -355,163 +284,8 @@ def submitTeacher(data):
 
 @socketio.on('loadStudents', namespace='/practica') 
 def loadStudents():
-<<<<<<< HEAD
-    
-    students = []
-    studentsFromDB = []
-    studentsPractica = []
-    studentsAvailability = []
-    studentsEndorsements = []
-    studentsCourses = []
-    hasError = False
-    
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
-    # Grab all students
-    try:
-        query = cur.mogrify(selectStudents) 
-        
-        cur.execute(query)
-        studentsFromDB = cur.fetchall()
-    #    print("Students", studentsFromDB)
-        
-    except Exception as e:
-        print("Error: Invalid SELECT on 'students' table: %s" % e)
-        db.rollback()
-        hasError = True
-    
-    if not hasError:
-        # Grab all students practicas
-        try:
-            query = cur.mogrify(selectStudentPractica) 
-            
-            cur.execute(query)
-            studentsPractica = cur.fetchall()
-            #print("Previous Pactica", studentsPractica)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
-            db.rollback()
-            hasError = True
-    
-    if not hasError:    
-        # Grab all students availablities
-        try:
-            query = cur.mogrify(selectStudentAvailability) 
-            
-            cur.execute(query)
-            studentsAvailability = cur.fetchall()
-    #        print("Availability", studentsAvailability)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
-            db.rollback()
-            hasError = True
-    
-    if not hasError:
-        # Grab all students endorsements
-        try:
-            query = cur.mogrify(selectStudentEndorsements) 
-            
-            cur.execute(query)
-            studentsEndorsements = cur.fetchall()
-    #        print("Endorsements", studentsEndorsements)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
-            db.rollback()
-            hasError = True
-    
-    if not hasError:
-        # Grab all students enrolled courses
-        try:
-            query = cur.mogrify(selectStudentCourses) 
-            
-            cur.execute(query)
-            studentsCourses = cur.fetchall()
-    #        print("Courses", studentsCourses)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
-            db.rollback()
-            hasError = True
-            
-    listOfStudents = []
-    
-    for student in studentsFromDB:
-        newStudent = {}
-        newStudent['email'] = student['email']
-        newStudent['firstName'] = student['firstname']#
-        newStudent['lastName'] = student['lastname']#
-        newStudent['hasCar'] = student['hascar']#
-        newStudent['passengers'] = student['passengers'] #
-        newStudent['previousPractica'] = []#
-        newStudent['availability'] = []#
-        newStudent['endorsements'] = []#
-        newStudent['enrolledClasses'] = []#
-        
-        ###
-        for student in studentsPractica:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['school'] = student['school']
-                if student['grade'] == 0:
-                    payload['course'] = student['course']
-                else:
-                    payload['course'] = student['grade']
-                
-                
-                #col.remove(newStudent['email'])
-                newStudent['previousPractica'].append(payload)
-        
-     #   print(newStudent['previousPractica'])
-        
-        
-        ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
-        for student in studentsAvailability:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['startTime'] = student['starttime']
-                payload['endTime'] = student['endtime']
-                payload['monday'] = student['monday']
-                payload['tuesday'] = student['tuesday']
-                payload['wednesday'] = student['wednesday']
-                payload['thursday'] = student['thursday']
-                payload['friday'] = student['friday']
-                
-            
-                newStudent['availability'].append(payload)
-        
-      #  print(newStudent['availability'])
-        
-        endorsementPayload = []   
-        for student in studentsEndorsements:
-            
-            if newStudent['email'] == student['studentemail']:
-                endorsementPayload.append(student['endorsementname'])
-                
-        newStudent['endorsements'] = endorsementPayload
-     #   print(newStudent['endorsements'])
-                
-        
-        enrolledPayload = []
-        for student in studentsCourses:
-            if newStudent['email'] == student['studentemail']:
-                enrolledPayload.append(student['coursename'])
-        
-    #    print(newStudent['enrolledClasses'])
-        newStudent['enrolledClasses'] = enrolledPayload
-                
-        listOfStudents.append(newStudent)
-    
-    #print(listOfStudents)
-    
-    emit('loadStudents', listOfStudents)
-=======
     students = load_students()
     emit('loadStudents', students)
->>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
 
 selectTeachers = "SELECT * FROM teachers"
 availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
@@ -538,7 +312,7 @@ def loadTeachers():
         print(teachersFromDB)
         
     except Exception as e:
-        print("Error: Invalid SELECT on 'students' table: %s" % e)
+        print("Error: Invalid SELECT on 'teachers' table: %s" % e)
         db.rollback()
         hasError = True
     
@@ -564,112 +338,14 @@ def loadTeachers():
             print("Error: Invalid SELECT on 'middleSchoolSchedule': %s", e)
             hasError = True
     
+    #
+    #if not hasError:
+    #    try:
+            #query = cur.mogrify()
             
-"""    if not hasError:
-        # Grab all students practicas
-        try:
-            query = cur.mogrify(selectStudentPractica) 
-            
-            cur.execute(query)
-            studentsPractica = cur.fetchall()
-            print("Previous Pactica", studentsPractica)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
-            db.rollback()
-            hasError = True
-    
-    if not hasError:    
-        # Grab all students availablities
-        try:
-            query = cur.mogrify(selectStudentAvailability) 
-            
-            cur.execute(query)
-            studentsAvailability = cur.fetchall()
-            print("Availability", studentsAvailability)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
-            db.rollback()
-            hasError = True
-    
-    if not hasError:
-        # Grab all students endorsements
-        try:
-            query = cur.mogrify(selectStudentEndorsements) 
-            
-            cur.execute(query)
-            studentsEndorsements = cur.fetchall()
-            print("Endorsements", studentsEndorsements)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
-            db.rollback()
-            hasError = True
-    
-    if not hasError:
-        # Grab all students enrolled courses
-        try:
-            query = cur.mogrify(selectStudentCourses) 
-            
-            cur.execute(query)
-            studentsCourses = cur.fetchall()
-            print("Courses", studentsCourses)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
-            db.rollback()
-            hasError = True
-            
-    listOfStudents = []
-    
-    for student in studentsFromDB:
-        newStudent = {}
-        newStudent['email'] = student['email']
-        newStudent['firstName'] = student['firstname']#
-        newStudent['lastName'] = student['lastname']#
-        newStudent['hasCar'] = student['hascar']#
-        newStudent['passengers'] = student['passengers'] #
-        newStudent['previousPractica'] = []#
-        newStudent['availability'] = []#
-        newStudent['endorsements'] = []#
-        newStudent['enrolledClasses'] = []#
+
         
-        ###
-        for student in studentsPractica:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['school'] = student['school']
-                if student['grade'] == 0:
-                    payload['course'] = student['course']
-                else:
-                    payload['course'] = student['grade']
-                
-                
-                #col.remove(newStudent['email'])
-                newStudent['previousPractica'].append(payload)
-        
-        print(newStudent['previousPractica'])
-        
-        
-        ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
-        for student in studentsAvailability:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['startTime'] = student['starttime']
-                payload['endTime'] = student['endtime']
-                payload['monday'] = student['monday']
-                payload['tuesday'] = student['tuesday']
-                payload['wednesday'] = student['wednesday']
-                payload['thursday'] = student['thursday']
-                payload['friday'] = student['friday']
-                
-            
-                newStudent['availability'].append(payload)
-        
-        print(newStudent['availability'])
-        
-        endorsementPayload = []   
+"""        endorsementPayload = []   
         for student in studentsEndorsements:
             
             if newStudent['email'] == student['studentemail']:
@@ -692,6 +368,7 @@ def loadTeachers():
     print(listOfStudents)
     
     emit('loadStudents', listOfStudents)"""
+    #emit('loadTeachers',)
     
 @app.route('/')
 def mainIndex():
@@ -833,28 +510,8 @@ def getDivisionsForReports():
     divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
 
-<<<<<<< HEAD
-def getSchoolDivisions():
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    schoolDivisions = []
-    
-    # Grab all school divisions
-    try:
-        query = cur.mogrify("SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) FROM \
-        schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
-        GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName")
-        #print query
-        cur.execute(query)
-        schoolDivisions = cur.fetchall()
-        #print schoolDivisions
-    except Exception as e:
-        print("Error: Invalid SELECT on 'schoolDivision' table: %s" % e)
-        db.rollback()
-    return schoolDivisions
-=======
 ######################################################
->>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
+
 
 selectPracticumCourses = "SELECT practicumCourses.courseName FROM practicumCourses"
 
@@ -872,25 +529,6 @@ def getPracticumBearingForAssignment():
 def getPracticumBearingForReports():
     courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
-<<<<<<< HEAD
-
-def getPracticumBearing():
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    courses = []
-    
-    # Grab all school divisions
-    try:
-        query = cur.mogrify("SELECT practicumCourses.courseName FROM practicumCourses")
-        cur.execute(query)
-        courses = cur.fetchall()
-        #print courses
-    except Exception as e:
-        print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
-        db.rollback()
-    return courses
-=======
->>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
     
 ##########################################################
 
