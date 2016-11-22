@@ -65,8 +65,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.invalidEndorsement = false;
     $scope.invalidEnrolledClass= false;
     $scope.invalidTransportation= false;
-    $scope.invalidAvailability = true;
-    $scope.invalidPractica = true;
     $scope.isTravelTeacher = undefined;
     $scope.invalidDivision= false;
     $scope.invalidGrade= false;
@@ -204,11 +202,11 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.resetSchoolType = function(schoolLevel){
         $scope.otherSchool = '';
         $scope.otherDivision='';
-        $scope.teacherType = schoolLevel;
-        $scope.gradeLevel = '';
         $scope.travelTeacher = '';
-        
-        
+        if (schoolLevel === "Elementary")
+            $scope.teacherType = schoolLevel;
+        if (schoolLevel === "Secondary")
+            $scope.gradeLevel = '';
         
     };
     
@@ -528,9 +526,22 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         // $scope.validateAvailability(); 
         // $scope.validateAllPractica();
         //return (false);
+        console.log("#################################");
+        console.log("$scope.invalidFirstName: ", $scope.invalidFirstName);
+        console.log("$scope.invalidLastName: ", $scope.invalidLastName);
+        console.log("$scope.invalidEmail: ", $scope.invalidEmail);
+        console.log("$scope.invalidEndorsement: ", $scope.invalidEndorsement);
+        console.log("$scope.invalidEnrolledClass: ", $scope.invalidEnrolledClass);
+        console.log("$scope.invalidTransportation: ", $scope.invalidTransportation);;
+        console.log("$scope.invalidSchool: ", $scope.invalidSchool);
+        console.log("$scope.invalidDivision: ", $scope.invalidDivision);
+        console.log("$scope.invalidGrade: ", $scope.invalidGrade);
+        console.log("$scope.invalidTravel: ", $scope.invalidTravel);
+        console.log("$scope.invalidHosting: ", $scope.invalidHosting);
+        console.log("#################################");
         return( $scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
-                $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
-                $scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
+                $scope.invalidEnrolledClass || $scope.invalidTransportation ||  $scope.invalidSchool || $scope.invalidDivision || 
+                $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
                 $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
 
