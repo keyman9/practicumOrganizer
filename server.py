@@ -47,7 +47,7 @@ def submitStudent(data):
     print(data)
     #print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
-    print(studentData)
+    #print(studentData)
     error = False
     msg = ""
     
@@ -68,7 +68,7 @@ def submitStudent(data):
             endorsementData = [endorsement, data['email']]
             #cur.mogrify(endorseTable, endorsementData)
             cur.execute(endorseTable, endorsementData)
-            print("inserted into endorsements table")
+    #        print("inserted into endorsements table")
             db.commit()
         except Exception as e:
             error = True
@@ -86,7 +86,7 @@ def submitStudent(data):
             
             practicaData = [practica['school'], grade, course ,data['email']]
             cur.execute(prevPracTable, practicaData)
-            print("inserted into prev practica table")
+     #       print("inserted into prev practica table")
             db.commit()
         except Exception as e:
             error = True
@@ -97,7 +97,7 @@ def submitStudent(data):
        try:
             coursesData = [enrolledIn, data['email']]       
             cur.execute(enrolledCourseTable, coursesData)
-            print("inserted into enrolled courses")
+    #        print("inserted into enrolled courses")
        except Exception as e:
             error = True
             print(e)
@@ -113,7 +113,7 @@ def submitStudent(data):
             availabilityData = [times['startTime'], times['endTime'], meetingID, data['email']]       
             cur.execute(availableInsert, availabilityData)
             db.commit()
-            print("inserted into meeting table and availabletimes tables")
+     #       print("inserted into meeting table and availabletimes tables")
         except Exception as e:
             error = True
             print(e)
@@ -156,7 +156,7 @@ def submitTeacher(data):
         cur = db.cursor()
         cur.execute(selectTeacher,(teacherData[0],))
         teacherId = cur.fetchone()[0]
-        print(teacherId)
+        #print(teacherId)
         if teacherId:
             teacherPresent = True
     except Exception as e:
@@ -168,7 +168,7 @@ def submitTeacher(data):
         try:
             db = connect_to_db()
             cur = db.cursor()
-            print(cur.mogrify(schoolIdByDivision,(data['school'],)))
+            #print(cur.mogrify(schoolIdByDivision,(data['school'],)))
             #get schoolId
             cur.execute(schoolIdByDivision,(data['school'],))
             db.commit()
@@ -180,14 +180,14 @@ def submitTeacher(data):
                 cur = db.cursor()
                 #print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
                 if teacherPresent:
-                    print("teacherPresent")
+                    #print("teacherPresent")
                     cur.execute(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0]))
                 else:   
-                    print("teacherNotPresent")
+                    #print("teacherNotPresent")
                     cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
                 db.commit()
                 teacherId = cur.fetchone()[0]
-                print(teacherId)
+                #print(teacherId)
             except Exception as e:
                 error = True
                 print(e)
@@ -196,7 +196,7 @@ def submitTeacher(data):
             print(e)
         
     else:
-        print("Else")
+        #print("Else")
         schoolDiv = data['schoolDivision']
         elementaryGrades = ['K','1','2','3','4','5','6','Art','Music']
         #select schoolid, divisionid
@@ -204,28 +204,28 @@ def submitTeacher(data):
         try:
             db = connect_to_db()
             cur = db.cursor()
-            print(cur.mogrify(schoolIdByDivision,(data['school'],)))
+            #print(cur.mogrify(schoolIdByDivision,(data['school'],)))
             #get schoolId
             cur.execute(schoolIdByDivision,(data['school'],))
             schoolIdDivId = cur.fetchone()[0]
             #remove braces and comma
             schoolIdDivId = schoolIdDivId[1:-1].split(',')
             #insert teacher
-            print(schoolIdDivId)
+            #print(schoolIdDivId)
             #try to select by email, and if so, update instead of inserting
             try:
                 cur = db.cursor()
                 #print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
                 if teacherPresent == True:
-                    print("teacherPresent")
-                    print(cur.mogrify(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0])))
+                    #print("teacherPresent")
+                    #print(cur.mogrify(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0])))
                     cur.execute(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0]))
                 else:
-                    print("teacherNotPresent")
+                    #print("teacherNotPresent")
                     cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
                 db.commit()
                 teacherId = cur.fetchone()[0]
-                print(teacherId)
+                #print(teacherId)
             except Exception as e:
                 error = True
                 print(e)
@@ -240,7 +240,7 @@ def submitTeacher(data):
             #courseName, start, end, teacherid, schoolid
             
             meetingId = []
-            print("elementary")
+            #print("elementary")
             #get meetingDaysID for all non-electives
             try:
                 db = connect_to_db()
@@ -268,7 +268,7 @@ def submitTeacher(data):
                 elif classType == 'elemElectives':
                     #for each course
                     for electiveCourse in courseInfo:
-                        print(electiveCourse)
+                        #print(electiveCourse)
                         days = ['monday','tuesday','wednesday','thursday','friday']
                         courseDays = []
                         for day in days:
@@ -276,12 +276,12 @@ def submitTeacher(data):
                                 courseDays.append(electiveCourse[day])
                             else:
                                 courseDays.append(False)
-                        print(courseDays)    
+                        #print(courseDays)    
                         #insert days returning meetingid
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            print(cur.mogrify(meetingInsert,(courseDays)))
+                            #print(cur.mogrify(meetingInsert,(courseDays)))
                             cur.execute(meetingInsert,(courseDays))
                             db.commit()
                             courseId = cur.fetchone()[0] ##meetingid,
@@ -292,7 +292,7 @@ def submitTeacher(data):
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            print(cur.mogrify(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId)))
+                            #print(cur.mogrify(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId)))
                             cur.execute(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId))
                             db.commit()
                         except Exception as e:
@@ -304,7 +304,7 @@ def submitTeacher(data):
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            print(cur.mogrify(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId)))
+                            #print(cur.mogrify(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId)))
                             cur.execute(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId))
                             db.commit()
                         except Exception as e:
@@ -332,11 +332,11 @@ def submitTeacher(data):
                             error = True
                             print(e)
                 else: #timeSlot == 'secondaryClasses':
-                    print("blockClasses")
-                    print(timeSlot)
-                    print(blockInfo)
+                    #print("blockClasses")
+                    #print(timeSlot)
+                    #print(blockInfo)
                     for secondaryClass in blockInfo:
-                        print(secondaryClass)
+                        #print(secondaryClass)
                         if 'dayType' not in secondaryClass:
                             secondaryClass['dayType'] = "Standard"
                         try:
@@ -387,7 +387,7 @@ def loadStudents():
         
         cur.execute(query)
         studentsFromDB = cur.fetchall()
-        print("Students", studentsFromDB)
+    #    print("Students", studentsFromDB)
         
     except Exception as e:
         print("Error: Invalid SELECT on 'students' table: %s" % e)
@@ -401,7 +401,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsPractica = cur.fetchall()
-            print("Previous Pactica", studentsPractica)
+            #print("Previous Pactica", studentsPractica)
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
@@ -415,7 +415,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsAvailability = cur.fetchall()
-            print("Availability", studentsAvailability)
+    #        print("Availability", studentsAvailability)
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
@@ -429,7 +429,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsEndorsements = cur.fetchall()
-            print("Endorsements", studentsEndorsements)
+    #        print("Endorsements", studentsEndorsements)
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
@@ -443,7 +443,7 @@ def loadStudents():
             
             cur.execute(query)
             studentsCourses = cur.fetchall()
-            print("Courses", studentsCourses)
+    #        print("Courses", studentsCourses)
             
         except Exception as e:
             print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
@@ -478,7 +478,7 @@ def loadStudents():
                 #col.remove(newStudent['email'])
                 newStudent['previousPractica'].append(payload)
         
-        print(newStudent['previousPractica'])
+     #   print(newStudent['previousPractica'])
         
         
         ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
@@ -496,7 +496,7 @@ def loadStudents():
             
                 newStudent['availability'].append(payload)
         
-        print(newStudent['availability'])
+      #  print(newStudent['availability'])
         
         endorsementPayload = []   
         for student in studentsEndorsements:
@@ -505,7 +505,7 @@ def loadStudents():
                 endorsementPayload.append(student['endorsementname'])
                 
         newStudent['endorsements'] = endorsementPayload
-        print(newStudent['endorsements'])
+     #   print(newStudent['endorsements'])
                 
         
         enrolledPayload = []
@@ -513,45 +513,68 @@ def loadStudents():
             if newStudent['email'] == student['studentemail']:
                 enrolledPayload.append(student['coursename'])
         
-        print(newStudent['enrolledClasses'])
+    #    print(newStudent['enrolledClasses'])
         newStudent['enrolledClasses'] = enrolledPayload
                 
         listOfStudents.append(newStudent)
     
-    print(listOfStudents)
+    #print(listOfStudents)
     
     emit('loadStudents', listOfStudents)
 
-"""selectTeachers = "SELECT * FROM teachers"
+selectTeachers = "SELECT * FROM teachers"
 availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
 selectTeacherElem = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
-selectTeacherSec = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
+selectTeacherSec = "SELECT * FROM middleSchoolSchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
 
 @socketio.on('loadTeachers', namespace='/practica') 
 def loadTeachers():
     
     teachers = []
-    teachersFromDB = []
+    teachersFromDB = defaultdict(list)
     
     hasError = False
     
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
-    # Grab all students
+    # Grab all teachers
     try:
-        query = cur.mogrify(selectStudents) 
+        query = cur.mogrify(selectTeachers) 
         
         cur.execute(query)
-        studentsFromDB = cur.fetchall()
-        print("Students", studentsFromDB)
+        teachersFromDB = cur.fetchall()
+        print(teachersFromDB)
         
     except Exception as e:
         print("Error: Invalid SELECT on 'students' table: %s" % e)
         db.rollback()
         hasError = True
     
+    #Elementary Schedules
     if not hasError:
+        try:
+            query = cur.mogrify(selectTeacherElem)
+            cur.execute(query)
+            teachersElementary = cur.fetchall()
+            print("Teachers Elementary", teachersElementary)
+        except Exception as e:
+            print("Error: Invalid SELECT on 'elementarySchedule': %s", e)
+            hasError = True
+
+    #Secondary Schedules
+    if not hasError:
+        try:
+            query = cur.mogrify(selectTeacherSec)
+            cur.execute(query)
+            teachersSecondary = cur.fetchall()
+            print("Teachers Secondary", teachersSecondary)
+        except Exception as e:
+            print("Error: Invalid SELECT on 'middleSchoolSchedule': %s", e)
+            hasError = True
+    
+            
+"""    if not hasError:
         # Grab all students practicas
         try:
             query = cur.mogrify(selectStudentPractica) 
@@ -841,10 +864,10 @@ def getSchoolDivisions():
         query = cur.mogrify("SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) FROM \
         schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
         GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName")
-        print query
+        #print query
         cur.execute(query)
         schoolDivisions = cur.fetchall()
-        print schoolDivisions
+        #print schoolDivisions
     except Exception as e:
         print("Error: Invalid SELECT on 'schoolDivision' table: %s" % e)
         db.rollback()
@@ -876,7 +899,7 @@ def getPracticumBearing():
         query = cur.mogrify("SELECT practicumCourses.courseName FROM practicumCourses")
         cur.execute(query)
         courses = cur.fetchall()
-        print courses
+        #print courses
     except Exception as e:
         print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
         db.rollback()
@@ -884,7 +907,7 @@ def getPracticumBearing():
     
 @socketio.on('submitPractica', namespace='/practica')
 def submitPractica(assignment):
-    print(assignment)
+    #print(assignment)
     #TODO: insert/update in database
     result = defaultdict(list)
     #meetingDays table
@@ -897,7 +920,7 @@ def submitPractica(assignment):
         cur.execute(query)
         result = cur.fetchone()[0]
     except Exception as e:
-        print("meetingSelect error")
+        #print("meetingSelect error")
         print(e)
     
     if not result:
@@ -909,22 +932,22 @@ def submitPractica(assignment):
         except Exception as e:
             print(e)
     meetingId = result 
-    print(meetingId)
+    #print(meetingId)
         
     practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
     #insert into practicumArrangement
     try:
-        print("trying...")
+        #print("trying...")
         db = connect_to_db()
         cur = db.cursor()
-        print(practicaInsert)
+        #print(practicaInsert)
         cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
         db.commit()
         result = cur.fetchone()[0]
-        print(result)
+        #print(result)
     except Exception as e:
         print(e)
-    print("inserted..")    
+    #print("inserted..")    
     
 @socketio.on('deletePractica', namespace='/practica')
 def deletePractica(assignment):
