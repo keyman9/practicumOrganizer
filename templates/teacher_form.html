@@ -48,7 +48,7 @@
 
     <div class="row">
         <div class="col-md-4 col-md-offset-2">
-            <form name="studentForm" method="post" action="" ng-submit="submit()">
+            <form name="teacherForm">
                 <div class="form-group" ng-class="{'has-error': invalidFirstName}">
                     <span>First Name</span><span ng-if="firstName===undefined || invalidFirstName"><small class="error">&nbsp;&nbsp;*</small></span>
                     <input type="text" class="form-control" name="firstname" id="firstname" ng-model="firstName" ng-blur="validateFirstName()" required>
@@ -102,22 +102,22 @@
                         </select>
                     </div>
                     <div class="col-md-4" ng-show="isElementary(school)">
-                        <span>Grade Level/ Subject Taught</span><span ng-if="$parent.gradeLevel===undefined || invalidGrade || $parent.gradeLevel===''"><small class="error">&nbsp;&nbsp;*</small></span>
+                        <span>Grade Level/ Subject Taught</span><span ng-show="otherCheck($parent.gradeLevel, invalidGrade)"><small class="error">&nbsp;&nbsp;*</small></span>
                         <select class="form-control" id="gradeLevel" name="gradeLevel" ng-model="$parent.gradeLevel" ng-change="initializeElemClasses($parent.gradeLevel)" required>
                             <option ng-repeat="grade in elemGradesAndSubjects">{{ '{{grade}}' }}</option>
                             <span class="error" ng-if="invalidGrade"><em>Invalid Grade</em></span>
                         </select>
                     </div>
                     <div class="col-md-4" ng-show="isOther(school)">
-                        <span>Do you work at multiple schools?<span ng-if="$parent.isTravelTeacher===undefined || invalidTravel"></span><small class="error">&nbsp;&nbsp;*</small></span>
-                        <select class="form-control" id="travelTeacher" name="travelTeacher" ng-model="$parent.isTravelTeacher" ng-change="print($parent.isTravelTeacher)" required>
+                        <span>Do you work at multiple schools?</span><span ng-show="isTravelTeacherUndefined()"><small class="error">&nbsp;&nbsp;*</small></span>
+                        <select class="form-control" id="travelTeacher" name="travelTeacher" ng-model="isTravelTeacher" ng-change="print(isTravelTeacher)" required>
                             <option ng-value="true">Yes</option>
                             <option ng-value="false">No</option>
                         </select>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12" ng-hide="isTravelTeacher===false">
+                    <div class="col-md-12" ng-show="allOther(school, schoolDivision, isTravelTeacher)">
                         <br/>
                         <div class="form-group" ng-class="{'has-error': invalidSchool}">
                             <span>Enter School Name:</span><span ng-if="$parent.otherSchool===undefined || invalidSchool || $parent.otherSchool===''"><small class="error">&nbsp;&nbsp;*</small></span>
@@ -157,7 +157,7 @@
         </div>
     </div>
     
-    <div ng-show="isElementary(school) && $parent.gradeLevel.length > 0">
+    <div ng-show="isElementary(school) && gradeLevels.length > 0">
         <div class="row" >
             <div class="col-md-2 col-md-offset-5">
                 <br />

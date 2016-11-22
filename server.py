@@ -12,6 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from db import *
+import report as Report
 import uuid
 import string
 import random
@@ -32,35 +33,23 @@ globalDict = {'accessCode': ''}
 loginQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
 updatePasswordQuery = "UPDATE login SET password=crypt(%s, gen_salt('bf')) WHERE passwordid = 1"
 
-
-studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
-endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
-meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
-meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
-
-prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
-enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
-availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"
-
 @socketio.on('submit', namespace='/student')
 def submitStudent(data):
+<<<<<<< HEAD
     print(data)
     #print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
     #print(studentData)
+=======
+>>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
     error = False
-    msg = ""
-    
-    #student Table
+    msg = ''
     try:
-        db = connect_to_db()
-        cur = db.cursor()
-        #cur.mogrify(studentTable, studentData)
-        cur.execute(studentTable, studentData)
-        db.commit()
+        submit_student(data)
+        msg = "Your information has been submitted!"
     except Exception as e:
-        error = True
         print(e)
+<<<<<<< HEAD
     
     #endorsement Table
     for endorsement in data['endorsements']:
@@ -121,6 +110,9 @@ def submitStudent(data):
     if not error:
         msg = "Your information has been submitted!"
     else:
+=======
+        error = True
+>>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
         msg = "There was an error submitting your information. Try again."
     
     emit("submissionResult", {"error": error, "msg": msg})
@@ -354,21 +346,16 @@ def submitTeacher(data):
         msg = "There was an error submitting your information. Try again."
     
     emit("submissionResult", {"error": error, "msg": msg})
+
  
 #@socketio.on('loadTeachers', namespace='/practica') 
 #def loadTeachers(): 
 ##TODO:SIMILAR TO BELOW
 ##     POPULATE TEACHER LIST IN PRACTICA PAGE
 
-selectStudents = "SELECT * FROM students"
-selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
-availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
-selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
-selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
-selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
-
 @socketio.on('loadStudents', namespace='/practica') 
 def loadStudents():
+<<<<<<< HEAD
     
     students = []
     studentsFromDB = []
@@ -521,6 +508,10 @@ def loadStudents():
     #print(listOfStudents)
     
     emit('loadStudents', listOfStudents)
+=======
+    students = load_students()
+    emit('loadStudents', students)
+>>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
 
 selectTeachers = "SELECT * FROM teachers"
 availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
@@ -723,42 +714,43 @@ def logout():
     session.clear()
     flash('You have successfully logged out!')
     return redirect(url_for('login'))
+
+
     
 @app.route('/practica', methods=['GET', 'POST'])
-def assignPractica():
+def practica():
+    selectPasswordQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
     hasRedirect = False
     error = ''
+    
     if request.method == "POST":
         if 'password' in request.form:
             pd = request.form['password']
             hasRedirect = True
-        
-        db = connect_to_db()
-        cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-        cur.execute("""SELECT passwordid FROM login WHERE password = crypt(%s, password)""",(pd,))
-        results = cur.fetchone()
+        results = select_query_db(selectPasswordQuery , (pd,), True)
+        
         if not results:
-            error+= 'Incorrect Password.\n'
+            error += 'Incorrect Password.\n'
             flash('Invalid Password')
-            
             hasRedirect = False
+            
         else:
             session['userid'] = results['passwordid']
             session['loggedIn'] = True
-            
-        
-        cur.close()
-        db.close()
+
         if hasRedirect:
             return render_template('practicum_assignment.html')
-        return redirect(url_for('login'))
+        else:    
+            return redirect(url_for('login'))
+        
     else:
-        if session and 'loggedIn' in session:
+        if session and session['loggedIn']:
             return render_template('practicum_assignment.html')
         else:
             flash('Please log in to access practica')
             return redirect(url_for('login'))
+        
 
 @socketio.on('forgotPassword', namespace='/login') 
 def forgotPassword():
@@ -766,32 +758,24 @@ def forgotPassword():
     chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
     accessCode = ''.join(random.SystemRandom().choice(chars) for _ in range(10))
     globalDict['accessCode'] = accessCode
-    print accessCode
-    message = "A password reset has been requested for the Practicum Organizer application.\n\n" + \
+    
+    TEXT = "A password reset has been requested for the Practicum Organizer application.\n\n" + \
     "If you did not make this request, you can ignore this email. This password reset can only be made by those who have access to the login site." + \
     "It does not indicate that the application is in any danger of being accessed by someone else.\n\n" + \
     "The access code to reset your password is: " + accessCode + "\n\nThank you."
     # emailMSG = "Your new password is:  " + accessCode + "\n\nThank you, \nBuyMyBooks"
-    print(message)
-    msg = MIMEText(message)
-    subject = '[Practicum Organizer] Reset password'
+    SUBJECT = '[Practicum Organizer] Reset password'
     From = 'practicumorganizer@gmail.com'
-    To = 'lcarter3@mail.umw.edu' #Just to test
+    To = 'sheldonmcclung@gmail.com' #Just to test
     
     try:
         #smtpObj = smtplib.SMTP("smtp.gmail.com", 587)
         smtpObj = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        print("HERE 1")
         #server.set_debuglevel(1)
         smtpObj.ehlo()
-        print("Here 2")
-        print("Here 3")
         smtpObj.login('practicumorganizer@gmail.com', 'Grown Jacob Broom Spar')
-        print("Here 4")
-        smtpObj.sendmail(From, To, msg.as_string())
-        print("Here 5")
+        message = 'Subject: %s\n\n%s' % (SUBJECT, TEXT)
         smtpObj.close()
-        print("Here 6")
         print "Successfully sent email"
     except Exception as e:
         print(e)
@@ -819,41 +803,37 @@ def updatePassword(payload):
     print("Payload: %s", payload)
     newpass = payload['password']
     
-    db = connect_to_db()
-    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
-    try:
-        query = cur.mogrify(updatePasswordQuery, (newpass, )) 
-        print query
-        cur.execute(query)
-        db.commit()
-        print "Password changed"
-    except Exception as e:
-        print("Error: Invalid UPDATE in 'login' table: %s" % e)
-        db.rollback()
+    write_query_db(updatePasswordQuery, (payload['password'], ))
     
     emit('updatePassword')
     
+#################################    
+
+selectSchoolDivisions = "SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) FROM \
+        schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
+        GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName"
+
 @socketio.on('getDivisions', namespace='/student')
 def getDivisionsForStudent():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
     
 @socketio.on('getDivisions', namespace='/teacher')
 def getDivisionsForTeacher():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
     
 @socketio.on('getDivisions', namespace='/practica')
 def getDivisionsForPractica():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
 
 @socketio.on('getDivisions', namespace='/reports')
 def getDivisionsForReports():
-    divisions = getSchoolDivisions()
+    divisions = select_query_db(selectSchoolDivisions)
     emit("retrievedDivisions", divisions)
 
+<<<<<<< HEAD
 def getSchoolDivisions():
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -872,22 +852,27 @@ def getSchoolDivisions():
         print("Error: Invalid SELECT on 'schoolDivision' table: %s" % e)
         db.rollback()
     return schoolDivisions
+=======
+######################################################
+>>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
 
+selectPracticumCourses = "SELECT practicumCourses.courseName FROM practicumCourses"
 
 @socketio.on('getPracticumBearing', namespace='/student')
 def getPracticumBearingForStudent():
-    courses = getPracticumBearing()
+    courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
     
 @socketio.on('getPracticumBearing', namespace='/practica')
 def getPracticumBearingForAssignment():
-    courses = getPracticumBearing()
+    courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
 
 @socketio.on('getPracticumBearing', namespace='/reports')
 def getPracticumBearingForReports():
-    courses = getPracticumBearing()
+    courses = select_query_db(selectPracticumCourses)
     emit("retrievedPracticumBearing", courses)
+<<<<<<< HEAD
 
 def getPracticumBearing():
     db = connect_to_db()
@@ -904,7 +889,11 @@ def getPracticumBearing():
         print("Error: Invalid SELECT on 'practicumCourses' table: %s" % e)
         db.rollback()
     return courses
+=======
+>>>>>>> ab3a0676e1bccd8dc9ab0dc3dac78b62a71c4ba8
     
+##########################################################
+
 @socketio.on('submitPractica', namespace='/practica')
 def submitPractica(assignment):
     #print(assignment)
@@ -958,14 +947,18 @@ def deletePractica(assignment):
 @socketio.on('createReport', namespace='/reports')
 def createReport(reportType, limit):
     print(limit);
+    
     if reportType == "school":
         print("school")
+       
         shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/schoolreport.xlsx')
     elif reportType == "division":
         print("division")
         shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/divisionreport.xlsx')
     elif reportType == "course":
         print("course")
+        
+        Report.create_course_report() ########
         shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
     else:
         print("invalid report type")

@@ -305,10 +305,11 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
             stu.hasCar = true;
         }
         
-        if ($scope.transportation === "none" || $scope.transportation != "self"){
+        if ($scope.transportation === "none" || $scope.transportation === "self"){
     		$scope.passengerNum = 0;
     	} 
         
+        console.log($scope.passengerNum)
         stu.passengers = $scope.passengerNum;
         
         console.log(stu);
