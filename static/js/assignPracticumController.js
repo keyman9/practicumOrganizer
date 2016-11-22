@@ -84,7 +84,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.showAssignedTeachers = false;
     $scope.showAssignedStudents = false;
     $scope.practicaErrorMsg = [];
-    $scope.deleteString = "";
+    $scope.deleteTeach= undefined;
+    $scope.deletePrac = undefined;
     
     $scope.selectEndorsement = false;
     $scope.selectCourse = false;
@@ -155,24 +156,34 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     });
     
     $scope.initializeTeachers = function(){
-        for (var i = 0; i < 5; i++){
-            var t = new Teacher();
-            t.initialize(teacher);
-            $scope.teachers.push(t);
-            var t2 = new Teacher();
-            t2.initialize(teacher1);
-            $scope.teachers.push(t2);
-        }
+        var t = new Teacher();
+        t.initialize(teacher);
+        $scope.teachers.push(t);
+        var t2 = new Teacher();
+        t2.initialize(teacher1);
+        $scope.teachers.push(t2);
         // console.log($scope.teachers);
     };
     
     $scope.deleteTeacher = function(index){
-        console.log("in delete teacher");
-        var teacher = $scope.teachers[index];
-        var id = teacher.id
-        $scope.deleteString = teacher.firstName + " " + teacher.lastName;
-        console.log($scope.deleteString);
+        $scope.deleteTeach = $scope.teachers[index];
+        console.log($scope.deleteTeach);
         $('#deleteModal').modal('show');
+    }
+    
+    $scope.delete = function(){
+        if ($scope.deleteTeach){
+            //make db call
+        } else if ($scope.deletePrac){
+            //make db call
+        }
+        $scope.deletePrac = undefined;
+        $scope.deleteTeach = undefined;
+    }
+    
+    $scope.cancelDelete = function(){
+        $scope.deleteTeach = undefined;
+        $scope.deletePrac = undefined;
     }
     
     $scope.addPracticumAssignment = function(){
@@ -197,7 +208,9 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     }
     
     $scope.deletePublishedPracticumAssignment = function(index){
-        //TODO: show modal, emit to server
+        $scope.deletePrac = $scope.publishedPracticumAssignments[index];
+        console.log($scope.deletePrac);
+        $('#deleteModal').modal('show');
     }
 
     $scope.savePracticumAssignment = function(index){
@@ -260,7 +273,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.setCurrentTeacher = function(teacher){
         $scope.currentTeacher = teacher;
-        console.log($scope.currentTeacher);
+        //console.log($scope.currentTeacher);
     };
     
     $scope.getAvailabilityString = function(av){
