@@ -42,7 +42,6 @@ def submitStudent(data):
         msg = "Your information has been submitted!"
     except Exception as e:
         print(e)
-        error = True
         msg = "There was an error submitting your information. Try again."
     
     emit("submissionResult", {"error": error, "msg": msg})
@@ -78,7 +77,7 @@ def submitTeacher(data):
         cur = db.cursor()
         cur.execute(selectTeacher,(teacherData[0],))
         teacherId = cur.fetchone()[0]
-        print(teacherId)
+        #print(teacherId)
         if teacherId:
             teacherPresent = True
     except Exception as e:
@@ -90,7 +89,7 @@ def submitTeacher(data):
         try:
             db = connect_to_db()
             cur = db.cursor()
-            print(cur.mogrify(schoolIdByDivision,(data['school'],)))
+            #print(cur.mogrify(schoolIdByDivision,(data['school'],)))
             #get schoolId
             cur.execute(schoolIdByDivision,(data['school'],))
             db.commit()
@@ -102,14 +101,14 @@ def submitTeacher(data):
                 cur = db.cursor()
                 #print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
                 if teacherPresent:
-                    print("teacherPresent")
+                    #print("teacherPresent")
                     cur.execute(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0]))
                 else:   
-                    print("teacherNotPresent")
+                    #print("teacherNotPresent")
                     cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
                 db.commit()
                 teacherId = cur.fetchone()[0]
-                print(teacherId)
+                #print(teacherId)
             except Exception as e:
                 error = True
                 print(e)
@@ -118,7 +117,7 @@ def submitTeacher(data):
             print(e)
         
     else:
-        print("Else")
+        #print("Else")
         schoolDiv = data['schoolDivision']
         elementaryGrades = ['K','1','2','3','4','5','6','Art','Music']
         #select schoolid, divisionid
@@ -126,28 +125,28 @@ def submitTeacher(data):
         try:
             db = connect_to_db()
             cur = db.cursor()
-            print(cur.mogrify(schoolIdByDivision,(data['school'],)))
+            #print(cur.mogrify(schoolIdByDivision,(data['school'],)))
             #get schoolId
             cur.execute(schoolIdByDivision,(data['school'],))
             schoolIdDivId = cur.fetchone()[0]
             #remove braces and comma
             schoolIdDivId = schoolIdDivId[1:-1].split(',')
             #insert teacher
-            print(schoolIdDivId)
+            #print(schoolIdDivId)
             #try to select by email, and if so, update instead of inserting
             try:
                 cur = db.cursor()
                 #print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
                 if teacherPresent == True:
-                    print("teacherPresent")
-                    print(cur.mogrify(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0])))
+                    #print("teacherPresent")
+                    #print(cur.mogrify(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0])))
                     cur.execute(updateTeacher,(teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1],teacherData[0]))
                 else:
-                    print("teacherNotPresent")
+                    #print("teacherNotPresent")
                     cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
                 db.commit()
                 teacherId = cur.fetchone()[0]
-                print(teacherId)
+                #print(teacherId)
             except Exception as e:
                 error = True
                 print(e)
@@ -162,7 +161,7 @@ def submitTeacher(data):
             #courseName, start, end, teacherid, schoolid
             
             meetingId = []
-            print("elementary")
+            #print("elementary")
             #get meetingDaysID for all non-electives
             try:
                 db = connect_to_db()
@@ -190,7 +189,7 @@ def submitTeacher(data):
                 elif classType == 'elemElectives':
                     #for each course
                     for electiveCourse in courseInfo:
-                        print(electiveCourse)
+                        #print(electiveCourse)
                         days = ['monday','tuesday','wednesday','thursday','friday']
                         courseDays = []
                         for day in days:
@@ -198,12 +197,12 @@ def submitTeacher(data):
                                 courseDays.append(electiveCourse[day])
                             else:
                                 courseDays.append(False)
-                        print(courseDays)    
+                        #print(courseDays)    
                         #insert days returning meetingid
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            print(cur.mogrify(meetingInsert,(courseDays)))
+                            #print(cur.mogrify(meetingInsert,(courseDays)))
                             cur.execute(meetingInsert,(courseDays))
                             db.commit()
                             courseId = cur.fetchone()[0] ##meetingid,
@@ -214,7 +213,7 @@ def submitTeacher(data):
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            print(cur.mogrify(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId)))
+                            #print(cur.mogrify(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId)))
                             cur.execute(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId))
                             db.commit()
                         except Exception as e:
@@ -226,7 +225,7 @@ def submitTeacher(data):
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
-                            print(cur.mogrify(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId)))
+                            #print(cur.mogrify(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId)))
                             cur.execute(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId))
                             db.commit()
                         except Exception as e:
@@ -254,11 +253,11 @@ def submitTeacher(data):
                             error = True
                             print(e)
                 else: #timeSlot == 'secondaryClasses':
-                    print("blockClasses")
-                    print(timeSlot)
-                    print(blockInfo)
+                    #print("blockClasses")
+                    #print(timeSlot)
+                    #print(blockInfo)
                     for secondaryClass in blockInfo:
-                        print(secondaryClass)
+                        #print(secondaryClass)
                         if 'dayType' not in secondaryClass:
                             secondaryClass['dayType'] = "Standard"
                         try:
@@ -288,140 +287,66 @@ def loadStudents():
     students = load_students()
     emit('loadStudents', students)
 
-"""selectTeachers = "SELECT * FROM teachers"
+
+selectTeachers = "SELECT * FROM teachers"
 availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
 selectTeacherElem = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
-selectTeacherSec = "SELECT * FROM elementarySchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
+selectTeacherSec = "SELECT * FROM middleSchoolSchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
 
 @socketio.on('loadTeachers', namespace='/practica') 
 def loadTeachers():
     
     teachers = []
-    teachersFromDB = []
+    teachersFromDB = defaultdict(list)
     
     hasError = False
     
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
-    # Grab all students
+    # Grab all teachers
     try:
-        query = cur.mogrify(selectStudents) 
+        query = cur.mogrify(selectTeachers) 
         
         cur.execute(query)
-        studentsFromDB = cur.fetchall()
-        print("Students", studentsFromDB)
+        teachersFromDB = cur.fetchall()
+        print(teachersFromDB)
         
     except Exception as e:
-        print("Error: Invalid SELECT on 'students' table: %s" % e)
+        print("Error: Invalid SELECT on 'teachers' table: %s" % e)
         db.rollback()
         hasError = True
     
+    #Elementary Schedules
     if not hasError:
-        # Grab all students practicas
         try:
-            query = cur.mogrify(selectStudentPractica) 
-            
+            query = cur.mogrify(selectTeacherElem)
             cur.execute(query)
-            studentsPractica = cur.fetchall()
-            print("Previous Pactica", studentsPractica)
-            
+            teachersElementary = cur.fetchall()
+            print("Teachers Elementary", teachersElementary)
         except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'availableTimes' tables: %s" % e)
-            db.rollback()
+            print("Error: Invalid SELECT on 'elementarySchedule': %s", e)
             hasError = True
-    
-    if not hasError:    
-        # Grab all students availablities
-        try:
-            query = cur.mogrify(selectStudentAvailability) 
-            
-            cur.execute(query)
-            studentsAvailability = cur.fetchall()
-            print("Availability", studentsAvailability)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'availableTimes' or 'meetingDays' table: %s" % e)
-            db.rollback()
-            hasError = True
-    
+
+    #Secondary Schedules
     if not hasError:
-        # Grab all students endorsements
         try:
-            query = cur.mogrify(selectStudentEndorsements) 
-            
+            query = cur.mogrify(selectTeacherSec)
             cur.execute(query)
-            studentsEndorsements = cur.fetchall()
-            print("Endorsements", studentsEndorsements)
-            
+            teachersSecondary = cur.fetchall()
+            print("Teachers Secondary", teachersSecondary)
         except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'endorsements' table: %s" % e)
-            db.rollback()
+            print("Error: Invalid SELECT on 'middleSchoolSchedule': %s", e)
             hasError = True
     
-    if not hasError:
-        # Grab all students enrolled courses
-        try:
-            query = cur.mogrify(selectStudentCourses) 
+    #
+    #if not hasError:
+    #    try:
+            #query = cur.mogrify()
             
-            cur.execute(query)
-            studentsCourses = cur.fetchall()
-            print("Courses", studentsCourses)
-            
-        except Exception as e:
-            print("Error: Invalid SELECT on 'students' or 'enrolledcourses' table: %s" % e)
-            db.rollback()
-            hasError = True
-            
-    listOfStudents = []
-    
-    for student in studentsFromDB:
-        newStudent = {}
-        newStudent['email'] = student['email']
-        newStudent['firstName'] = student['firstname']#
-        newStudent['lastName'] = student['lastname']#
-        newStudent['hasCar'] = student['hascar']#
-        newStudent['passengers'] = student['passengers'] #
-        newStudent['previousPractica'] = []#
-        newStudent['availability'] = []#
-        newStudent['endorsements'] = []#
-        newStudent['enrolledClasses'] = []#
+
         
-        ###
-        for student in studentsPractica:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['school'] = student['school']
-                if student['grade'] == 0:
-                    payload['course'] = student['course']
-                else:
-                    payload['course'] = student['grade']
-                
-                
-                #col.remove(newStudent['email'])
-                newStudent['previousPractica'].append(payload)
-        
-        print(newStudent['previousPractica'])
-        
-        
-        ##  availableTimes.starttime, availableTimes.endtime, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday
-        for student in studentsAvailability:
-            if newStudent['email'] == student['studentemail']:
-                payload = {}
-                payload['startTime'] = student['starttime']
-                payload['endTime'] = student['endtime']
-                payload['monday'] = student['monday']
-                payload['tuesday'] = student['tuesday']
-                payload['wednesday'] = student['wednesday']
-                payload['thursday'] = student['thursday']
-                payload['friday'] = student['friday']
-                
-            
-                newStudent['availability'].append(payload)
-        
-        print(newStudent['availability'])
-        
-        endorsementPayload = []   
+"""        endorsementPayload = []   
         for student in studentsEndorsements:
             
             if newStudent['email'] == student['studentemail']:
@@ -444,6 +369,7 @@ def loadTeachers():
     print(listOfStudents)
     
     emit('loadStudents', listOfStudents)"""
+    #emit('loadTeachers',)
 
 
 @socketio.on('deleteTeacher', namespace='/practica') 
@@ -492,6 +418,7 @@ def logout():
 
 #################################  
     
+
 @app.route('/practica', methods=['GET', 'POST'])
 def practica():
     selectPasswordQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
@@ -503,7 +430,7 @@ def practica():
             pd = request.form['password']
             hasRedirect = True
 
-        results = select_query_db(selectPasswordQuery , (pd,), True)
+        results = select_query_db(selectPasswordQuery, (pd, ), True)
         
         if not results:
             error += 'Incorrect Password.\n'
@@ -610,6 +537,7 @@ def getDivisionsForReports():
 
 ######################################################
 
+
 selectPracticumCourses = "SELECT practicumCourses.courseName FROM practicumCourses"
 
 @socketio.on('getPracticumBearing', namespace='/student')
@@ -644,7 +572,7 @@ def submitPractica(assignment):
         cur.execute(query)
         result = cur.fetchone()[0]
     except Exception as e:
-        print("meetingSelect error")
+        #print("meetingSelect error")
         print(e)
     
     if not result:
@@ -716,8 +644,6 @@ def deletePracticum(pracId):
     db.close()
     emit("deletedPracticum", error)
     
-    
-    
 ##########################################################
 
 @socketio.on('createReport', namespace='/reports')
@@ -767,4 +693,4 @@ def deleteReport():
         os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
     
 if __name__ == '__main__':
-    socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
+    socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug=True)
