@@ -28,12 +28,12 @@
 
 <div class="container" id="container" ng-controller="StudentFormController">
      <br id="top" /> 
-     <div class="alert alert-success alert-dismissible" role="alert" id="submitSuccess" ng-if="submissionSuccess">
+     <div class="alert alert-success alert-dismissible" role="alert" id="submitSuccess" ng-show="submissionSuccess">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{submissionMsg}}' }}
     </div>
 
-    <div class="alert alert-warning alert-dismissible" role="alert" id="submitFail" ng-if="submissionFailure">
+    <div class="alert alert-warning alert-dismissible" role="alert" id="submitFail" ng-show="submissionFailure">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{submissionMsg}}' }}
     </div>

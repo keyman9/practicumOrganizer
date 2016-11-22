@@ -286,12 +286,13 @@ def submitTeacher(data):
 def loadStudents():
     students = load_students()
     emit('loadStudents', students)
-    
+
 @socketio.on('loadTeachers', namespace='/practica') 
 def loadTeachers():
     teachers = load_teachers()
     emit('loadTeachers', teachers)
     
+
 @app.route('/')
 def mainIndex():
     return render_template('index.html', currentPage='home')
@@ -314,8 +315,6 @@ def logout():
     flash('You have successfully logged out!')
     return redirect(url_for('login'))
 
-
-    
 @app.route('/practica', methods=['GET', 'POST'])
 def practica():
     selectPasswordQuery = "SELECT passwordid FROM login WHERE password = crypt(%s, password)"
@@ -327,7 +326,7 @@ def practica():
             pd = request.form['password']
             hasRedirect = True
 
-        results = select_query_db(selectPasswordQuery , (pd,), True)
+        results = select_query_db(selectPasswordQuery, (pd, ), True)
         
         if not results:
             error += 'Incorrect Password.\n'
@@ -551,4 +550,4 @@ def deleteReport():
         os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
     
 if __name__ == '__main__':
-    socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
+    socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug=True)
