@@ -54,6 +54,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.firstName = undefined;
     $scope.lastName = undefined;
     $scope.email = undefined;
+    $scope.grade= undefined;
     $scope.availability = [];
     $scope.previousPractica = [];
     $scope.noPreviousPractica = false;
@@ -261,17 +262,29 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     
     $scope.otherCheck= function(gradeLevel, invalidGrade)
     {
-        console.log("before");
-        console.log(gradeLevel);
-        var grade= String(gradeLevel);
-        console.log("Hey im here. Why don't you look here");
-        console.log(grade);
+        // console.log("before");
+        // console.log(gradeLevel);
+        // var grade= String(gradeLevel);
+        // console.log("Hey im here. Why don't you look here");
+        // console.log(grade);
         
         if(gradeLevel !== undefined && gradeLevel !== "" && invalidGrade === "false")
         {
             return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
+        
+        // if(gradeLevel !== undefined && gradeLevel !== "" && invalidGrade === "false")
+        // {
+        //     return true;
+        // }
+        // else
+        // {
+        //     return false;
+        // }
     };
     
     $scope.isTravelTeacherUndefined = function()
