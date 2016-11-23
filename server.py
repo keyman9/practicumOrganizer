@@ -83,17 +83,6 @@ def submitTeacher(data):
             teacherPresent = True
     except Exception as e:
         print(e)
-        
-    ##if not teacherPresent:
-     ##   try:
-      ##      db = connect_to_db()
-    ##        cur = db.cursor()
-     ##       cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
-     ##       db.commit()
-     ##       teacherId = cur.fetchone()[0]
-     ##       db.close()
-     ##   except Exception as e:
-     ##       print(e)
             
     ###edge case -- Other School, no course info
     if data['school'] == "Other":
@@ -307,11 +296,6 @@ def submitTeacher(data):
     emit("submissionResult", {"error": error, "msg": msg})
 
  
-#@socketio.on('loadTeachers', namespace='/practica') 
-#def loadTeachers(): 
-##TODO:SIMILAR TO BELOW
-##     POPULATE TEACHER LIST IN PRACTICA PAGE
-
 @socketio.on('loadStudents', namespace='/practica') 
 def loadStudents():
     students = load_students()
