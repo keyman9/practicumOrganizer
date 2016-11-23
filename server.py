@@ -289,6 +289,17 @@ def loadStudents():
 
 @socketio.on('loadTeachers', namespace='/practica') 
 def loadTeachers():
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    print("LOAD TEAACHERS")
+    
     teachers = load_teachers()
     emit('loadTeachers', teachers)
     
