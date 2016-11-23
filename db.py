@@ -63,10 +63,7 @@ def delete_query_db(query, data):
     hasError = False
     db = connect_to_db()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    
-    results = []
     try:
-        
         mog = cur.mogrify(query, data)
         cur.execute(mog)
         db.commit()
@@ -78,7 +75,6 @@ def delete_query_db(query, data):
         
     cur.close()
     db.close()
-    
     return hasError
     
 

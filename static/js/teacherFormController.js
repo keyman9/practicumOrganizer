@@ -169,6 +169,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             $scope.submissionSuccess = true;
             $scope.submissionFailure = false;
             $scope.resetForm();
+            console.log($scope.gradeLevel);
         }
         $scope.submissionMsg = result.msg;
         $scope.$apply();
@@ -201,14 +202,14 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         return false;
     };
     
-    $scope.resetSchoolType = function(schoolLevel){
+    $scope.resetSchoolType = function(schoolLevel,gradeLevel){
         $scope.otherSchool = '';
         $scope.otherDivision='';
-        $scope.teacherType = schoolLevel;
-        $scope.gradeLevel = '';
         $scope.travelTeacher = '';
-        
-        
+        if(schoolLevel === "Elementary")
+            $scope.teacherType = schoolLevel;
+        if(schoolLevel === "Secondary")
+        $scope.gradeLevel = gradeLevel;
         
     };
     
@@ -238,6 +239,8 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         
     };
     
+    //If the value that was selected and entered into the function equals "Other"
+    //return true so we know what to show/hide
     $scope.isOther = function(school){
         
         var sch = String(school);
@@ -250,6 +253,9 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         
     };
     
+    //If school and division are both equal to "Other" and isTravelTeacher is not false
+    //Return true so we can show a different input field for the user to enter a new school
+    //Else return false
     $scope.allOther = function(school, division, isTravelTeacher){
         var div= String(division);
         var sch =String(school);
@@ -260,6 +266,8 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         return false;
     };
     
+    //This function checks to see if the gradeLevel entered is not undefined and
+    //
     $scope.otherCheck= function(gradeLevel, invalidGrade)
     {
         // console.log("before");
@@ -548,6 +556,17 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         $scope.firstName = undefined;
         $scope.lastName = undefined;
         $scope.email = undefined;
+        $scope.schoolDivision= undefined;
+        $scope.school = undefined;
+        $scope.gradeLevel= '';
+        $scope.travelTeacher= undefined;
+        $scope.otherSchool= undefined;
+        $scope.semesterHosting=undefined;
+        //$scope.blockSchedule=undefined;
+        //$scope.elemCourse=undefined;
+        //$scope.item.startTime=undefined;
+        //$scope.item.endTime=undefined;
+        
         $scope.availability = [];
         $scope.previousPractica = [];
         $scope.noPreviousPractica = false;
@@ -701,6 +720,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     
     $scope.initializeElemClasses = function(subject){
         $scope.gradeLevel = subject;
+        console.log("HEY NOW")
         console.log($scope.gradeLevel);
         $scope.isElectiveTeacher = false
         for(var i=0; i < $scope.elemSubjects.length; i++){
