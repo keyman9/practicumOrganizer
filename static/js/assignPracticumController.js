@@ -173,6 +173,16 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.$apply();
     });
     
+    $scope.initializePractica = function(){
+        socket.emit('loadPractica');
+    };
+    
+    socket.on('loadPractica', function(results){
+        console.log(results);
+        $scope.publishedPracticumAssignments = results;
+        $scope.$apply();
+    });
+    
     $scope.addPracticumAssignment = function(){
         var a = new PracticumAssignment();
         a.student = {};
@@ -659,6 +669,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.initializeStudents();
     $scope.initializeTeachers();
+    $scope.initializePractica();
     $scope.addPracticumAssignment();
     $scope.getPracticumBearing()
     $scope.getSchoolDivisions();

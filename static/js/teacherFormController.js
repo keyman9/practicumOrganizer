@@ -209,7 +209,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         if(schoolLevel === "Elementary")
             $scope.teacherType = schoolLevel;
         if(schoolLevel === "Secondary")
-        $scope.gradeLevel = gradeLevel;
+            $scope.gradeLevel = gradeLevel;
         
     };
     
@@ -307,7 +307,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.isSecondary = function(school){
         
         var sch = String(school);
-        if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
+        if (sch.indexOf("Middle") > 0 || sch.indexOf("High") > 0){
             $scope.resetSchoolType("Secondary");
             return true;
         } else {
@@ -370,27 +370,51 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             teacher.hostFall = true;
             teacher.hostSpring = true;
         }
-        console.log("Im here. Look right beneath me")
-        console.log($scope.gradeLevel);
-        //teacher.grade = $scope.gradeLevel;
+       
         if($scope.gradeLevel !== undefined){
             teacher.grade = $scope.gradeLevel;
-            console.log("Look here bro")
-            console.log(teacher.grade);
         }
         
+        console.log($scope.teacherType);
         var classes = {}
         if($scope.teacherType == "Elementary"){
+            console.log("Elementary Classes");
+            console.log($scope.elemClasses);
+            //change timestamp to string for regular classes
+            for(var i = 0; i < $scope.elemClasses.length; i++){
+                $scope.elemClasses[i]['startTime'] = $scope.elemClasses[i]['startTime'].toLocaleTimeString();
+                $scope.elemClasses[i]['endTime'] = $scope.elemClasses[i]['endTime'].toLocaleTimeString();
+            }
             classes['elemClasses'] = $scope.elemClasses;
+            //change timestamp to string for electives
+            for(var i = 0; i < $scope.elemElectives.length; i++){
+                $scope.elemElectives[i]['startTime'] = $scope.elemElectives[i]['startTime'].toLocaleTimeString();
+                $scope.elemElectives[i]['endTime'] = $scope.elemElectives[i]['endTime'].toLocaleTimeString();
+            }
             classes['elemElectives'] = $scope.elemElectives;
-            classes['recess'] = $scope.recess;
+            //change timestamp to string for recess 
+            if($scope.recess != []){
+                console.log($scope.recess);
+                $scope.recess['startTime'] = $scope.recess['startTime'].toLocaleTimeString();
+                $scope.recess['endTime'] = $scope.recess['endTime'].toLocaleTimeString();
+                classes['recess'] = $scope.recess;
+            }
+            //change timestamp to string for lunch
+            $scope.lunchBreak['startTime'] = $scope.lunchBreak['startTime'].toLocaleTimeString();
+            $scope.lunchBreak['endTime'] = $scope.lunchBreak['endTime'].toLocaleTimeString();
             classes['lunchBreak'] = $scope.lunchBreak;
+            
             teacher.elementarySchedule = classes;
+            //console.log(teacher.elementarySchedule);
+            
         } else if($scope.teacherType == "Secondary"){
+            console.log("Secondary Classes");
+            
             classes['secondaryClasses'] = $scope.secondaryClasses;
             classes['planning'] = $scope.secondaryPlanning;
             classes['secondaryLunch'] = $scope.secondaryLunch;
             teacher.secondarySchedule = classes;
+            //console.log(teacher.secondarySchedule);
         }
         
         
@@ -617,7 +641,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     }
     
     $scope.initializeSecondaryCourses = function(){
-        console.log("TEST")
         $scope.secondaryClasses = [];
         $scope.numCourses = 4;
         if($scope.isBlockSchedule($scope.blockSchedule)){
