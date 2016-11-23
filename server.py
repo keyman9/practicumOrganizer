@@ -235,7 +235,7 @@ def submitTeacher(data):
         else:
             #secondary schedule select, else insert to reduce database load
              #dayType,block,course,start,end,teacherid,schoolid
-            for timeSlot,blockInfo in data['secondarySchedule'].iteritems():
+            for timeSlot,blockInfo in data['secondarySchedule']:
                 if timeSlot == 'planning' or timeSlot == 'secondaryLunch':
                     blockNumber = 0 #magic number :( 1-8 are courses, 9 is lunch)
                     if timeSlot == 'secondaryLunch':
@@ -257,7 +257,7 @@ def submitTeacher(data):
                     #print(timeSlot)
                     #print(blockInfo)
                     for secondaryClass in blockInfo:
-                        #print(secondaryClass)
+                        print(secondaryClass)
                         if 'dayType' not in secondaryClass:
                             secondaryClass['dayType'] = "Standard"
                         try:
@@ -303,6 +303,10 @@ def loadTeachers():
     teachers = load_teachers()
     emit('loadTeachers', teachers)
     
+@socketio.on('loadPractica', namespace='/practica')
+def loadPractica():
+    practica = load_practica()
+    emit('loadPractica',practica)
 
 @app.route('/')
 def mainIndex():

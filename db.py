@@ -184,5 +184,14 @@ def load_teachers():
     #print(queryResults)
     
     listOfTeachers = [teach.zip_teachers(teacher, queryResults) for teacher in teachersFromDB]
-    print(listOfTeachers)
-    return listOfTeachers    
+    #print(listOfTeachers)
+    return listOfTeachers
+
+selectPractica = "SELECT * FROM practicumArrangement AS p JOIN teachers AS t USING (teacherid) JOIN students AS s ON (p.studentemail = s.email)"
+    
+def load_practica():
+    
+    allPractica = select_query_db(selectPractica)
+    
+    print(allPractica)
+    return allPractica
