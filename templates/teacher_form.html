@@ -161,7 +161,7 @@
         <div class="row" >
             <div class="col-md-2 col-md-offset-5">
                 <br />
-                <h4>Class Times<span ng-if="invalidAvailability"><small class="error">&nbsp;&nbsp;*</small></span></h4>
+                <h4 ng-if="elemClasses.length > 0">Class Times<span ng-if="invalidAvailability"><small class="error">&nbsp;&nbsp;*</small></span></h4>
             </div>
         </div>
         <div class="row">
@@ -171,7 +171,7 @@
                         
                         <div class="col-md-1"></div>
                         <div class="col-md-3">
-                            <span>Subject</span><span ng-if="elemCourse===undefined || invalidCourse || elemCourse===''"><small class="error">&nbsp;&nbsp;*</small></span>
+                            <span>Subject</span>
                             <input class="form-control" type="text" name="elemCourse" id="elemCourse" ng-model="item.course" disabled>
                         </div>
                         
@@ -347,7 +347,7 @@
         <div class="row" >
             <div class="col-md-2 col-md-offset-5" ng-show="secondaryClasses.length > 0">
                 <br />
-                <h4>Class Times<span ng-if="invalidAvailability"><small class="error">&nbsp;&nbsp;*</small></span></h4>
+                <h4 ng-if="secondaryClasses.length > 0">Class Times<span ng-if="invalidAvailability"><small class="error">&nbsp;&nbsp;*</small></span></h4>
             </div>
         </div>
         <div class="row">
@@ -365,7 +365,7 @@
                         </div>
                         
                         <div class="col-md-3">
-                            <span>Subject</span>
+                            <span>Subject</span><span ng-if="item.course===undefined || item.course ===''"><small class="error">&nbsp;&nbsp;*</small></span>
                             <select class="form-control" id="course" name="course" ng-model="item.course" >
                                 <option ng-repeat="c in courses | orderBy:c">{{ '{{c}}' }}</option>
                                 <option>Other</option>

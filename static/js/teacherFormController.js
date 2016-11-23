@@ -45,7 +45,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.elemGradesAndSubjects = $scope.gradeLevels.concat($scope.elemSubjects);
 
     $scope.schoolDivisions = [];
-    $scope.practicumBearingClasses = [];
     
     $scope.firstName = undefined;
     $scope.lastName = undefined;
@@ -55,21 +54,17 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.invalidFirstName = false;
     $scope.invalidLastName = false;
     $scope.invalidEmail = false;
-    $scope.invalidEndorsement = false;
-    $scope.invalidEnrolledClass= false;
-    $scope.invalidTransportation= false;
     $scope.isTravelTeacher = undefined;
     $scope.invalidDivision= false;
     $scope.invalidGrade= false;
     $scope.invalidTravel= false;
-    $scope.invalidHosting= false;
     $scope.submissionSuccess = false;
     $scope.submissionFailure = false;
     $scope.submissionMsg = "";
     
-    $scope.school = '';
-    $scope.schoolDivision = '';
-    $scope.otherSchool = '';
+    $scope.school = undefined;
+    $scope.schoolDivision = undefined;
+    $scope.otherSchool= undefined;
     $scope.otherDivision='';
     $scope.otherGrade='';
     $scope.otherTravel='';
@@ -77,11 +72,11 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.gradeLevel = undefined;
     $scope.elemClasses = []
     $scope.elemElectives = [];
-    $scope.travelTeacher = '';
+    $scope.travelTeacher= undefined;
     $scope.otherHosting = '';
     var elemCourses = ['Writing', 'Reading', 'Math', 'Social Studies', 'Science']
     var elemElectives = ['Art','Computer', 'Library', 'Music', 'P.E.']
-    $scope.semesterHosting = '';
+    $scope.semesterHosting = undefined;
     $scope.secondaryClasses = [];
     $scope.isElectiveTeacher = false
     $scope.blockSchedule = ''
@@ -131,20 +126,6 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
          console.log($scope.schoolDivisions);
     });
     
-    $scope.getPracticumBearing = function(){
-        socket.emit('getPracticumBearing');
-    };
-    
-    socket.on("retrievedPracticumBearing", function(courses){
-        if (courses.length > 0){
-            for (var i=0; i < courses.length; i++){
-                $scope.practicumBearingClasses.push(courses[i][0]);
-            }
-        }
-        $scope.$apply();
-        // console.log($scope.practicumBearingClasses);
-    });
-    
     socket.on("submissionResult", function(result){
         console.log(result);
         if (result.error){
@@ -180,7 +161,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     $scope.resetSchoolType = function(schoolLevel,gradeLevel){
         $scope.otherSchool = '';
         $scope.otherDivision='';
-        $scope.travelTeacher = '';
+        $scope.travelTeacher = undefined;
         if (schoolLevel === "Elementary")
             $scope.teacherType = schoolLevel;
         if (schoolLevel === "Secondary")
@@ -492,34 +473,20 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         }
     }
     
-    $scope.validateHosting = function(){
-        var schoolpat = /(^[A-Z]{1})([A-Za-z\'\-\.\s]+$)/;
-    	var hosting = $scope.otherHosting;
-    	var testHosting = schoolpat.test(hosting);
-    	if (!testHosting){
-    		$scope.invalidHosting = true;
-    	} else {
-            $scope.invalidHosting = false;
-        }
-    }
-    
     $scope.formIsInvalid = function(){
-        // console.log("#################################");
-        // console.log("$scope.invalidFirstName: ", $scope.invalidFirstName);
-        // console.log("$scope.invalidLastName: ", $scope.invalidLastName);
-        // console.log("$scope.invalidEmail: ", $scope.invalidEmail);
-        // console.log("$scope.invalidEndorsement: ", $scope.invalidEndorsement);
-        // console.log("$scope.invalidEnrolledClass: ", $scope.invalidEnrolledClass);
-        // console.log("$scope.invalidTransportation: ", $scope.invalidTransportation);;
-        // console.log("$scope.invalidSchool: ", $scope.invalidSchool);
-        // console.log("$scope.invalidDivision: ", $scope.invalidDivision);
-        // console.log("$scope.invalidGrade: ", $scope.invalidGrade);
-        // console.log("$scope.invalidTravel: ", $scope.invalidTravel);
-        // console.log("$scope.invalidHosting: ", $scope.invalidHosting);
-        // console.log("#################################");
-        return( $scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail || $scope.invalidEndorsement ||
-                $scope.invalidEnrolledClass || $scope.invalidTransportation ||  $scope.invalidSchool || $scope.invalidDivision || 
-                $scope.invalidGrade || $scope.invalidTravel || $scope.invalidHosting ||
+        console.log("#################################");
+        console.log("$scope.invalidFirstName: ", $scope.invalidFirstName);
+        console.log("$scope.invalidLastName: ", $scope.invalidLastName);
+        console.log("$scope.invalidEmail: ", $scope.invalidEmail);
+        console.log("$scope.invalidSchool: ", $scope.invalidSchool);
+        console.log("$scope.invalidDivision: ", $scope.invalidDivision);
+        console.log("$scope.invalidGrade: ", $scope.invalidGrade);
+        console.log("$scope.invalidTravel: ", $scope.invalidTravel);
+        console.log("#################################");
+        return( $scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail ||  
+                $scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || 
+                $scope.invalidTravel || $scope.semesterHosting === undefined || $scope.school === undefined || 
+                $scope.schoolDivision === undefined ||
                 $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
 
@@ -530,16 +497,12 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     };
     
     $scope.resetForm = function(){
-        $scope.endorsementSought = undefined;
-        $scope.enrolledClasses = undefined;
-        $scope.transportation = undefined;
-        $scope.passengerNum = 0;
         $scope.firstName = undefined;
         $scope.lastName = undefined;
         $scope.email = undefined;
         $scope.schoolDivision= undefined;
         $scope.school = undefined;
-        $scope.gradeLevel= '';
+        $scope.gradeLevel= undefined;
         $scope.travelTeacher= undefined;
         $scope.otherSchool= undefined;
         $scope.semesterHosting=undefined;
@@ -551,16 +514,10 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         $scope.invalidFirstName = false;
         $scope.invalidLastName = false;
         $scope.invalidEmail = false;
-        $scope.invalidEndorsement = false;
-        $scope.invalidEnrolledClass= false;
-        $scope.invalidTransportation= false;
-        $scope.invalidAvailability = true;
-        $scope.invalidPractica = true;
         $scope.invalidSchool= false;
         $scope.invalidDivision= false;
         $scope.invalidGrade= false;
         $scope.invalidTravel= false;
-        $scope.invalidHosting= false;
         
         $scope.goToTop();
     }
@@ -588,7 +545,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     
     $scope.initializeSecondaryCourses = function(){
         $scope.secondaryClasses = [];
-        $scope.numCourses = 4;
+        $scope.numCourses = 7;
         if($scope.isBlockSchedule($scope.blockSchedule)){
             $scope.numCourses = 8
         }
@@ -615,7 +572,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             
             av.block = blockNum;
             blockNum++;
-            if(blockNum == 5){
+            if(blockNum == 5 && $scope.isBlockSchedule($scope.blockSchedule)){
                 isBDay = true;
                 blockNum = 1;
             }
@@ -722,16 +679,15 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         $scope.elemElectives = [];
     }
     
-    $scope.deleteElemClass = function(av){
-        for (var i = 0; i < $scope.availability.length; i++){
-            if ($scope.elemClasses[i] === av){
-                $scope.elemClasses.splice(i,1);
-            }
-        }
-    };
+    // $scope.deleteElemClass = function(av){
+    //     for (var i = 0; i < $scope.availability.length; i++){
+    //         if ($scope.elemClasses[i] === av){
+    //             $scope.elemClasses.splice(i,1);
+    //         }
+    //     }
+    // };
     
     $scope.resetForm();
-    $scope.getPracticumBearing()
     $scope.getSchoolDivisions();
     
     
