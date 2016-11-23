@@ -210,6 +210,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             $scope.teacherType = schoolLevel;
         if(schoolLevel === "Secondary")
             $scope.gradeLevel = gradeLevel;
+            $scope.teacherType = schoolLevel;
         
     };
     
@@ -409,12 +410,35 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             
         } else if($scope.teacherType == "Secondary"){
             console.log("Secondary Classes");
-            
+            //convert secondary class timestamps
+            for(var i = 0; i < $scope.secondaryClasses.length; i++){
+                console.log("loop");
+                $scope.secondaryClasses[i]['startTime'] = $scope.secondaryClasses[i]['startTime'].toLocaleTimeString();
+                $scope.secondaryClasses[i]['endTime'] = $scope.secondaryClasses[i]['endTime'].toLocaleTimeString();
+                console.log($scope.secondaryClasses[i]);
+            }
+            //store new string timestamps
             classes['secondaryClasses'] = $scope.secondaryClasses;
+            //convert secondary planning timestamps
+            for(var i = 0; i < $scope.secondaryPlanning.length; i++){
+                $scope.secondaryPlanning[i]['course'] = "planning";
+                $scope.secondaryPlanning[i]['startTime'] = $scope.secondaryPlanning[i]['startTime'].toLocaleTimeString();
+                $scope.secondaryPlanning[i]['endTime'] = $scope.secondaryPlanning[i]['endTime'].toLocaleTimeString();
+            }
+            //store new string timestamps
             classes['planning'] = $scope.secondaryPlanning;
+            //convert secondary lunch timestamps
+            for(var i = 0; i < $scope.secondaryLunch.length; i++){
+                $scope.secondaryLunch[i]['course'] = "lunch";
+                $scope.secondaryLunch[i]['startTime'] = $scope.secondaryLunch[i]['startTime'].toLocaleTimeString();
+                $scope.secondaryLunch[i]['endTime'] = $scope.secondaryLunch[i]['endTime'].toLocaleTimeString();
+            }
+            //store new string timestamps
             classes['secondaryLunch'] = $scope.secondaryLunch;
+            
+            //store all info in teacher
             teacher.secondarySchedule = classes;
-            //console.log(teacher.secondarySchedule);
+            console.log(teacher.secondarySchedule);
         }
         
         
@@ -425,7 +449,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         
         console.log(teacher);
         
-         socket.emit('submit', teacher);
+        socket.emit('submit', teacher);
     };
     
     var inGrades = function(name){
@@ -677,7 +701,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             $scope.secondaryClasses.push(av)
             
         }
-        console.log($scope.secondaryClasses)
+        //console.log($scope.secondaryClasses)
         $scope.secondaryPlanning = $scope.initializeSecondaryOther("Planning");
         $scope.secondaryLunch = $scope.initializeSecondaryOther("Lunch");
     }

@@ -59,7 +59,7 @@ selectTeacher = """SELECT teacherid FROM teachers WHERE email = %s"""
 updateTeacher = """UPDATE teachers SET firstName = %s,lastName = %s,hostSpring = %s,hostFall = %s,grade = %s,schoolid = %s ,divisionid = %s WHERE email = %s RETURNING teacherid"""
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
-    print(data)
+    #print(data)
     if 'grade' not in data:
         data['grade'] = 'Other'
     
@@ -77,11 +77,23 @@ def submitTeacher(data):
         cur = db.cursor()
         cur.execute(selectTeacher,(teacherData[0],))
         teacherId = cur.fetchone()[0]
+        db.close()
         #print(teacherId)
         if teacherId:
             teacherPresent = True
     except Exception as e:
         print(e)
+        
+    ##if not teacherPresent:
+     ##   try:
+      ##      db = connect_to_db()
+    ##        cur = db.cursor()
+     ##       cur.execute(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1]))
+     ##       db.commit()
+     ##       teacherId = cur.fetchone()[0]
+     ##       db.close()
+     ##   except Exception as e:
+     ##       print(e)
             
     ###edge case -- Other School, no course info
     if data['school'] == "Other":
@@ -109,6 +121,7 @@ def submitTeacher(data):
                 db.commit()
                 teacherId = cur.fetchone()[0]
                 #print(teacherId)
+                db.close()
             except Exception as e:
                 error = True
                 print(e)
@@ -129,12 +142,14 @@ def submitTeacher(data):
             #get schoolId
             cur.execute(schoolIdByDivision,(data['school'],))
             schoolIdDivId = cur.fetchone()[0]
+            db.close()
             #remove braces and comma
             schoolIdDivId = schoolIdDivId[1:-1].split(',')
             #insert teacher
             #print(schoolIdDivId)
             #try to select by email, and if so, update instead of inserting
             try:
+                db = connect_to_db()
                 cur = db.cursor()
                 #print(cur.mogrify(teacherInsert,(teacherData[0],teacherData[1],teacherData[2],teacherData[3],teacherData[4],teacherData[5],schoolIdDivId[0],schoolIdDivId[1])))
                 if teacherPresent == True:
@@ -147,6 +162,7 @@ def submitTeacher(data):
                 db.commit()
                 teacherId = cur.fetchone()[0]
                 #print(teacherId)
+                db.close()
             except Exception as e:
                 error = True
                 print(e)
@@ -156,7 +172,7 @@ def submitTeacher(data):
 
         #if it has a grade, it will be an elementary school teacher
         #print(data['grade'])
-        if 'Elementary' in data['school']:
+        if  len(data['elementarySchedule']) > 1:
             #elementary schedule has meetingDays, not X/Y
             #courseName, start, end, teacherid, schoolid
             
@@ -169,6 +185,7 @@ def submitTeacher(data):
                 cur.execute(meetingInsert,('True','True','True','True','True')) #ALL True here means every day of the week, since elementary
                 db.commit()
                 meetingId = cur.fetchone()[0]
+                db.close()
             except Exception as e:
                 error = True
                 print(e)
@@ -183,6 +200,7 @@ def submitTeacher(data):
                         cur = db.cursor()
                         cur.execute(insertClass,(courseInfo['course'],courseInfo['startTime'],courseInfo['endTime'],teacherId,schoolIdDivId[0],meetingId))
                         db.commit()
+                        db.close()
                     except Exception as e:
                         error = True
                         print(e)
@@ -206,6 +224,7 @@ def submitTeacher(data):
                             cur.execute(meetingInsert,(courseDays))
                             db.commit()
                             courseId = cur.fetchone()[0] ##meetingid,
+                            db.close()
                         except Exception as e:
                             error = True
                             print(e)
@@ -216,6 +235,7 @@ def submitTeacher(data):
                             #print(cur.mogrify(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId)))
                             cur.execute(insertClass,(electiveCourse['course'],electiveCourse['startTime'],electiveCourse['endTime'],teacherId,schoolIdDivId[0],courseId))
                             db.commit()
+                            db.close()
                         except Exception as e:
                             error = True
                             print(e)
@@ -228,27 +248,36 @@ def submitTeacher(data):
                             #print(cur.mogrify(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId)))
                             cur.execute(insertClass,(course['course'],course['startTime'],course['endTime'],teacherId,schoolIdDivId[0],meetingId))
                             db.commit()
+                            db.close()
                         except Exception as e:
                             error = True
                             print(e)
         
         else:
+            print("Secondary School")
+            print(data['secondarySchedule'])
             #secondary schedule select, else insert to reduce database load
              #dayType,block,course,start,end,teacherid,schoolid
-            for timeSlot,blockInfo in data['secondarySchedule']:
+            for timeSlot in data['secondarySchedule']:
+                print(timeSlot)
+                print("#")
+                print(data['secondarySchedule'][timeSlot])
                 if timeSlot == 'planning' or timeSlot == 'secondaryLunch':
                     blockNumber = 0 #magic number :( 1-8 are courses, 9 is lunch)
                     if timeSlot == 'secondaryLunch':
                         blockNumber = 9
                     #print("planning/secondary")
                     #print(blockInfo)
-                    for period in blockInfo:
+                    for period in data['secondarySchedule'][timeSlot]:
                         try:
                             db = connect_to_db()
                             cur = db.cursor()
+                            print("###")
+                            print(teacherId)
                             insertSecondaryCourse = """INSERT INTO middleSchoolSchedule(block,course,startTime,endTime,teacherID,schoolID,dayType) VALUES (%s,%s,%s,%s,%s,%s,%s)"""
                             cur.execute(insertSecondaryCourse,(blockNumber,timeSlot,period['startTime'],period['endTime'],teacherId,schoolIdDivId[0],period['dayType']))
                             db.commit()
+                            db.close()
                         except Exception as e:
                             error = True
                             print(e)
@@ -256,7 +285,7 @@ def submitTeacher(data):
                     #print("blockClasses")
                     #print(timeSlot)
                     #print(blockInfo)
-                    for secondaryClass in blockInfo:
+                    for secondaryClass in data['secondarySchedule'][timeSlot]:
                         print(secondaryClass)
                         if 'dayType' not in secondaryClass:
                             secondaryClass['dayType'] = "Standard"
@@ -265,6 +294,7 @@ def submitTeacher(data):
                             cur = db.cursor()
                             cur.execute(insertSecondaryCourse,(secondaryClass['block'],secondaryClass['course'],secondaryClass['startTime'],secondaryClass['endTime'],teacherId,schoolIdDivId[0],secondaryClass['dayType']))
                             db.commit()
+                            db.close()
                         except Exception as e:
                             error = True
                             print(e)
