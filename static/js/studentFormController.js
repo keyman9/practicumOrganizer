@@ -115,17 +115,32 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
     });
     
     socket.on("submissionResult", function(result){
+        var submitBox = $('#submitResult');
+        console.log(submitBox)
+        var submitText = '';
         console.log(result);
+        
         if (result.error){
-            $scope.submissionFailure = true;
-            $scope.submissionSuccess = false;
+            
+            submitBox.removeClass('alert-success');
+            submitBox.addClass('alert-danger');
+            submitText = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon-exclamation-sign" aria-hidden="true"></span>' + result.error;
+            submitBox.empty();
+            submitBox.append(submitText);
+            submitBox.fadeIn().delay(3000).fadeOut(600);
             $scope.goToTop();
+            
         } else{
-            $scope.submissionSuccess = true;
-            $scope.submissionFailure = false;
+            
+            submitText = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> &nbsp;&nbsp;' + result.msg;
+            submitBox.empty();
+            submitBox.append(submitText);
+            submitBox.fadeIn().delay(3000).fadeOut(600);
             $scope.resetForm();
+            $scope.goToTop();
+            
         }
-        $scope.submissionMsg = result.msg;
+        
         $scope.$apply();
     });
     
