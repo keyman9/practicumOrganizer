@@ -189,6 +189,9 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     socket.on('loadTeachers', function(results){
         console.log(results);
+        $scope.teachers = results;
+        $scope.allTeachers = results;
+        $scope.$apply();
     });
     
     $scope.addPracticumAssignment = function(){

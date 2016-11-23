@@ -194,8 +194,8 @@ GRANT ALL ON teachers_teacherid_seq TO practicum_admin;
 DROP TABLE IF EXISTS elementarySchedule;
 CREATE TABLE elementarySchedule(
   course varchar(60) NOT NULL default '',
-  startTime timestamp,
-  endTime timestamp,
+  startTime varchar(40),
+  endTime varchar(40),
   teacherID serial,
   schoolID serial,
   meetingID serial,
@@ -222,8 +222,8 @@ CREATE TABLE middleSchoolSchedule(
   dayType varchar(30) NOT NULL default '',
   block integer,
   course varchar(60) NOT NULL default '',
-  startTime timestamp,
-  endTime timestamp,
+  startTime varchar(40),
+  endTime varchar(40),
   teacherID serial,
   schoolID serial,
   FOREIGN KEY(teacherID) references teachers(teacherID) ON DELETE CASCADE,
