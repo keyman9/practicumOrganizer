@@ -179,7 +179,41 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     socket.on('loadPractica', function(results){
         console.log(results);
-        $scope.publishedPracticumAssignments = results;
+        //for each prac already saved
+        for(var i =0; i < results.length; i++){
+            var pracMatch = {};
+            //find the teacher object
+            for(var j = 0; j < $scope.allTeachers.length; j++){
+                console.log($scope.allTeachers[j]);
+                if(results[i]['teacherId'] == $scope.allTeachers[j]['id']){
+                    pracMatch['teacher'] = $scope.allTeachers[j];
+                    console.log(pracMatch['teacher']);
+                }
+            }
+            //find the student object
+            for(var j = 0; j < $scope.allStudents.length; j++){
+                if(results[i]['studentEmail'] == $scope.allStudents[j]['email']){
+                    pracMatch['student'] = $scope.allStudents[j];
+                }
+            }
+            //get course name
+            pracMatch['course'] = results[i]['class'];
+            
+            //fill cols using results scheduling info
+            //console.log(results[i]['startTime']);
+            pracMatch['availability'] = {};
+            pracMatch['availability']['startTime'] = results[i]['startTime'];
+            pracMatch['availability']['endTime'] = results[i]['endTime'];
+            pracMatch['availability']['monday'] = results[i]['monday'];
+            pracMatch['availability']['tuesday'] = results[i]['tuesday'];
+            pracMatch['availability']['wednesay'] = results[i]['wednesday'];
+            pracMatch['availability']['thursday'] = results[i]['thursday'];
+            pracMatch['availability']['thursday'] = results[i]['thursday'];
+            console.log(pracMatch);
+            $scope.publishedPracticumAssignments.push(pracMatch);
+        }
+        
+        //$scope.publishedPracticumAssignments = results;
         $scope.$apply();
     });
     
