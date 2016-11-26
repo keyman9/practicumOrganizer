@@ -483,10 +483,10 @@ def getPracticumBearingForReports():
     
 ##########################################################
 
-#TODO: make this update if match already exists
 @socketio.on('submitPractica', namespace='/practica')
 def submitPractica(assignment):
-    print(assignment)
+    #print(assignment)
+    #TODO: insert/update in database
     result = defaultdict(list)
     #meetingDays table
     meetingPresent = False
@@ -510,44 +510,22 @@ def submitPractica(assignment):
         except Exception as e:
             print(e)
     meetingId = result 
-    print(meetingId)
-    
-    practicumPresent = False
-    if assignment['id']:
-        practicumPresent = True
-    
-    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""  
-    practicaUpdate = """UPDATE practicumArrangement SET startTime=%s, endTime=%s, course=%s, studentEmail=%s, teacherId=%s, meetingId=%s WHERE practicum=%s RETURNING practicum"""
+    #print(meetingId)
+        
+    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
+    #insert into practicumArrangement
     try:
-        if practicumPresent:
-            print("practicumPresent")
-            try:
-                print(practicaUpdate)
-                cur.execute(practicaUpdate,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId, assignment['id']))
-                db.commit()
-                result = cur.fetchone()
-                print(result)
-            except Exception as e:
-                print(e)
-        else:   
-            print("practicumNotPresent")
-            #insert into practicumArrangement
-            try:
-                print("trying...")
-                print(practicaInsert)
-                cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
-                db.commit()
-                result = cur.fetchone()
-                print(result)
-            except Exception as e:
-                print(e)
-            print("inserted..")   
+        #print("trying...")
+        db = connect_to_db()
+        cur = db.cursor()
+        #print(practicaInsert)
+        cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
+        db.commit()
+        result = cur.fetchone()[0]
+        #print(result)
     except Exception as e:
-        error = True
         print(e)
-    cur.close()
-    db.close()
-
+    #print("inserted..")    
     
     
 @socketio.on('deletePracticum', namespace='/practica')
