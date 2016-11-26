@@ -67,6 +67,9 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
     $scope.submissionSuccess = false;
     $scope.submissionFailure = false;
     $scope.submissionMsg = "";
+    
+     /**************************************************/
+     //Pull in select options from the database
         
     //returns schools in selected division (of previous practica)
     $scope.getSchools = function(id){
@@ -114,6 +117,10 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         // console.log($scope.practicumBearingClasses);
     });
     
+    /**************************************************/
+    
+    //Submission methods
+    
     socket.on("submissionResult", function(result){
         var submitBox = $('#submitResult');
         console.log(submitBox)
@@ -143,122 +150,6 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         
         $scope.$apply();
     });
-    
-    $scope.addAvailability = function(){
-        var av = new Availability();
-        av.start = new Date();
-        av.start.setHours(7);
-        av.start.setMinutes(30);
-        av.end = new Date();
-        av.end.setHours(15);
-        av.end.setMinutes(30);
-        $scope.availability.push(av);
-    };
-    
-    $scope.deleteAvailability = function(av){
-        for (var i = 0; i < $scope.availability.length; i++){
-            if ($scope.availability[i] === av){
-                $scope.availabilityErrorMsg[i] = ""
-                $scope.availability.splice(i,1);
-            }
-        }
-    };
-    
-    $scope.addPractica = function(){
-        var prac = new PreviousPractica();
-        $scope.practicaErrorMsg.push("");
-        $scope.previousPractica.push(prac);
-    };
-    
-    $scope.deletePractica = function(prac){
-        for (var i = 0; i < $scope.previousPractica.length; i++){
-            if ($scope.previousPractica[i] === prac){
-                $scope.previousPractica.splice(i,1);
-                $scope.practicaErrorMsg.splice(i,1);
-            }
-        }
-    };
-    
-    $scope.updatePractica = function(){
-       if ($scope.noPreviousPractica){
-           $scope.previousPractica = [];
-           $scope.practicaErrorMsg = [];
-       } else{
-            var prac = new PreviousPractica();
-            $scope.previousPractica.push(prac);
-            $scope.practicaErrorMsg.push("");
-       }
-    };
-    
-    $scope.isElementary = function(school){
-        var sch = String(school);
-        if (sch.indexOf("Elementary School") > 0){
-            return true;
-        } else {
-            return false;
-        }
-    };
-    
-    $scope.isSecondary = function(school){
-        var sch = String(school);
-        if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
-            return true;
-        } else {
-            return false;
-        }
-    };
-    
-    $scope.changeGrade = function(item){
-        item.course = undefined;
-        item.other = undefined;
-        var index = $scope.previousPractica.indexOf(item);
-        console.log($scope.previousPractica[index]);
-        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
-            var msg = $scope.practicaErrorMsg[index];
-            msg = msg.replace("You must enter a course!\n", "");
-            $scope.practicaErrorMsg[index] = msg;
-        }
-    }
-    
-    $scope.changeCourse = function(item){
-        item.grade = undefined;
-        item.other = undefined;
-        var index = $scope.previousPractica.indexOf(item);
-        console.log($scope.previousPractica[index]);
-        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
-            var msg = $scope.practicaErrorMsg[index];
-            msg = msg.replace("You must enter a course!\n", "");
-            $scope.practicaErrorMsg[index] = msg;
-        }
-    }
-    
-    $scope.changeSchool = function(item){
-        item.otherSchool = undefined;
-        item.other = undefined;
-        $scope.changeCourse(item);
-        $scope.changeGrade(item);
-        var index = $scope.previousPractica.indexOf(item);
-        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
-            var msg = $scope.practicaErrorMsg[index];
-            msg = msg.replace("You must enter a school!\n", "");
-            $scope.practicaErrorMsg[index] = msg;
-        }
-    }
-    
-    $scope.changeSchoolDivision = function(item){
-        $scope.changeSchool(item);
-        item.school = undefined;
-        var index = $scope.previousPractica.indexOf(item);
-        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
-            var msg = $scope.practicaErrorMsg[index];
-            msg = msg.replace("You must enter a school!\n", "");
-            $scope.practicaErrorMsg[index] = msg;
-        }
-    }
-
-    $scope.print = function(item){
-        console.log(item);
-    };
     
     $scope.submit = function(){
         var stu = new Student();
@@ -332,6 +223,127 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         socket.emit('submit', stu);
     };
     
+     /**************************************************/
+    
+    //Methods for adding/deleting/modifying things
+    
+    $scope.addAvailability = function(){
+        var av = new Availability();
+        av.start = new Date();
+        av.start.setHours(7);
+        av.start.setMinutes(30);
+        av.end = new Date();
+        av.end.setHours(15);
+        av.end.setMinutes(30);
+        $scope.availability.push(av);
+    };
+    
+    $scope.deleteAvailability = function(av){
+        for (var i = 0; i < $scope.availability.length; i++){
+            if ($scope.availability[i] === av){
+                $scope.availabilityErrorMsg[i] = ""
+                $scope.availability.splice(i,1);
+            }
+        }
+    };
+    
+    $scope.addPractica = function(){
+        var prac = new PreviousPractica();
+        $scope.practicaErrorMsg.push("");
+        $scope.previousPractica.push(prac);
+    };
+    
+    $scope.deletePractica = function(prac){
+        for (var i = 0; i < $scope.previousPractica.length; i++){
+            if ($scope.previousPractica[i] === prac){
+                $scope.previousPractica.splice(i,1);
+                $scope.practicaErrorMsg.splice(i,1);
+            }
+        }
+    };
+    
+    $scope.updatePractica = function(){
+       if ($scope.noPreviousPractica){
+           $scope.previousPractica = [];
+           $scope.practicaErrorMsg = [];
+       } else{
+            var prac = new PreviousPractica();
+            $scope.previousPractica.push(prac);
+            $scope.practicaErrorMsg.push("");
+       }
+    };
+    
+    $scope.isElementary = function(school){
+        var sch = String(school);
+        if (sch.indexOf("Elementary School") > 0){
+            return true;
+        } else {
+            return false;
+        }
+    };
+    
+    $scope.isSecondary = function(school){
+        var sch = String(school);
+        if (sch.indexOf("Middle School") > 0 || sch.indexOf("High School") > 0){
+            return true;
+        } else {
+            return false;
+        }
+    };
+    
+    
+     /**************************************************/
+     
+    //Validation methods
+    
+    $scope.changeGrade = function(item){
+        item.course = undefined;
+        item.other = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        console.log($scope.previousPractica[index]);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a course!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
+    }
+    
+    $scope.changeCourse = function(item){
+        item.grade = undefined;
+        item.other = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        console.log($scope.previousPractica[index]);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a course!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
+    }
+    
+    $scope.changeSchool = function(item){
+        item.otherSchool = undefined;
+        item.other = undefined;
+        $scope.changeCourse(item);
+        $scope.changeGrade(item);
+        var index = $scope.previousPractica.indexOf(item);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a school!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
+    }
+    
+    $scope.changeSchoolDivision = function(item){
+        $scope.changeSchool(item);
+        item.school = undefined;
+        var index = $scope.previousPractica.indexOf(item);
+        if ($scope.practicaErrorMsg[index].indexOf("You must enter a school!\n") != -1){
+            var msg = $scope.practicaErrorMsg[index];
+            msg = msg.replace("You must enter a school!\n", "");
+            $scope.practicaErrorMsg[index] = msg;
+        }
+    }
+
     var inGrades = function(name){
         for (var i = 0; i < $scope.grades.length; i++){
             var grade = $scope.grades[i].displayName;
@@ -353,6 +365,8 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         }
         return temp;
     }
+    
+    /**************************************************/
     
     //Validation
     
@@ -551,12 +565,21 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         $scope.invalidEnrolledClass || $scope.invalidTransportation || $scope.invalidAvailability || $scope.invalidPractica ||
         $scope.firstName === undefined || $scope.lastName === undefined || $scope.email === undefined);
     }
+    
+    /**************************************************/
+    
+    //Miscellaneous methods
 
     $scope.goToTop = function() {
         // $location.hash('top');
         // $anchorScroll();
         $(window).scrollTop(0);
     };
+    
+    $scope.print = function(item){
+        console.log(item);
+    };
+    
     
     $scope.resetForm = function(){
         $scope.endorsementSought = undefined;
@@ -588,6 +611,8 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         $scope.addPractica();
         $scope.goToTop();
     }
+    
+    /**************************************************/
     
     $scope.resetForm();
     $scope.getPracticumBearing()

@@ -10,22 +10,9 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
     
     var iframe = undefined;
     
-    $scope.createReport = function(reportType, limit){
-        console.log(reportType, limit);
-        socket.emit("createReport", reportType, limit)
-        $scope.selected = limit;
-    }
+    /**************************************************/
     
-    socket.on("reportCreated", function(reportType){
-        if (iframe)
-            document.body.removeChild(iframe);
-        var iframe = document.createElement('iframe');
-        iframe.id = "hiddenIframe";
-        iframe.style.visibility = 'hidden';
-        document.body.appendChild(iframe);
-        iframe.src = "/reports/" + reportType;
-    });
-
+    //Pull in options from database
     
     $scope.getSchoolDivisions = function(){
         socket.emit('getDivisions');
@@ -62,7 +49,11 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
         console.log($scope.practicumBearingClasses);
         $scope.$apply();
     });
-     
+    
+    /**************************************************/
+    
+    //Methods for creating report
+    
     $scope.prepForReports = function(){
         if ($scope.practicumBearingClasses.length < 1){
             $scope.getPracticumBearing();
@@ -77,10 +68,24 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
         $scope.reportType = type;
     }
     
+    $scope.createReport = function(reportType, limit){
+        console.log(reportType, limit);
+        socket.emit("createReport", reportType, limit)
+        $scope.selected = limit;
+    }
+    
+    socket.on("reportCreated", function(reportType){
+        if (iframe)
+            document.body.removeChild(iframe);
+        var iframe = document.createElement('iframe');
+        iframe.id = "hiddenIframe";
+        iframe.style.visibility = 'hidden';
+        document.body.appendChild(iframe);
+        iframe.src = "/reports/" + reportType;
+    });
+    
     $scope.deleteReports = function(){
         socket.emit("deleteReport");
     }
     
-
-
 });
