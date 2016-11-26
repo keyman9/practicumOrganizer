@@ -183,5 +183,37 @@ def load_teachers():
     #print(queryResults)
     
     listOfTeachers = [teach.zip_teachers(teacher, queryResults) for teacher in teachersFromDB]
-    print(listOfTeachers)
-    return listOfTeachers    
+
+    return listOfTeachers
+
+practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday"
+selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
+                        JOIN students AS s ON s.email = p.studentEmail \
+                        JOIN teachers as t USING (teacherID) \
+                        JOIN meetingDays as m USING (meetingid)"
+                        
+    
+def load_practica():
+    
+    allPractica = select_query_db(selectPractica)
+    
+    #print(allPractica)
+    payload = []
+    for row in allPractica:
+        match = {}
+        print(row)
+        match['studentEmail'] = row[0] 
+        match['teacherId'] = row[1] 
+        match['startTime'] = row[2]
+        match['endTime'] = row[3]
+        match['class'] = row[4]
+        match['monday'] = row[5]
+        match['tuesday'] = row[6]
+        match['wednesday'] = row[7]
+        match['thursday'] = row[8]
+        match['friday'] = row[9]
+        payload.append(match)
+    
+    print(payload)
+    return payload
+
