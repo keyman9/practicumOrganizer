@@ -86,6 +86,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.practicaErrorMsg = [];
     $scope.deleteTeach= undefined;
     $scope.deletePrac = undefined;
+    $scope.deleteFailure = false;
+    $scope.deleteErrorMsg = "";
     
     $scope.selectEndorsement = false;
     $scope.selectCourse = false;
@@ -174,18 +176,31 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.delete = function(){
         if ($scope.deleteTeach){
-            //make db call
+            var id = $scope.deleteTeach.id;
+            socket.emit("deleteTeacher", id);
         } else if ($scope.deletePrac){
             //make db call
         }
         $scope.deletePrac = undefined;
-        $scope.deleteTeach = undefined;
     }
     
     $scope.cancelDelete = function(){
         $scope.deleteTeach = undefined;
         $scope.deletePrac = undefined;
     }
+    
+    socket.on("deletedTeacher", function(error){
+        if (error){
+            $scope.deleteFailure = true;
+            $scope.deleteErrorMsg = "Failed to delete teacher";
+        } else{
+            var index = $scope.teachers.indexOf($scope.deleteTeach);
+            console.log(index);
+            $scope.teachers.splice(index,1);
+            $scope.deleteTeach = undefined;
+            $scope.$apply();
+        }
+    });
     
     socket.on('loadTeachers', function(results){
         console.log(results);
@@ -195,7 +210,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     });
     
     $scope.initializePractica = function(){
-        socket.emit('loadPractica');
+        //socket.emit('loadPractica');
     };
     
     socket.on('loadPractica', function(results){

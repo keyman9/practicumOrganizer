@@ -319,7 +319,6 @@ def loadTeachers():
 
 @socketio.on('deleteTeacher', namespace='/practica') 
 def deleteTeacher(teachId):
-    print(teachId)
     deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
     error = delete_query_db(deleteTeacherQuery, teachId)
     emit("deletedTeacher", error)

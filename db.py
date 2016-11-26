@@ -61,10 +61,10 @@ def write_query_db(query, data, returnOne=False):
         
 def delete_query_db(query, data):
     hasError = False
-    db = connect_to_db()
+    db = connect_to_db_admin()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
-        mog = cur.mogrify(query, data)
+        mog = cur.mogrify(query, (data,))
         cur.execute(mog)
         db.commit()
         

@@ -410,7 +410,7 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
         }
         
         
-        if($scope.otherSchool.length > 0){
+        if($scope.otherSchool && $scope.otherSchool.length > 0){
             $scope.teacherType = "Other";
         }
        
