@@ -354,8 +354,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.getScheduleString = function(course){
         var str = "";
         if (course){
-            if(course.dayType)
-                str += "[" + course.dayType + " Days";
+            if(course.daytype)
+                str += "[" + course.daytype + " Days";
             if (course.block)
                 str += ", Block " + course.block + "] ";
             if (course.startTime)

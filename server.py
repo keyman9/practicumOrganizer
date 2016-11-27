@@ -12,7 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from db import *
-#import report as Report
+import report as rp
 import uuid
 import string
 import random
@@ -303,6 +303,7 @@ def loadStudents():
 
 @socketio.on('loadTeachers', namespace='/practica') 
 def loadTeachers():
+    print("Load Teachers")
     teachers = load_teachers()
     emit('loadTeachers', teachers)
 
@@ -551,7 +552,7 @@ def createReport(reportType, limit):
     elif reportType == "course":
         print("course")
         
-        Report.create_course_report() ########
+        rp.create_course_report(limit) ########
         shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
     else:
         print("invalid report type")
