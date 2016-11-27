@@ -89,6 +89,14 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.deleteFailure = false;
     $scope.deleteErrorMsg = "";
     
+    $scope.selectGrade = false;
+    $scope.selectSchool = false;
+    $scope.gradeSought = 'N/A';
+    $scope.schoolSought = 'N/A';
+    $scope.showTeacherGrades = [];
+    $scope.showTeacherSchools = [];
+    $scope.allTeachers = [];
+    
     $scope.selectEndorsement = false;
     $scope.selectCourse = false;
     $scope.endorsementSought = 'N/A';
@@ -166,7 +174,6 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     };
     
     socket.on('loadTeachers', function(results){
-        // console.log(results);
         $scope.teachers = results;
         $scope.allTeachers = results;
         $scope.$apply();
@@ -183,7 +190,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
             var pracMatch = {};
             //find the teacher object
             for(var j = 0; j < $scope.allTeachers.length; j++){
-                console.log($scope.allTeachers[j]);
+                //console.log($scope.allTeachers[j]);
                 if(results[i]['teacherId'] == $scope.allTeachers[j]['id']){
                     pracMatch['teacher'] = $scope.allTeachers[j];
                     console.log(pracMatch['teacher']);
@@ -527,6 +534,65 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
      /**************************************************/
      
     //Filter methods
+    
+    $scope.filterGrade =  function(){
+      
+        $scope.showTeacherGrades = [];
+        for(var i = 0; i < $scope.teachers.length; i++){
+            if($scope.teachers[i]['grade'].indexOf($scope.gradeSought) !== -1){
+                $scope.showTeacherGrades.push($scope.teachers[i]);
+            }
+        }
+        $scope.selectGrade = true;
+        $scope.teachers = $scope.showTeacherGrades;
+        
+    };
+    
+    $scope.changeGrade = function(gradeSought){
+        
+        $scope.teachers = $scope.allTeachers;
+        if(gradeSought !== "N/A"){
+            if($scope.selectSchool == true){ //if a different teacherFilter is applied, apply it in scope
+                $scope.filterSchool();
+            } 
+            $scope.filterGrade();
+        } else {
+            $scope.selectGrade = false;
+            if($scope.selectSchool == true){ //if a different filter is applied, apply it in scope
+                $scope.filterSchool();
+            } 
+        }
+    };
+    
+    $scope.filterSchool =  function(){
+      
+        $scope.showTeacherSchools = [];
+        for(var i = 0; i < $scope.teachers.length; i++){
+            console.log($scope.teachers[i]['school']);
+            if($scope.teachers[i]['school'].indexOf($scope.schoolSought) !== -1){
+                $scope.showTeacherSchools.push($scope.teachers[i]);
+            }
+        }
+        $scope.selectSchool = true;
+        $scope.teachers = $scope.showTeacherSchools;
+        
+    };
+    
+    $scope.changeSchool = function(schoolSought){
+        
+        $scope.teachers = $scope.allTeachers;
+        if(schoolSought !== "N/A"){
+            //if($scope.selectGrade == true){ //if a different teacherFilter is applied, apply it in scope
+            //    $scope.filterGrade();
+            //} 
+            $scope.filterSchool();
+        } else {
+            $scope.selectSchool = false;
+            //if($scope.selectGrade == true){ //if a different filter is applied, apply it in scope
+            //    $scope.filterGrade();
+            //} 
+        }
+    };
     
     $scope.filterCourses = function(){
         

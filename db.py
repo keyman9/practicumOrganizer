@@ -191,6 +191,7 @@ selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
                         JOIN students AS s ON s.email = p.studentEmail \
                         JOIN teachers as t USING (teacherID) \
                         JOIN meetingDays as m USING (meetingid)"
+
 def load_practica():
     
     allPractica = select_query_db(selectPractica)
@@ -212,6 +213,5 @@ def load_practica():
         match['friday'] = row[9]
         match['practicum'] = row[10]
         payload.append(match)
-    
     print(payload)
     return payload
