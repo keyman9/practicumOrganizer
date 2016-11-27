@@ -149,7 +149,8 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
             $scope.goToTop();
             
         } else{
-            
+            submitBox.removeClass('alert-danger');
+            submitBox.addClass('alert-success');
             submitText = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> &nbsp;&nbsp;' + result.msg;
             submitBox.empty();
             submitBox.append(submitText);

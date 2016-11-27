@@ -12,11 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from db import *
-<<<<<<< HEAD
 import report as rp
-=======
-import report as Report
->>>>>>> 988fe544714b2e9037c9449429ead309980c12b1
 import uuid
 import string
 import random
@@ -64,7 +60,7 @@ updateTeacher = """UPDATE teachers SET firstName = %s,lastName = %s,hostSpring =
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
     #print(data)
-    if 'grade' not in data and data['divisionid'] == '8':
+    if 'grade' not in data and 'divisionid' in data and data['divisionid'] == '8':
         data['grade'] = 'Other'
     elif 'grade' not in data:
         data['grade'] = 'Secondary'
@@ -540,12 +536,23 @@ def submitPractica(assignment):
                 print(e)
     except Exception as e:
         print(e)
-    #print("inserted..")    
+    #print("inserted..") 
+  
+#################################   
+
+@socketio.on('deleteTeacher', namespace='/practica') 
+def deleteTeacher(teachId):
+    deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
+    error = delete_query_db(deleteTeacherQuery, teachId)
+    emit("deletedTeacher", error)
+
     
-@socketio.on('deletePractica', namespace='/practica')
-def deletePractica(assignment):
-    print(assignment)
-    #TODO: delete from database, resend assignments
+@socketio.on('deletePracticum', namespace='/practica')
+def deletePracticum(pracId):
+    print(pracId)
+    deletePracticumQuery = """DELETE FROM practicumArrangement WHERE practicum=%s;"""
+    error = delete_query_db(deletePracticumQuery, pracId)
+    emit("deletedPracticum", error)
     
 
 @socketio.on('createReport', namespace='/reports')
