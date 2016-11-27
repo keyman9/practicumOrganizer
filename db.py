@@ -186,12 +186,11 @@ def load_teachers():
 
     return listOfTeachers
 
-practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday"
+practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday, p.practica"
 selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
                         JOIN students AS s ON s.email = p.studentEmail \
                         JOIN teachers as t USING (teacherID) \
                         JOIN meetingDays as m USING (meetingid)"
-                        
     
 def load_practica():
     
@@ -213,7 +212,6 @@ def load_practica():
         match['thursday'] = row[8]
         match['friday'] = row[9]
         payload.append(match)
-    
     print(payload)
     return payload
 
