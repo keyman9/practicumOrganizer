@@ -307,14 +307,14 @@
                     </div>
                     <div class="form-group">
                         <span>School:
-                        <select class="form-control" id="school" name="school" ng-model="school">
+                        <select class="form-control" id="school" name="school" ng-model="schoolSought" ng-change="changeSchool(schoolSought)">
                             <option>N/A</option>
                             <option ng-repeat="school in getSchools(currentSchoolDivision)">{{ '{{school}}' }}</option>
                         </select></span>
                     </div>
                     <div class="form-group">
                         <span>Grade</span>
-                        <select class="form-control" id="grade" name="grade" ng-model="grade">
+                        <select class="form-control" id="grade" name="grade" ng-model="gradeSought" ng-change="changeGrade(gradeSought)">
                             <option>N/A</option>                            
                             <option ng-repeat="g in grades">{{ '{{g.displayName}}' }}</option>
                         </select>

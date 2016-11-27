@@ -183,16 +183,15 @@ def load_teachers():
     #print(queryResults)
     
     listOfTeachers = [teach.zip_teachers(teacher, queryResults) for teacher in teachersFromDB]
+    print(listOfTeachers)
+    return listOfTeachers    
 
-    return listOfTeachers
-
-practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday"
+practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday, p.practicum"
 selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
                         JOIN students AS s ON s.email = p.studentEmail \
                         JOIN teachers as t USING (teacherID) \
                         JOIN meetingDays as m USING (meetingid)"
-                        
-    
+
 def load_practica():
     
     allPractica = select_query_db(selectPractica)
@@ -212,8 +211,7 @@ def load_practica():
         match['wednesday'] = row[7]
         match['thursday'] = row[8]
         match['friday'] = row[9]
+        match['practicum'] = row[10]
         payload.append(match)
-    
     print(payload)
     return payload
-

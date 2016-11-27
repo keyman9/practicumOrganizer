@@ -12,7 +12,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from db import *
+<<<<<<< HEAD
 import report as rp
+=======
+import report as Report
+>>>>>>> 988fe544714b2e9037c9449429ead309980c12b1
 import uuid
 import string
 import random
@@ -60,8 +64,10 @@ updateTeacher = """UPDATE teachers SET firstName = %s,lastName = %s,hostSpring =
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
     #print(data)
-    if 'grade' not in data:
+    if 'grade' not in data and data['divisionid'] == '8':
         data['grade'] = 'Other'
+    elif 'grade' not in data:
+        data['grade'] = 'Secondary'
     
     teacherData = [data['email'], data['firstName'], data['lastName'], data['hostSpring'], data['hostFall'], data['grade']]
 
@@ -306,15 +312,6 @@ def loadTeachers():
     print("Load Teachers")
     teachers = load_teachers()
     emit('loadTeachers', teachers)
-
-@socketio.on('deleteTeacher', namespace='/practica') 
-def deleteTeacher(teachId):
-    deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
-    error = delete_query_db(deleteTeacherQuery, teachId)
-    emit("deletedTeacher", error)
-
-#################################  
-
     
 @socketio.on('loadPractica', namespace='/practica')
 def loadPractica():
@@ -342,9 +339,6 @@ def logout():
     session.clear()
     flash('You have successfully logged out!')
     return redirect(url_for('login'))
-
-#################################  
-    
 
 @app.route('/practica', methods=['GET', 'POST'])
 def practica():
@@ -512,31 +506,47 @@ def submitPractica(assignment):
             print(e)
     meetingId = result 
     #print(meetingId)
-        
-    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
+    print(meetingId)
+    
+    practicumPresent = False
+    if "id" in assignment:
+        practicumPresent = True
+    
+    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""  
+    practicaUpdate = """UPDATE practicumArrangement SET startTime=%s, endTime=%s, course=%s, studentEmail=%s, teacherId=%s, meetingId=%s WHERE practicum=%s RETURNING practicum"""
     #insert into practicumArrangement
     try:
-        #print("trying...")
-        db = connect_to_db()
-        cur = db.cursor()
-        #print(practicaInsert)
-        cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
-        db.commit()
-        result = cur.fetchone()[0]
-        #print(result)
+        if practicumPresent:
+            print("practicumPresent")
+            try:
+                cur.execute(practicaUpdate,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId, assignment['id']))
+                db.commit()
+                result = cur.fetchone()
+                print(result)
+            except Exception as e:
+                print(e)
+        else:   
+            print("practicumNotPresent")
+            #insert into practicumArrangement
+            try:
+                db = connect_to_db()
+                cur = db.cursor()
+                #print(practicaInsert)
+                cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
+                db.commit()
+                result = cur.fetchone()[0]
+                #print(result)
+            except Exception as e:
+                print(e)
     except Exception as e:
         print(e)
     #print("inserted..")    
     
+@socketio.on('deletePractica', namespace='/practica')
+def deletePractica(assignment):
+    print(assignment)
+    #TODO: delete from database, resend assignments
     
-@socketio.on('deletePracticum', namespace='/practica')
-def deletePracticum(pracId):
-    print(pracId)
-    deletePracticumQuery = """DELETE FROM practicumArrangement WHERE practicum=%s;"""
-    error = delete_query_db(deletePracticumQuery, pracId)
-    emit("deletedPracticum", error)
-    
-##########################################################
 
 @socketio.on('createReport', namespace='/reports')
 def createReport(reportType, limit):
