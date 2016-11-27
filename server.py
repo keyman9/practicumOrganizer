@@ -511,18 +511,40 @@ def submitPractica(assignment):
             print(e)
     meetingId = result 
     #print(meetingId)
+    print(meetingId)
+    
+    practicumPresent = False
+    if "id" in assignment:
+        practicumPresent = True
+    
+    practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""  
+    practicaUpdate = """UPDATE practicumArrangement SET startTime=%s, endTime=%s, course=%s, studentEmail=%s, teacherId=%s, meetingId=%s WHERE practicum=%s RETURNING practicum"""
         
     practicaInsert = """INSERT INTO practicumArrangement( startTime, endTime, course, studentEmail, teacherId, meetingId ) VALUES ( %s, %s, %s, %s, %s, %s) RETURNING practicum"""
     #insert into practicumArrangement
     try:
-        #print("trying...")
-        db = connect_to_db()
-        cur = db.cursor()
-        #print(practicaInsert)
-        cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
-        db.commit()
-        result = cur.fetchone()[0]
-        #print(result)
+        if practicumPresent:
+            print("practicumPresent")
+            try:
+                cur.execute(practicaUpdate,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId, assignment['id']))
+                db.commit()
+                result = cur.fetchone()
+                print(result)
+            except Exception as e:
+                print(e)
+        else:   
+            print("practicumNotPresent")
+            #insert into practicumArrangement
+            try:
+                db = connect_to_db()
+                cur = db.cursor()
+                #print(practicaInsert)
+                cur.execute(practicaInsert,(assignment['availability']['startTime'],assignment['availability']['endTime'],assignment['course'],assignment['studentId'],assignment['teacherId'],meetingId))
+                db.commit()
+                result = cur.fetchone()[0]
+                #print(result)
+            except Exception as e:
+                print(e)
     except Exception as e:
         print(e)
     #print("inserted..")    
