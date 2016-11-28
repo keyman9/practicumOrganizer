@@ -561,16 +561,17 @@ def createReport(reportType, limit):
     
     if reportType == "school":
         print("school")
-       
-        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/schoolreport.xlsx')
+        rp.create_school_report(limit)
+        
     elif reportType == "division":
         print("division")
-        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/divisionreport.xlsx')
+        rp.create_schoolDivision_report(limit)
+        #shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/divisionreport.xlsx')
     elif reportType == "course":
         print("course")
         
         rp.create_course_report(limit) ########
-        shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
+        #shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
     else:
         print("invalid report type")
     emit("reportCreated", reportType)

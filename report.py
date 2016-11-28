@@ -1,5 +1,8 @@
 from db import *
 import pandas as pd
+import os
+import xlsxwriter
+# import practica as prac
 
 def format_availability_string(availability):
     
@@ -24,25 +27,13 @@ def format_availability_string(availability):
 
 def create_course_report(limit):
     
-    practicaCols = "s.email as email, s.firstname as stuFirstname, s.lastname as stuLastname, \
-                    sch.schoolname, \
-                    t.firstname as teacherFirstname, t.lastname as teacherLastname, t.teacherId, p.startTime as starttime, t.schoolid, \
-                    p.endTime as endtime, p.course as course, \
-                    m.monday, m.tuesday, m.wednesday, m.thursday, m.friday"
-    selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
-                        JOIN students AS s ON s.email = p.studentEmail \
-                        JOIN teachers as t USING (teacherId) \
-                        JOIN meetingDays as m USING (meetingid) \
-                        JOIN schools as sch USING (schoolid)"
-    
-    selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"   
-    
-    results = select_query_db(selectPractica)
+    results = load_practica_matches_for_reports()
+    selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
     studentCourses = select_query_db(selectStudentCourses)
     
-    # print(results)
-    # print("----------------------")
-    # print(studentCourses)
+    hasCourseCol = True
+    if limit == 'none':
+        hasCourseCol = False
     
     lastNameCol = []
     firstNameCol = []
@@ -53,138 +44,264 @@ def create_course_report(limit):
     courseCol = []
     
     sortedlist = sorted(results , key=lambda elem: "%s, %s" % (elem['stulastname'], elem['stufirstname']))
-    # print(results)
-    # print("========================================")
-    # print(sortedlist)
+    
+    # Create the file and add a worksheet
+    directory = os.path.dirname(__file__)
+    workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx'))
+    worksheet = workbook.add_worksheet()
+    
+    # Cell Format dictionaries
+    formatDefaultCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center'}
+    formatHeaderRow = {'bold': True, 'underline': True, 'align': 'center', 'border': 2}
+    formatCourseCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center', 'italic': True}
+    
+    # Create formats for the cells
+    wrapHeaderRow = workbook.add_format(formatHeaderRow)
+    wrapCourseCol = workbook.add_format(formatCourseCol)
+    wrapDefaultCol = workbook.add_format(formatDefaultCol)
+    
+    # Set Worksheet Column Width
+    if hasCourseCol:
+        worksheet.set_column('A:A', 10, wrapCourseCol)
+        worksheet.set_column('B:B', 15, wrapDefaultCol)
+        worksheet.set_column('C:C', 15, wrapDefaultCol)
+        worksheet.set_column('D:D', 35, wrapDefaultCol)
+        worksheet.set_column('E:E', 30, wrapDefaultCol)
+        worksheet.set_column('F:F', 20, wrapDefaultCol)
+        worksheet.set_column('G:G', 35, wrapDefaultCol)
+        
+        # Set up the Header information
+        worksheet.write('A1', 'Course', wrapHeaderRow)
+        worksheet.write('B1', 'Last Name', wrapHeaderRow)
+        worksheet.write('C1', 'First Name', wrapHeaderRow)
+        worksheet.write('D1', 'Assigned School', wrapHeaderRow)
+        worksheet.write('E1', 'Host Teacher', wrapHeaderRow)
+        worksheet.write('F1', 'Practicum Course', wrapHeaderRow)
+        worksheet.write('G1', 'Practicum Day/Time', wrapHeaderRow)
+        
+        
+    else:
+        worksheet.set_column('A:A', 15, wrapDefaultCol)
+        worksheet.set_column('B:B', 15, wrapDefaultCol)
+        worksheet.set_column('C:C', 35, wrapDefaultCol)
+        worksheet.set_column('D:D', 30, wrapDefaultCol)
+        worksheet.set_column('E:E', 20, wrapDefaultCol)
+        worksheet.set_column('F:F', 35, wrapDefaultCol)
+        
+        # Set up the Header information
+        worksheet.write('A1', 'Last Name', wrapHeaderRow)
+        worksheet.write('B1', 'First Name', wrapHeaderRow)
+        worksheet.write('C1', 'Assigned School', wrapHeaderRow)
+        worksheet.write('D1', 'Host Teacher', wrapHeaderRow)
+        worksheet.write('E1', 'Practicum Course', wrapHeaderRow)
+        worksheet.write('F1', 'Practicum Day/Time', wrapHeaderRow)
+    
+    # Start at the Second row to not overwrite Header info
+    row = 1
     
     for match in sortedlist:
+        col = 0
         
         studentMatch = any(row[1] == match['email'] and row[0] == limit for row in studentCourses)
         if not studentMatch and limit != 'none':
-            print("Student doesn't have the match")
             continue
         
-        lastNameCol.append(match['stulastname'])
-        firstNameCol.append(match['stufirstname'])
+        teacherName = '{}, {}'.format(match['teacherlastname'], match['teacherfirstname'])
+        availStr = format_availability_string(match)
+        dayTime = '{}: {} - {}'.format(availStr, match['starttime'], match['endtime'])
         
-        assignedSchoolCol.append(match['schoolname'])
+        if hasCourseCol:
+            worksheet.write(row, col, limit, wrapCourseCol) # Write UMW Course Name
+            col += 1
+        
+        worksheet.write(row, col, match['stulastname'], wrapDefaultCol) # Write Student's Last Name
+        worksheet.write(row, col+1, match['stufirstname'], wrapDefaultCol) # Write Student's First Name
+        worksheet.write(row, col+2, match['schoolname'], wrapDefaultCol) # Write School Name
+        worksheet.write(row, col+3, teacherName, wrapDefaultCol) # Write Teacher's Name
+        worksheet.write(row, col+4, match['course'], wrapDefaultCol) # Write Practicum Course Name
+        worksheet.write(row, col+5, dayTime, wrapDefaultCol) # Write Practicum Course Time
+        row += 1
+    
+    workbook.close()
+    
+    
+def create_school_report(limit):
+    
+    selectSchoolID = "SELECT schoolid FROM schools where schoolname = %s"
+    schoolID = select_query_db(selectSchoolID, (limit, ), True)[0]
+    
+    results = load_practica_matches_for_reports()
+    sortedlist = sorted(results , key=lambda elem: "%s, %s" % (elem['stulastname'], elem['stufirstname']))
+    
+    # Create the file and add a worksheet
+    directory = os.path.dirname(__file__)
+    workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
+    worksheet = workbook.add_worksheet()
+    
+    # Cell Format dictionaries
+    formatDefaultCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center'}
+    formatHeaderRow = {'bold': True, 'underline': True, 'align': 'center', 'border': 2}
+    formatSchoolCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center', 'bg_color': '#92D050'}
+    
+    # Create formats for the cells
+    wrapHeaderRow = workbook.add_format(formatHeaderRow)
+    wrapSchoolCol = workbook.add_format(formatSchoolCol)
+    wrapDefaultCol = workbook.add_format(formatDefaultCol)
+    
+    # Set Worksheet Column Width
+    worksheet.set_column('A:A', 30)
+    worksheet.set_column('B:B', 35)
+    worksheet.set_column('C:C', 25)
+    worksheet.set_column('D:D', 30)
+    
+    # Set up the Header information
+    worksheet.write('A1', 'Last Name, First Name (Student)', wrapHeaderRow)
+    worksheet.write('B1', 'Placement School', wrapHeaderRow)
+    worksheet.write('C1', 'Teacher', wrapHeaderRow)
+    worksheet.write('D1', 'Days and Time Assigned', wrapHeaderRow)
+    
+    # Start at the Second row to not overwrite Header info
+    row = 1
+    col = 0
+    
+    for match in sortedlist:
+        
+        studentMatch = match['schid'] == schoolID
+        if not studentMatch and limit != 'none': # Skip if the student isn't assigned to the school chosen
+            continue
+        
+        studentName = '{}, {}'.format(match['stulastname'], match['stufirstname'])
+        worksheet.write(row, col, studentName, wrapDefaultCol) # Write Student's Name
+        
+        worksheet.write(row, col+1, match['schoolname'], wrapSchoolCol) # Write the Placement School
         
         teacherName = '{}, {}'.format(match['teacherlastname'], match['teacherfirstname'])
-        hostTeacherCol.append(teacherName)
+        
+        worksheet.write(row, col+2, teacherName, wrapDefaultCol) # Write the Teacher's Name
         
         availStr = format_availability_string(match)
         dayTime = '{}: {} - {}'.format(availStr, match['starttime'], match['endtime'])
-        practicumDayTimeCol.append(dayTime)
-        practicumCourseCol.append(match['course'])
         
-        if limit != 'none':
-            courseCol.append(limit)
+        worksheet.write(row, col+3, dayTime, wrapDefaultCol) # Write the Practicum Day and Time
         
+        row += 1
+ 
+    workbook.close()
+    
+def create_schoolDivision_report(limit):
+    
+    selectSchoolDivisions = "SELECT schools.schoolName FROM schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId\
+        WHERE schoolDivisions.divisionName = %s"
         
+    schoolsInDivision = select_query_db(selectSchoolDivisions, (limit, ))
+    
+    elemSchools = []
+    middleSchools = []
+    highSchools = []
+    otherSchools = []
+    
+    for school in schoolsInDivision:
+        elemSchoolCheck = 'Elementary School' in school['schoolname'] and not 'High' in school['schoolname'] and not 'Middle' in school['schoolname']
+        middleSchoolCheck = 'Middle School' in school['schoolname'] and not 'High' in school['schoolname'] and not 'Elementary' in school['schoolname']
+        highSchoolCheck = 'High School' in school['schoolname'] and not 'Middle' in school['schoolname'] and not 'Elementary' in school['schoolname']
         
+        if elemSchoolCheck:
+            elemSchools.append(school['schoolname'])
+        elif middleSchoolCheck:
+            middleSchools.append(school['schoolname'])
+        elif highSchoolCheck:
+            highSchools.append(school['schoolname'])
+        else:
+            otherSchools.append(school['schoolname'])
+    
+    # Create the file and add a worksheet
+    directory = os.path.dirname(__file__)
+    workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
+    worksheet = workbook.add_worksheet()
+    
+        
+    # Cell Format dictionaries
+    formatDefaultCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center'}
+    formatHeaderRow = {'bold': True, 'underline': True, 'align': 'center', 'border': 2}
+    formatSchoolCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center', 'bg_color': '#92D050'}
+    formatSchoolInfo = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center', 'bg_color': '#FFFF00', 'bold': True, 'underline': True,}
+    
+    # Create formats for the cells
+    wrapHeaderRow = workbook.add_format(formatHeaderRow)
+    wrapSchoolCol = workbook.add_format(formatSchoolCol)
+    wrapDefaultCol = workbook.add_format(formatDefaultCol)
+    wrapSchooInfo = workbook.add_format(formatSchoolInfo)
+    
+    # Set Worksheet Column Width
+    worksheet.set_column('A:A', 30)
+    worksheet.set_column('B:B', 35)
+    worksheet.set_column('C:C', 25)
+    worksheet.set_column('D:D', 35)
+    
+    # Set up the Header information
+    worksheet.write('A1', 'Last Name, First Name (Student)', wrapHeaderRow)
+    worksheet.write('B1', 'Placement School', wrapHeaderRow)
+    worksheet.write('C1', 'Teacher', wrapHeaderRow)
+    worksheet.write('D1', 'Days and Time Assigned', wrapHeaderRow)
+    
+    # Start at the Second row to not overwrite Header info
+    row = 1
+    col = 0
+    
+    elemSchools.sort()
+    middleSchools.sort()
+    highSchools.sort()
+    otherSchools.sort()
+    
+    formats = {'schoolCol': wrapSchoolCol, 'defaultCol': wrapDefaultCol}
+    
+    worksheet.write(row, col, 'Elementary Schools:', wrapSchooInfo)
+    row += 1
+    row = write_to_workbook_by_school(elemSchools, worksheet, row, col, formats)
+   
+    worksheet.write(row, col, 'Middle Schools:', wrapSchooInfo)
+    row += 1
+    row = write_to_workbook_by_school(middleSchools, worksheet, row, col, formats)
+    
+    worksheet.write(row, col, 'High Schools:', wrapSchooInfo)
+    row += 1
+    row = write_to_workbook_by_school(highSchools, worksheet, row, col, formats)
+    
+    worksheet.write(row, col, 'Other Schools:', wrapSchooInfo)
+    row += 1
+    row = write_to_workbook_by_school(otherSchools, worksheet, row, col, formats)
+        
+    workbook.close()
+    
+def write_to_workbook_by_school(schools, worksheet, row, col, formats):
+    selectSchoolID = "SELECT schoolid FROM schools where schoolname = %s"
+    
+    for school in schools:
+        schoolID = select_query_db(selectSchoolID, (school, ), True)[0]
+        results = load_practica_matches_for_reports()
+        sortedlist = sorted(results, key=lambda elem: "%s, %s" % (elem['stulastname'], elem['stufirstname']))
+        
+        for match in sortedlist:
+            studentMatch = match['schid'] == schoolID
+            if not studentMatch: # Skip if the student isn't assigned to the school chosen
+                continue
             
+            studentName = '{}, {}'.format(match['stulastname'], match['stufirstname'])
+            worksheet.write(row, col, studentName, formats['defaultCol']) # Write Student's Name
+            
+            worksheet.write(row, col+1, match['schoolname'], formats['schoolCol']) # Write the Placement School
+            
+            teacherName = '{}, {}'.format(match['teacherlastname'], match['teacherfirstname'])
+            worksheet.write(row, col+2, teacherName, formats['defaultCol']) # Write the Teacher's Name
+            
+            availStr = format_availability_string(match)
+            dayTime = '{}: {} - {}'.format(availStr, match['starttime'], match['endtime'])
+            worksheet.write(row, col+3, dayTime, formats['defaultCol']) # Write the Practicum Day and Time
+            
+            row += 1
+            
+        worksheet.write_blank(row, col, None)
+        row += 1
         
-    print(lastNameCol)
-    print(firstNameCol)
-    print(assignedSchoolCol)
-    print(practicumDayTimeCol)
-    print(practicumCourseCol)
-    print(courseCol)
-    
-    
-    
-    
-    
-    
-    # nameCol = []
-    # courseCol = []
-    # availCol = []
-    # endorsementCol = []
-    # previousPracCol = []
-    # hasCarCol = []
-    # passengerCol = []
-    # students = load_students()
-    
-    # sortedlist = sorted(students , key=lambda elem: "%s %s" % (elem['lastName'], elem['firstName']))
-    
-    # print("SORTED")
-    # print(sortedlist)
-    
-    # for student in sortedlist:
-    #     #col 1
-    #     name = '{}, {}'.format(student['lastName'], student['firstName'])
-    #     nameCol.append(name)
-        
-    #     #col 2
-    #     courses = '\n'.join(student['enrolledClasses'])
-    #     courseCol.append(courses)
-        
-    #     #col 3
-        
-    #     availabilities = '\n'.join('{} {} - {}'.format(format_availability_string(value), value['startTime'], value['endTime']) for value in student['availability'])
-    #     availCol.append(availabilities)
-        
-    #     #col 4
-    #     endorsements = '\n'.join(student['endorsements'])
-    #     endorsementCol.append(endorsements)
-        
-    #     #col 5
-    #     prevPracs = '\n'.join('{}: {}'.format(value['school'], value['course']) for value in student['previousPractica'])    
-    #     previousPracCol.append(prevPracs)
-        
-    #     #col6 and 7
-    #     hasCar = 'No'
-    #     passengerCount = ''
-    #     if student['hasCar'] == True:
-    #         hasCar = 'Yes and others'
-    #         passengerCount = student['passengers']
-    #         if student['passengers'] == 0:
-    #             hasCar = 'Yes'
-    #             passengerCount = ''
-        
-    #     hasCarCol.append(hasCar)
-    #     passengerCol.append(passengerCount)   
-    
-    # print(nameCol)
-    #print(courseCol)
-    # print(availCol)
-    # print(endorsementCol)
-    # print(previousPracCol)
-    # print(hasCarCol)
-    # print(passengerCol)
-    
-    # df = pd.DataFrame({'Last Name, First Name': nameCol, 'Courses': courseCol, 'Days/Times': availCol, 'Endorsements': endorsementCol,
-    # 'Previous Practica': previousPracCol, 'Do you have a car?': hasCarCol, 'Number of Passengers you can take':passengerCol})
-    
-    # colsForSheet = ["Last Name, First Name","Courses","Days/Times", "Endorsements", "Previous Practica", "Do you have a car?", "Number of Passengers you can take"]
-    
-    # writer = pd.ExcelWriter("pandas_column_formats.xlsx", engine='xlsxwriter')
-    
-    # pd.formats.format.header_style = None
-    
-    # df.to_excel(writer, sheet_name='Sheet1', index=False, columns=colsForSheet)
-    # workbook  = writer.book
-    # worksheet = writer.sheets['Sheet1']
-    
-    # formatDayTime = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center'}
-    # headerRow = {'bg_color': '#CCFFCC', 'bold': True, 'align': 'center', 'border': 2}
-    # headerRowFormat = workbook.add_format(headerRow)
-    # wrapDayTimeCol = workbook.add_format(formatDayTime)
-    # wrapCourseCol = workbook.add_format(formatDayTime)
-    # wrapPrevPracCol = workbook.add_format(formatDayTime)
-    # wrapEndorsementCol = workbook.add_format(formatDayTime)
-    
-    
-    
-    # worksheet.set_column('A:A', 18, wrapDayTimeCol)
-    # worksheet.set_column('B:B', 10, wrapDayTimeCol)
-    # worksheet.set_column('C:C', 30, wrapDayTimeCol)
-    # worksheet.set_column('D:D', 25, wrapDayTimeCol)
-    # worksheet.set_column('E:E', 50, wrapDayTimeCol)
-    # worksheet.set_column('F:F', 20, wrapDayTimeCol)
-    # worksheet.set_column('G:G', 30, wrapDayTimeCol)
-    # worksheet.set_row(0, None, headerRowFormat)
-    # writer.save()
-    
-    #df.to_excel('test.xlsx', sheet_name='Test', index=False, columns=["Last Name, First Name","Courses","Days/Times", "Endorsements", "Previous Practica", "Do you have a car?", "Number of Passengers you can take"])
-    
+    worksheet.write_blank(row, col, None)
+    return row + 1
