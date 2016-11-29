@@ -201,3 +201,33 @@ function Teacher() {
         
     }
 }
+
+function TransportationAssignment(){
+    this.driver = undefined;
+    this.passengers = [];
+    
+    this.initialize = function(obj){
+        if (obj.driver)
+            this.driver = obj.driver;
+        
+        if (obj.passengers){
+            for (var i = 0; i < obj.passengers.length; i++){
+                var pass = new Passenger();
+                pass.initialize(obj.passengers[i]);
+                this.passengers.push(pass);
+            }
+        }
+    }
+}
+
+function Passenger(){
+    this.id = undefined;
+    this.student = undefined;
+    
+    this.initialize = function(obj){
+        if (obj.id)
+            this.id = obj.id;
+        if (obj.student)
+            this.student = obj.student;
+    }
+}

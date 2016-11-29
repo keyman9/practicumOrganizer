@@ -275,7 +275,7 @@
                     <div slim-scroll height="300px">
                         <ul class="list-group">
                             <div class="list-group-item btn student" ng-repeat="student in students" 
-                            ng-class="{active : currentStudent === student}" ng-model="student" 
+                            ng-class="{active : currentStudent === student, driver : student.passengers > 0, rider : !student.hasCar}" ng-model="student" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
                             jqyoui-draggable="{placeholder:'keep', animate:true}" data-template-url="popover.student.tpl.html" 
                             container="body" placement="left" auto-close="true" data-html="true"
@@ -506,25 +506,67 @@
                     </div>
                 </div>
                 <div class="row" ng-if="transportationMode">
-                    <div class="col-md-4 right-border">
-                        <h5>Driver</h5>
+                    <div class="row">
+                        <div class="col-md-4 right-border">
+                            <h5 class="text-center">Driver</h5>
+                        </div>
+                        <div class="col-md-8">
+                            <h5 class="text-center">Riders</h5>
+                        </div>
                     </div>
-                    <div class="col-md-8">
-                        <h5>Riders</h5>
-                    </div>
-                </div>
-                <div class="row" ng-if="practicumMode">
-                    <div class="col-md-3">
-                    </div>
-                    <div class="col-md-3">
-                    </div>
-                    <div class="col-md-6">
-                    </div>
-                </div>
-                <div class="row" ng-if="transportationMode">
-                    <div class="col-md-4">
-                    </div>
-                    <div class="col-md-8">
+                    <hr/>
+                    <div ng-repeat="item in transportationAssignments">
+                        <div class="row">
+                             <div class="alert alert-danger" role="alert" id="invalidPractica" ng-if="">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <div>
+                                    <button class="btn btn-danger" ng-click="">&nbsp;-&nbsp;</button>
+                                </div>
+                            </div>
+                            <div class="col-md-3 student-drop">
+                                <div class="thumbnail" ng-model="item.driver"
+                                data-drop="true" data-jqyoui-options="{accept:'.driver'}" ng-change="" jqyoui-droppable>
+                                    <div ng-if="!isEmptyObject(item.driver)" class="btn btn-draggable" ng-show="item.driver" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                    ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
+                                    container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                        <span ng-bind="item.driver.firstName"></span>&nbsp;
+                                        <span ng-bind="item.driver.lastName"></span>
+                                    </div>
+                                    <div ng-if="isEmptyObject(item.student)" class="btn btn-draggable" ng-show="item.driver" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                    ng-model="item.driver" jqyoui-draggable="{animate:true}">
+                                        <span ng-bind="item.driver.firstName"></span>&nbsp;
+                                        <span ng-bind="item.driver.lastName"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7 student-drop">
+                                <div class="thumbnail" ng-repeat="pass in item.passengers"
+                                data-drop="true" data-jqyoui-options="{accept:'.passenger'}" ng-change="validateStudent(editingPracticumAssignments.indexOf(item),true)" jqyoui-droppable>
+                                    <div ng-if="!isEmptyObject(item.student)" class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                    ng-model="item.student" jqyoui-draggable="{animate:true}" data-template-url="popover.assignedstudent.tpl.html" 
+                                    container="body" placement="top" auto-close="true" data-html="true" bs-popover>
+                                        <span ng-bind="item.student.firstName"></span>&nbsp;
+                                        <span ng-bind="item.student.lastName"></span>
+                                    </div>
+                                    <div ng-if="isEmptyObject(item.student)" class="btn btn-draggable" ng-show="item.student" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
+                                    ng-model="item.student" jqyoui-draggable="{animate:true}">
+                                        <span ng-bind="item.student.firstName"></span>&nbsp;
+                                        <span ng-bind="item.student.lastName"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div>
+                                    <button class="btn btn-success" ng-click="" ng-disabled="practicaIsInvalid(editingPracticumAssignments.indexOf(item))">
+                                        <i class="glyphicon glyphicon-floppy-disk"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
