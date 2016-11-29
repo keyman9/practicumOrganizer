@@ -77,16 +77,16 @@ def delete_query_db(query, data):
     db.close()
     return hasError
     
-
-studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
-endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
-meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
-meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
-prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
-enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
-availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"
-
 def submit_student(data):
+    
+    studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
+    endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
+    meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
+    meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
+    prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
+    enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
+    availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"
+    
     print(data)
     #print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
@@ -124,14 +124,17 @@ def submit_student(data):
         write_query_db(availableInsert, availabilityData)
 
   
-selectStudents = "SELECT * FROM students"
-selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
-availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
-selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
-selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
-selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"   
+
     
 def load_students():
+    
+    selectStudents = "SELECT * FROM students"
+    selectStudentPractica = "SELECT * FROM previousPractica WHERE studentEmail IN (SELECT email FROM students)"
+    availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
+    selectStudentAvailability = "SELECT " + availableColSelect + " FROM availableTimes JOIN meetingDays ON availableTimes.meetingID = meetingDays.meetingID WHERE studentEmail IN (SELECT email FROM students)"
+    selectStudentEndorsements = "SELECT * FROM endorsements WHERE studentemail IN (SELECT email FROM students)"
+    selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"   
+    
     # Grab all students
     studentsFromDB = select_query_db(selectStudents)    
     
@@ -158,13 +161,13 @@ def load_students():
     #print(listOfStudents)
     return listOfStudents
     
-selectTeacherCols = "t.teacherid as teacherid, t.email, t.firstname, t.lastname, t.grade, t.hostfall, t.hostspring, sch.schoolname as schoolname, sd.divisionname as divisionname"
-selectTeachers = "SELECT + "+ selectTeacherCols + " FROM teachers AS t JOIN schools AS sch ON t.schoolid = sch.schoolid JOIN schoolDivisions AS sd ON t.divisionId = sd.divisionId"
-availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
-selectTeacherElem = "select * from elementarySchedule join meetingDays Using (meetingId) WHERE teacherId in (select teacherId from teachers)"
-selectTeacherSec = "SELECT * FROM middleSchoolSchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
-    
 def load_teachers():
+
+    selectTeacherCols = "t.teacherid as teacherid, t.email, t.firstname, t.lastname, t.grade, t.hostfall, t.hostspring, sch.schoolname as schoolname, sd.divisionname as divisionname"
+    selectTeachers = "SELECT + "+ selectTeacherCols + " FROM teachers AS t JOIN schools AS sch ON t.schoolid = sch.schoolid JOIN schoolDivisions AS sd ON t.divisionId = sd.divisionId"
+    availableColSelect = "availableTimes.studentEmail, availableTimes.starttime, availableTimes.endtime, availableTimes.meetingid, meetingDays.monday, meetingDays.tuesday, meetingDays.wednesday, meetingDays.thursday, meetingDays.friday"
+    selectTeacherElem = "select * from elementarySchedule join meetingDays Using (meetingId) WHERE teacherId in (select teacherId from teachers)"
+    selectTeacherSec = "SELECT * FROM middleSchoolSchedule WHERE teacherID IN (SELECT teacherID FROM teachers)"
 
     #Select Teachers
     teachersFromDB = select_query_db(selectTeachers)    
@@ -186,13 +189,14 @@ def load_teachers():
     print(listOfTeachers)
     return listOfTeachers    
 
-practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday, p.practicum"
-selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
+
+
+def load_practica():
+    practicaCols = "s.email, t.teacherId, p.startTime, p.endTime, p.course, m.monday, m.tuesday, m.wednesday, m.thursday, m.friday, p.practicum"
+    selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
                         JOIN students AS s ON s.email = p.studentEmail \
                         JOIN teachers as t USING (teacherID) \
                         JOIN meetingDays as m USING (meetingid)"
-
-def load_practica():
     
     allPractica = select_query_db(selectPractica)
     
@@ -215,3 +219,21 @@ def load_practica():
         payload.append(match)
     print(payload)
     return payload
+
+def load_practica_matches_for_reports():
+    
+    practicaCols = "s.email as email, s.firstname as stuFirstname, s.lastname as stuLastname, \
+                    sch.schoolname, sch.schoolid as schid, \
+                    t.firstname as teacherFirstname, t.lastname as teacherLastname, t.teacherId, p.startTime as starttime, t.schoolid, \
+                    p.endTime as endtime, p.course as course, \
+                    m.monday, m.tuesday, m.wednesday, m.thursday, m.friday"
+                    
+    selectPractica = "SELECT " + practicaCols +  " FROM practicumArrangement AS p \
+                        JOIN students AS s ON s.email = p.studentEmail \
+                        JOIN teachers as t USING (teacherId) \
+                        JOIN meetingDays as m USING (meetingid) \
+                        JOIN schools as sch USING (schoolid)"
+    
+
+    results = select_query_db(selectPractica)
+    return results
