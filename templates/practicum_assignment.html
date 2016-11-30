@@ -289,7 +289,8 @@
             </div>
             <div class="row show-assigned">
                 <div class="col-md-12">
-                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedStudents">&nbsp;Show students that have already been assigned a practicum.</label>
+                    <!--HERE-->
+                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedStudents" ng-change= "changeAssigned(showAssignedStudents)">&nbsp;Show students that have already been assigned a practicum.</label>
                 </div>
             </div>
         </div>
@@ -300,7 +301,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <span>School Division:
-                        <select class="form-control" id="division" name="division" ng-model="currentSchoolDivision">
+                        <select class="form-control" id="division" name="division" ng-model="divisionSought" ng-change= "changeDivision(divisionSought)">
                             <option>N/A</option>
                             <option ng-repeat="item in schoolDivisions">{{ '{{item.division}}' }}</option>
                         </select></span>
@@ -309,7 +310,7 @@
                         <span>School:
                         <select class="form-control" id="school" name="school" ng-model="schoolSought" ng-change="changeSchool(schoolSought)">
                             <option>N/A</option>
-                            <option ng-repeat="school in getSchools(currentSchoolDivision)">{{ '{{school}}' }}</option>
+                            <option ng-repeat="school in getSchools(divisionSought)">{{ '{{school}}' }}</option>
                         </select></span>
                     </div>
                     <div class="form-group">
@@ -321,7 +322,7 @@
                     </div>
                     <div class="form-group">
                         <span>Subject</span>
-                        <select class="form-control" id="subject" name="subject" ng-model="subject">
+                        <select class="form-control" id="subject" name="subject" ng-model="subjectSought" ng-change="changeSubject(subjectSought)">
                             <option>N/A</option>
                             <option ng-repeat="s in subjects | orderBy:c">{{ '{{s}}' }}</option>
                         </select>
@@ -348,7 +349,7 @@
             </div>
             <div class="row show-assigned">
                 <div class="col-md-12">
-                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedTeachers">&nbsp;Show teachers that have already been assigned a practicum student.</label>
+                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedTeachers" ng-change= "changeTeacherAssigned(showAssignedTeachers)">&nbsp;Show teachers that have already been assigned a practicum student.</label>
                 </div>
             </div>
         </div>

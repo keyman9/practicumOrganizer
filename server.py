@@ -559,34 +559,46 @@ def deletePracticum(pracId):
 def createReport(reportType, limit):
     print(limit);
     
+    directory = os.path.dirname(__file__)
+    archivedReports = os.path.join(directory, 'static', 'archived_reports')
+    
     if reportType == "school":
-        print("school")
-        rp.create_school_report(limit)
+        filename = os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx')
+        rp.create_school_report(limit, filename)
         
     elif reportType == "division":
-        print("division")
-        rp.create_schoolDivision_report(limit)
-        #shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder + '/reports/divisionreport.xlsx')
-    elif reportType == "course":
-        print("course")
+        filename = os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx')
+        rp.create_schoolDivision_report(limit, filename)
         
-        rp.create_course_report(limit) ########
-        #shutil.copy2(app.static_folder + '/reports/553spring16SW.xlsx', app.static_folder +'/reports/coursereport.xlsx')
+    elif reportType == "course":
+        filename = os.path.join(directory, 'static', 'reports', 'coursereport.xlsx')
+        rp.create_course_report(limit, filename)
+        
+        # DO NOT DELETE OR I WILL HURT YOU SHELDON
+        ########################################
+        # zipName, zipPath = rp.batch_reports()
+        # zipName = os.path.join(archivedReports, zipName)
+        # print(zipName, zipPath)
+        # shutil.make_archive(zipName, 'zip', zipPath)
+        # shutil.rmtree(zipPath, ignore_errors=True)
+        ########################################
     else:
         print("invalid report type")
     emit("reportCreated", reportType)
         
-    
-    
 @app.route('/reports/<reportType>')
 def downloadReport(reportType):
     filename = ""
+    
     if reportType == "school":
         filename = "schoolreport.xlsx"
+        
     elif reportType == "division":
         filename = "divisionreport.xlsx"
+        
     elif reportType == "course":
         filename = "coursereport.xlsx"
+        
     else:
         print("invalid report type")
     return send_from_directory(app.static_folder + "/reports", filename, as_attachment=True, 
@@ -595,10 +607,13 @@ def downloadReport(reportType):
 @socketio.on("deleteReport", namespace="/reports")
 def deleteReport():
     directory = os.path.dirname(__file__)
+    
     if os.path.isfile(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx')):
         os.remove(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx'))
+        
     if os.path.isfile(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx')):
         os.remove(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
+        
     if os.path.isfile(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx')):
         os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
     
