@@ -2,6 +2,8 @@ from db import *
 import pandas as pd
 import os
 import xlsxwriter
+import time
+import zipfile
 # import practica as prac
 
 def format_availability_string(availability):
@@ -25,7 +27,7 @@ def format_availability_string(availability):
     
     return formatStr[:-1]
 
-def create_course_report(limit):
+def create_course_report(limit, filename):
     
     results = load_practica_matches_for_reports()
     selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
@@ -46,8 +48,9 @@ def create_course_report(limit):
     sortedlist = sorted(results , key=lambda elem: "%s, %s" % (elem['stulastname'], elem['stufirstname']))
     
     # Create the file and add a worksheet
-    directory = os.path.dirname(__file__)
-    workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx'))
+    # directory = os.path.dirname(__file__)
+    # workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'coursereport.xlsx'))
+    workbook  = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
     
     # Cell Format dictionaries
@@ -125,7 +128,7 @@ def create_course_report(limit):
     workbook.close()
     
     
-def create_school_report(limit):
+def create_school_report(limit, filename):
     
     selectSchoolID = "SELECT schoolid FROM schools where schoolname = %s"
     schoolID = select_query_db(selectSchoolID, (limit, ), True)[0]
@@ -135,7 +138,8 @@ def create_school_report(limit):
     
     # Create the file and add a worksheet
     directory = os.path.dirname(__file__)
-    workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
+    #workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
+    workbook  = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
     
     # Cell Format dictionaries
@@ -188,7 +192,7 @@ def create_school_report(limit):
  
     workbook.close()
     
-def create_schoolDivision_report(limit):
+def create_schoolDivision_report(limit, filename):
     
     selectSchoolDivisions = "SELECT schools.schoolName FROM schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId\
         WHERE schoolDivisions.divisionName = %s"
@@ -216,7 +220,8 @@ def create_schoolDivision_report(limit):
     
     # Create the file and add a worksheet
     directory = os.path.dirname(__file__)
-    workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
+    #workbook  = xlsxwriter.Workbook(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
+    workbook  = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
     
         
@@ -305,3 +310,61 @@ def write_to_workbook_by_school(schools, worksheet, row, col, formats):
         
     worksheet.write_blank(row, col, None)
     return row + 1
+    
+def batch_reports():
+    
+    selectPracticumCourses = "select coursename from practicumcourses"
+    practicumCourses = select_query_db(selectPracticumCourses)
+    directory = os.path.dirname(__file__)
+    
+    zipName, zipPath = name_zip_file(directory)
+    
+    # Create the course report directory for the zipfile
+    courseReportPath = os.path.join(zipPath, 'course_reports')
+    create_directory_reports(courseReportPath)
+    
+    # Create the reports for each course
+    for course in practicumCourses:
+        xlsxFile = course['coursename'] + '_report.xlsx'
+        courseFilename = os.path.join(courseReportPath, xlsxFile)
+        create_course_report(course['coursename'], courseFilename)
+    
+    selectSchoolDivisions = "SELECT schoolDivisions.divisionName, ARRAY_AGG(schools.schoolName) as schoolnames FROM \
+        schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
+        GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName"
+    
+    schoolDivisions = select_query_db(selectSchoolDivisions)
+    
+    # Create the division_reports directory for the zipfile
+    divisionReportPath = os.path.join(zipPath, 'division_reports')
+    create_directory_reports(divisionReportPath)
+    
+    # Creare the reports for each division and school in that division
+    for division in schoolDivisions:
+        
+        # Create the Division Directory for the school division
+        divisionDir = os.path.join(divisionReportPath, division['divisionname'])
+        create_directory_reports(divisionDir)
+        
+        # Create the Excel report for the School Division
+        xlsxFile = '_' + division['divisionname'] + '_report.xlsx'
+        divisionFilename = os.path.join(divisionDir, xlsxFile)
+        create_schoolDivision_report(division['divisionname'], divisionFilename)
+        
+        for school in division['schoolnames']:
+            xlsxFile = school + '_report.xlsx'
+            schoolFilename = os.path.join(divisionDir, xlsxFile)
+            create_schoolDivision_report(school, schoolFilename)
+        
+    return (zipName, zipPath)       
+        
+def create_directory_reports(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+def name_zip_file(directory):
+    zipName = time.strftime("%b-%d-%Y") 
+    zipName += "_Reports"
+    zipPath = os.path.join(directory, 'static', 'archived_reports', zipName)
+    create_directory_reports(zipPath)
+    return (zipName, zipPath)

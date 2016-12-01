@@ -83,6 +83,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.publishedPracticumAssignments = [];
     $scope.showAssignedTeachers = false;
     $scope.showAssignedStudents = false;
+    $scope.assignedStudents = [];
+    $scope.assignedTeachers = [];
     $scope.practicaErrorMsg = [];
     $scope.deleteTeach= undefined;
     $scope.deletePrac = undefined;
@@ -91,10 +93,16 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.selectGrade = false;
     $scope.selectSchool = false;
+    $scope.selectDivision= false;
+    $scope.selectSubject= false;
     $scope.gradeSought = 'N/A';
     $scope.schoolSought = 'N/A';
+    $scope.divisionSought = 'N/A';
+    $scope.subjectSought= 'N/A';
     $scope.showTeacherGrades = [];
     $scope.showTeacherSchools = [];
+    $scope.showDivisionSchools = [];
+    $scope.showSubjects= [];
     $scope.allTeachers = [];
     
     $scope.selectEndorsement = false;
@@ -168,7 +176,6 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.students = results;
         $scope.allStudents = results;
         $scope.$apply();
-        
     });
     
     $scope.initializeTeachers = function(){
@@ -180,6 +187,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.teachers = results;
         $scope.allTeachers = results;
         $scope.$apply();
+        console.log($scope.teachers);
     });
     
     $scope.initializePractica = function(){
@@ -226,6 +234,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         
         //$scope.publishedPracticumAssignments = results;
         $scope.$apply();
+        $scope.changeStudentAssigned();
+        $scope.changeTeacherAssigned();
     });
     
     /**************************************************/
@@ -551,6 +561,149 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         
     };
     
+    $scope.filterSchool =  function(){
+      
+        $scope.showTeacherSchools = [];
+        for(var i = 0; i < $scope.teachers.length; i++){
+            //console.log($scope.teachers[i]['school']);
+            if($scope.teachers[i]['school'].indexOf($scope.schoolSought) !== -1){
+                $scope.showTeacherSchools.push($scope.teachers[i]);
+            }
+        }
+        $scope.selectSchool = true;
+        $scope.teachers = $scope.showTeacherSchools;
+        
+    };
+    
+    $scope.filterDivisions = function(divisionSought)
+    {
+        $scope.showDivisionSchools = [];
+        for(var i= 0; i < $scope.teachers.length; i++)
+        {
+            //console.log($scope.teachers[i]['schoolDivision']);
+            if($scope.teachers[i]['schoolDivision'].indexOf($scope.divisionSought) !== -1)
+            {
+                $scope.showDivisionSchools.push($scope.teachers[i]);
+            }
+        }
+        $scope.selectDivision = true;
+        $scope.teachers = $scope.showDivisionSchools;
+    };
+    
+    $scope.filterAssigned = function()
+    {
+        $scope.assignedStudents= [];
+        $scope.dummyArray= [];
+        for(var i=0; i < $scope.allStudents.length; i++)
+        {
+            for(var j=0; j < $scope.publishedPracticumAssignments.length; j++)
+            {
+                if($scope.students[i].email === $scope.publishedPracticumAssignments[j]['student'].email)
+                {
+                    $scope.dummyArray.push($scope.students[i].email);
+                }
+            }
+        }
+        for(var k=0; k < $scope.allStudents.length; k++)
+        {
+            if($scope.dummyArray.includes($scope.students[k].email) === false)
+            {
+                // console.log($scope.students[k].email);
+                $scope.assignedStudents.push($scope.students[k]);
+            }
+        }
+        $scope.students= $scope.assignedStudents;
+    };
+    
+    $scope.filterAssignedTeachers= function()
+    {
+        $scope.assignedTeachers=[];
+        $scope.dummyArray=[];
+        console.log("HERE 2");
+        for(var i=0; i < $scope.allTeachers.length; i++)
+        {
+            for(var j=0; j < $scope.publishedPracticumAssignments.length; j++)
+            {
+                if($scope.allTeachers[i].email === $scope.publishedPracticumAssignments[j]['teacher'].email)
+                {
+                    $scope.dummyArray.push($scope.allTeachers[i].email);
+                }
+            }
+        }
+        for(var k=0; k < $scope.allTeachers.length; k++)
+        {
+            if($scope.dummyArray.includes($scope.allTeachers[k].email) === false)
+            {
+                console.log($scope.allTeachers[k].email);
+                $scope.assignedTeachers.push($scope.allTeachers[k]);
+            }
+        }
+        $scope.teachers= $scope.assignedTeachers;
+    };
+    
+    $scope.filterSubject= function(subjectSought)
+    {
+        $scope.showSubjects= [];
+        for(var i=0; i < $scope.teachers.length; i++)
+        {
+            for(var j=0; j < $scope.teachers[i]['secondarySchedule'].length; j++)
+            {
+                //nsole.log($scope.teachers[i]['secondarySchedule'][j].course);
+                if($scope.teachers[i]['secondarySchedule'][j].course === subjectSought)
+                {
+                    $scope.showSubjects.push($scope.teachers[i]);
+                }
+                // if($scope.teachers[i]['secondarySchedule'][j].course === subjectSought)
+                // {
+                //     $scope.showSubjects.push($scope.teachers[i]);
+                // }
+            }
+            // for(var k=0; k < $scope.teachers[i]['elementarySchedule'].length; k++)
+            // {
+            //   // console.log($scope.teachers[i]['elementarySchedule'][j].course);
+            //     if($scope.teachers[i]['elementarySchedule'][k].course === subjectSought)
+            //     {
+            //         $scope.showSubjects.push($scope.teachers[i]);
+            //     }
+            // }
+        }
+        $scope.selectSubject= true;
+        $scope.teachers= $scope.showSubjects;
+    };
+    
+    $scope.filterCourses = function(){
+        
+        $scope.showStudentsCourses = [];
+            
+        for(var i = 0; i < $scope.students.length; i++){
+            if($scope.students[i]['enrolledClasses'].indexOf($scope.courseSought) !== -1){
+                $scope.showStudentsCourses.push($scope.students[i]);
+            }
+        }
+    
+        $scope.selectCourse = true;
+        $scope.students = $scope.showStudentsCourses;
+    };
+    
+    $scope.filterEndorsements = function(){
+        
+        $scope.showStudentsEndorsements = [];
+            
+        for(var i = 0; i < $scope.students.length; i++){
+        
+            if($scope.students[i]['endorsements'].indexOf($scope.endorsementSought) !== -1){
+                $scope.showStudentsEndorsements.push($scope.students[i]);
+            }
+        }
+    
+        $scope.selectEndorsement = true;
+        $scope.students = $scope.showStudentsEndorsements;
+    };
+    
+     /**************************************************/
+     
+    //Change methods
+    
     $scope.changeGrade = function(gradeSought){
         
         $scope.teachers = $scope.allTeachers;
@@ -567,18 +720,32 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         }
     };
     
-    $scope.filterSchool =  function(){
-      
-        $scope.showTeacherSchools = [];
-        for(var i = 0; i < $scope.teachers.length; i++){
-            console.log($scope.teachers[i]['school']);
-            if($scope.teachers[i]['school'].indexOf($scope.schoolSought) !== -1){
-                $scope.showTeacherSchools.push($scope.teachers[i]);
-            }
+    $scope.changeStudentAssigned= function()
+    {   
+        console.log("showAssignedStudents", $scope.showAssignedStudents);
+        if($scope.showAssignedStudents)
+        {
+            console.log("Student True?")
+            $scope.students= $scope.allStudents;
         }
-        $scope.selectSchool = true;
-        $scope.teachers = $scope.showTeacherSchools;
-        
+        else
+        {
+            $scope.filterAssigned();
+        } 
+    };
+    
+    $scope.changeTeacherAssigned= function()
+    {
+        console.log("showAssignedTeachers", $scope.showAssignedTeachers);
+        if($scope.showAssignedTeachers)
+        {
+            console.log("Teacher True?")
+            $scope.teachers=$scope.allTeachers;
+        }
+        else
+        {
+            $scope.filterAssignedTeachers();
+        }
     };
     
     $scope.changeSchool = function(schoolSought){
@@ -597,35 +764,33 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         }
     };
     
-    $scope.filterCourses = function(){
-        
-        $scope.showStudentsCourses = [];
-            
-            for(var i = 0; i < $scope.students.length; i++){
-            
-                if($scope.students[i]['enrolledClasses'].indexOf($scope.courseSought) !== -1){
-                    $scope.showStudentsCourses.push($scope.students[i]);
-                }
-            }
-        
-            $scope.selectCourse = true;
-            $scope.students = $scope.showStudentsCourses;
+    $scope.changeDivision= function(divisionSought)
+    {
+        $scope.teachers= $scope.allTeachers;
+        //console.log(divisionSought);
+        if(divisionSought !== "N/A")
+        {
+            $scope.filterDivisions(divisionSought);
+        }
+        else
+        {
+            $scope.selectDivision = false;
+        }
     };
     
-    $scope.filterEndorsements = function(){
-        
-        $scope.showStudentsEndorsements = []
-            
-            for(var i = 0; i < $scope.students.length; i++){
-            
-                if($scope.students[i]['endorsements'].indexOf($scope.endorsementSought) !== -1){
-                    $scope.showStudentsEndorsements.push($scope.students[i]);
-                }
-            }
-        
-            $scope.selectEndorsement = true;
-            $scope.students = $scope.showStudentsEndorsements;
-    };
+    $scope.changeSubject= function(subjectSought)
+    {
+        $scope.teachers= $scope.allTeachers;
+        //console.log(subjectSought);
+        if(subjectSought !== "N/A")
+        {
+            $scope.filterSubject(subjectSought);
+        }
+        else
+        {
+            $scope.selectSubject= false;
+        }
+    }
     
     $scope.changeEndorsement = function(endorsementSought){
         
@@ -651,6 +816,13 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
                 
             } 
         }
+    };
+    
+    $scope.changeAssigned= function(showAssignedStudents)
+    {
+        $scope.students= $scope.allStudents;
+        console.log("YO YO YO");
+        $scope.filterAssigned();
     };
     
     $scope.changeCourse = function(courseSought){
