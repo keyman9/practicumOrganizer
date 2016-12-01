@@ -35,7 +35,7 @@ CREATE TABLE transportation(
 );
 
 GRANT SELECT, INSERT ON transportation TO practicum_normal;
-GRANT SELECT, INSERT ON transportation TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON transportation TO practicum_admin;
 
 ---Previous Practica---
 DROP TABLE IF EXISTS previousPractica;

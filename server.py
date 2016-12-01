@@ -477,7 +477,6 @@ def getPracticumBearingForReports():
 @socketio.on('submitPractica', namespace='/practica')
 def submitPractica(assignment):
     #print(assignment)
-    #TODO: insert/update in database
     result = defaultdict(list)
     #meetingDays table
     meetingPresent = False
@@ -540,6 +539,27 @@ def submitPractica(assignment):
   
 #################################   
 
+@socketio.on('submitTransportation', namespace='/practica')
+def submitTransportation(assignment):
+    print(assignment)
+    insertTransportationQuery = """INSERT INTO transportation( driverEmail, passengerEmail ) VALUES ( %s, %s )""";
+    deleteTransporationQuery = """DELETE FROM transportation WHERE driverEmail=%s;"""
+    
+    driverEmail = assignment['driver']['email']
+    print(type(driverEmail))
+    error = delete_query_db(deleteTransporationQuery, driverEmail)
+    print("error")
+    
+    for rider in assignment['passengers']:
+        riderEmail = rider['email']
+        print(type(riderEmail))
+        result = write_query_db(insertTransportationQuery, (driverEmail, riderEmail), True)
+        if not result:
+            print("error inserting transportation: " + driverEmail + ", " + riderEmail + "\n")
+    
+
+#################################  
+
 @socketio.on('deleteTeacher', namespace='/practica') 
 def deleteTeacher(teachId):
     deleteTeacherQuery = """DELETE FROM teachers WHERE teacherID=%s;"""
@@ -554,6 +574,13 @@ def deletePracticum(pracId):
     error = delete_query_db(deletePracticumQuery, pracId)
     emit("deletedPracticum", error)
     
+@socketio.on('deleteTransportation', namespace='/practica') 
+def deleteTransportation(driverEmail):
+    deleteTransporationQuery = """DELETE FROM transportation WHERE driverEmail=%s;"""
+    error = delete_query_db(deleteTransporationQuery, driverEmail)
+    emit("deletedTransportation", error)
+    
+################################# 
 
 @socketio.on('createReport', namespace='/reports')
 def createReport(reportType, limit):

@@ -294,7 +294,7 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
     
      /**************************************************/
      
-    //Validation methods
+    //Change methods
     
     $scope.changeGrade = function(item){
         item.course = undefined;
@@ -368,7 +368,7 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
     
     /**************************************************/
     
-    //Validation
+    //Validation methods
     
     $scope.validateFirstName = function(){
         var namepat = /(^[A-Z]{1}[A-Za-z\'\-\.\s]+$)/;

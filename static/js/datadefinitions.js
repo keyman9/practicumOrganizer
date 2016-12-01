@@ -219,15 +219,3 @@ function TransportationAssignment(){
         }
     }
 }
-
-function Passenger(){
-    this.id = undefined;
-    this.student = undefined;
-    
-    this.initialize = function(obj){
-        if (obj.id)
-            this.id = obj.id;
-        if (obj.student)
-            this.student = obj.student;
-    }
-}

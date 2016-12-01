@@ -607,21 +607,26 @@
                             <h5 class="text-center">Driver</h5>
                         </div>
                         <div class="col-md-8">
-                            <h5 class="text-center">Riders</h5>
+                            <h5 class="text-center">Passengers</h5>
+                        </div>
+                        <div class="col-md-1">
+                            <div>
+                                <button class="btn btn-primary" ng-click="addTransportationAssignment()">&nbsp;+&nbsp;</button>
+                            </div>
                         </div>
                     </div>
                     <hr/>
-                    <div ng-repeat="item in transportationAssignments">
+                    <div ng-repeat="item in editingTransportationAssignments">
                         <div class="row">
-                             <div class="alert alert-danger" role="alert" id="invalidTransportation" ng-if="transportationErrorMsg[transportationAssignments.indexOf(item)].length > 0">
-                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{transportationErrorMsg[transportationAssignments.indexOf(item)]}}' }}
+                             <div class="alert alert-danger" role="alert" id="invalidTransportation" ng-if="transportationErrorMsg[editingTransportationAssignments.indexOf(item)].length > 0">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{transportationErrorMsg[editingTransportationAssignments.indexOf(item)]}}' }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-1">
                                 <br/>
                                 <div>
-                                    <button class="btn btn-danger" ng-click="deleteTranportationAssignment(transportationAssignments.indexOf(item))">
+                                    <button class="btn btn-danger" ng-click="deleteEditingTransportationAssignment(editingTransportationAssignments.indexOf(item))">
                                         <i class="glyphicon glyphicon-trash"></i>
                                     </button>
                                 </div>
@@ -647,8 +652,8 @@
                                 <div class="row">
                                     <div class="col-md-3" ng-repeat="rider in item.passengers">
                                         <br/>
-                                        <div class="thumbnail" ng-model="rider" 
-                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: 'addRider(item, rider)'}">
+                                        <div class="thumbnail" ng-model="item.passengers[$index]" 
+                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: ''}">
                                             <div ng-if="!isEmptyObject(rider)" class="btn btn-draggable" ng-show="rider" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                             ng-model="rider" jqyoui-draggable="{animate:true}" data-template-url="popover.rider.tpl.html" 
                                             container="body" placement="top" auto-close="true" data-html="true"  bs-popover>
@@ -656,7 +661,7 @@
                                                 <span ng-bind="rider.lastName"></span>
                                             </div>
                                             <div ng-if="isEmptyObject(rider)" class="btn btn-draggable" ng-show="rider" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                            ng-model="rider" jqyoui-draggable="{animate:true}">
+                                            ng-model="item.passengers[$index]" jqyoui-draggable="{animate:true}">
                                                 <span ng-bind="rider.firstName"></span>
                                                 <span ng-bind="rider.lastName"></span>
                                             </div>
@@ -667,7 +672,7 @@
                             <div class="col-md-1">
                                 <br/>
                                 <div>
-                                    <button class="btn btn-success" ng-click="saveTransportationAssignment(transportationAssignments.indexOf(item))" ng-disabled="transportationIsInvalid(item)">
+                                    <button class="btn btn-success" ng-click="saveTransportationAssignment(editingTransportationAssignments.indexOf(item))" ng-disabled="transportationIsInvalid(item)">
                                         <i class="glyphicon glyphicon-floppy-disk"></i>
                                     </button>
                                 </div>
@@ -713,6 +718,46 @@
             </table>
         </div>
     </div>
+    <div class="row" ng-if="transportationMode">
+        <div class="col-md-12 practica-table">
+            <table class="table table-bordered">
+                <thead class="practica">
+                    <th class="col-md-1"></th>
+                    <th class="col-md-3">Driver</th>
+                    <th class="col-md-7">Passengers</th>
+                    <th class="col-md-1"></th>
+                </thead>
+                <tr class="practica" ng-repeat="item in publishedTransportationAssignments"> 
+                    <td class="col-md-1">
+                        <div>
+                            <button class="btn btn-danger" ng-click="deletePublishedTransportationAssignment(publishedTransportationAssignments.indexOf(item))">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="col-md-3" ng-bind="item.driver.firstName + ' ' + item.driver.lastName"></td>
+                    <td class="col-md-7">
+                        <span ng-repeat="rider in item.passengers">
+                            <span ng-bind="rider.firstName + ' ' + rider.lastName"></span>
+                            <span ng-if="$index < item.passengers.length - 1">,&nbsp;</span>
+                        </span>
+                    </td>
+                    <td class="col-md-1">
+                        <div>
+                            <button class="btn btn-primary" ng-click="editTransportation(publishedTransportationAssignments.indexOf(item))">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    
+    
+    
+    
     <div id="deleteModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -742,6 +787,26 @@
                                     <td ng-bind="deletePrac.teacher.firstName + ' ' + deletePrac.teacher.lastName"></td>
                                     <td ng-bind="getScheduleString(getScheduleCourse(deletePrac.teacher, deletePrac.course))"></td>
                                     <td ng-bind="getAvailabilityString(deletePrac.availability)"></td>
+                                </tr>
+                            </table>
+                            <h4 class="text-center">This action cannot be undone.</h4>
+                            <br/><br/>
+                        </div>
+                        <div class="col-xs-12" ng-if="deleteTransport">
+                             <h4 class="text-center">Are you sure you want to delete this transportation assignment?</h4>
+                             <table class="table table-bordered">
+                                <thead class="practica">
+                                    <th class="col-md-3">Driver</th>
+                                    <th class="col-md-7">Passengers</th>
+                                </thead>
+                                <tr class="practica"> 
+                                    <td class="col-md-3" ng-bind="deleteTransport.driver.firstName + ' ' + deleteTransport.driver.lastName"></td>
+                                    <td class="col-md-7">
+                                        <span ng-repeat="rider in deleteTransport.passengers">
+                                            <span ng-bind="rider.firstName + ' ' + rider.lastName"></span>
+                                            <span ng-if="$index < deleteTransport.passengers.length - 1">,&nbsp;</span>
+                                        </span>
+                                    </td>
                                 </tr>
                             </table>
                             <h4 class="text-center">This action cannot be undone.</h4>

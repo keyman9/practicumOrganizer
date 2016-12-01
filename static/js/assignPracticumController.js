@@ -88,6 +88,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.practicaErrorMsg = [];
     $scope.deleteTeach= undefined;
     $scope.deletePrac = undefined;
+    $scope.deleteTransport = undefined;
     $scope.deleteFailure = false;
     $scope.deleteErrorMsg = "";
     
@@ -116,7 +117,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.showStudentsCourses = [];
     $scope.allStudents = [];
     
-    $scope.transportationAssignments = [];
+    $scope.editingTransportationAssignments = [];
+    $scope.publishedTransportationAssignments = [];
     $scope.transportationErrorMsg = [];
     
      /**************************************************/
@@ -255,12 +257,17 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
             var id = $scope.deletePrac.id;
             console.log(id);
             socket.emit("deletePracticum", id);
+        } else if ($scope.deleteTransport){
+            var driver = $scope.deleteTransport.driver.email
+            console.log(driver);
+            socket.emit("deleteTransportation", driver);
         }
     }
     
     $scope.cancelDelete = function(){
         $scope.deleteTeach = undefined;
         $scope.deletePrac = undefined;
+        $scope.deleteTransport = undefined;
     }
     
     socket.on("deletedTeacher", function(error){
@@ -276,7 +283,6 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     });
     
     socket.on("deletedPracticum", function(error){
-        console.log("in deleted practicum");
         if (error){
             $scope.deleteFailure = true;
             $scope.deleteErrorMsg = "Failed to delete practicum assignment";
@@ -284,6 +290,19 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
             var index = $scope.publishedPracticumAssignments.indexOf($scope.deletePrac);
             $scope.publishedPracticumAssignments.splice(index,1);
             $scope.deletePrac = undefined;
+            $scope.$apply();
+        }
+    });
+    
+    socket.on("deletedTransportation", function(error){
+        console.log("in deleted transportation");
+        if (error){
+            $scope.deleteFailure = true;
+            $scope.deleteErrorMsg = "Failed to delete transportation assignment";
+        } else{
+            var index = $scope.publishedTransportationAssignments.indexOf($scope.deleteTransport);
+            $scope.publishedTransportationAssignments.splice(index,1);
+            $scope.deleteTransport = undefined;
             $scope.$apply();
         }
     });
@@ -296,6 +315,17 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.deletePublishedPracticumAssignment = function(index){
         $scope.deletePrac = $scope.publishedPracticumAssignments[index];
         console.log($scope.deletePrac);
+        $('#deleteModal').modal('show');
+    }
+    
+    $scope.deleteEditingTransportationAssignment = function(index){
+        $scope.editingTransportationAssignments.splice(index, 1);
+        $scope.transportationErrorMsg.splice(index, 1);
+    }
+    
+    $scope.deletePublishedTransportationAssignment = function(index){
+        $scope.deleteTransport = $scope.publishedTransportationAssignments[index];
+        console.log($scope.deleteTransport);
         $('#deleteModal').modal('show');
     }
     
@@ -619,7 +649,6 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     {
         $scope.assignedTeachers=[];
         $scope.dummyArray=[];
-        console.log("HERE 2");
         for(var i=0; i < $scope.allTeachers.length; i++)
         {
             for(var j=0; j < $scope.publishedPracticumAssignments.length; j++)
@@ -722,10 +751,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.changeStudentAssigned= function()
     {   
-        console.log("showAssignedStudents", $scope.showAssignedStudents);
         if($scope.showAssignedStudents)
         {
-            console.log("Student True?")
             $scope.students= $scope.allStudents;
         }
         else
@@ -736,10 +763,8 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.changeTeacherAssigned= function()
     {
-        console.log("showAssignedTeachers", $scope.showAssignedTeachers);
         if($scope.showAssignedTeachers)
         {
-            console.log("Teacher True?")
             $scope.teachers=$scope.allTeachers;
         }
         else
@@ -999,7 +1024,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.validateDriver = function(event, ui, item, updateMsg){
         var invalid = false;
-        var index = $scope.transportationAssignments.indexOf(item);
+        var index = $scope.editingTransportationAssignments.indexOf(item);
         if ($scope.transportationMode){
             var driver = item.driver;
       
@@ -1028,11 +1053,11 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.validateRiders = function(event, ui, item, updateMsg){
         var invalid = true;
-        var index = $scope.transportationAssignments.indexOf(item);
+        var index = $scope.editingTransportationAssignments.indexOf(item);
         if ($scope.transportationMode){
             var riders = item.passengers;
-            console.log(riders);
-            console.log($scope.transportationAssignments);
+            // console.log(riders);
+            // console.log($scope.editingTransportationAssignments);
             for (var i = 0; i < riders.length; i++){
                 if (riders[i] != undefined && !$scope.isEmptyObject(riders[i])){
                     invalid = false;
@@ -1093,10 +1118,63 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
     $scope.addTransportationAssignment = function(){
         var transport = new TransportationAssignment();
-        $scope.transportationAssignments.push(transport);
-        console.log($scope.transportationAssignments);
+        $scope.editingTransportationAssignments.push(transport);
+        console.log($scope.editingTransportationAssignments);
         $scope.transportationErrorMsg.push("");
     }
+    
+    $scope.saveTransportationAssignment = function(index){
+        var transport = angular.copy($scope.editingTransportationAssignments[index]);
+        var publishTransport = $scope.convertToPublishableTransportation(transport);
+        
+        $scope.deleteEditingTransportationAssignment(index);
+        
+        socket.emit('submitTransportation', publishTransport);
+        
+        $scope.publishedTransportationAssignments.push(publishTransport);
+        console.log($scope.publishedTransportationAssignments);
+        if ($scope.editingTransportationAssignments.length < 1)
+            $scope.addTransportationAssignment();
+    }
+    
+    $scope.editTransportation = function(index){
+        var transport = angular.copy($scope.publishedTransportationAssignments[index]);
+        $scope.publishedTransportationAssignments.splice(index,1); 
+        var editable = $scope.convertToEditableTransportation(transport);
+        $scope.editingTransportationAssignments.push(editable);
+        $scope.transportationErrorMsg.push("");
+    }
+    
+    $scope.convertToEditableTransportation = function(transport){
+        var editTransport = angular.copy(transport);
+        //make sure number of objects in array is the same as student's passengers variable
+        var passNum = transport.driver.passengers;
+        var pass = editTransport.passengers
+        for (var i = editTransport.passengers.length; i < passNum; i++){
+            var rider = {};
+            pass.push(rider);
+        }
+        
+        console.log(editTransport);
+        return editTransport;
+    }
+    
+    $scope.convertToPublishableTransportation = function(transport){
+        var publishTransport = angular.copy(transport);
+        
+        //remove empty objects in array
+        var pass = [];
+        for (var i = 0; i < transport.passengers.length; i++){
+            if (!$scope.isEmptyObject(transport.passengers[i])){
+                pass.push(transport.passengers[i]);
+            }
+        }
+        
+        publishTransport.passengers = pass;
+        console.log(publishTransport);
+        return publishTransport;
+    }
+
     
     /**************************************************/
     
