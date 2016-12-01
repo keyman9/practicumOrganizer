@@ -648,7 +648,7 @@
                                     <div class="col-md-3" ng-repeat="rider in item.passengers">
                                         <br/>
                                         <div class="thumbnail" ng-model="rider" 
-                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: 'validateRiders(item, rider, true)'}">
+                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: 'addRider(item, rider)'}">
                                             <div ng-if="!isEmptyObject(rider)" class="btn btn-draggable" ng-show="rider" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                             ng-model="rider" jqyoui-draggable="{animate:true}" data-template-url="popover.rider.tpl.html" 
                                             container="body" placement="top" auto-close="true" data-html="true"  bs-popover>

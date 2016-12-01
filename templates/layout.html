@@ -20,7 +20,7 @@
     .modal-dialog{
         overflow-y: initial !important
     }
-    .modal-body{
+    .reports-modal-body{
         height: 400px;
         overflow-y: auto;
     }
@@ -99,7 +99,7 @@
                 <h4 class="modal-title" ng-if="reportType === 'school'">By Individual School</h4>
                 <h4 class="modal-title" ng-if="reportType === 'course'">By Course</h4>
               </div>
-              <div class="modal-body">
+              <div class="modal-body reports-modal-body">
                     <div class="col-xs-6 col-xs-offset-3">
                         <ul class="list-group" ng-if="reportType === 'division'">
                             <div class="list-group-item btn" ng-class="{active : selected === 'none'}" 
