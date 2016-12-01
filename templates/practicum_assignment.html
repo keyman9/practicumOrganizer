@@ -277,7 +277,7 @@
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
                         <ul class="list-group">
-                            <div class="list-group-item btn student" ng-repeat="student in students" 
+                            <div class="list-group-item btn student" ng-repeat="student in students track by $index" 
                             ng-class="{active : currentStudent === student}" ng-model="student" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
                             jqyoui-draggable="{placeholder:'keep', animate:true}" data-template-url="popover.student.tpl.html" 
@@ -293,7 +293,7 @@
             <div class="row show-assigned">
                 <div class="col-md-12">
                     <!--HERE-->
-                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedStudents" ng-change= "changeAssigned(showAssignedStudents)">&nbsp;Show students that have already been assigned a practicum.</label>
+                    <label><input type="checkbox" id="showassigned" name="showassigned" ng-model="showAssignedStudents" ng-change= "changeStudentAssigned()">&nbsp;Show students that have already been assigned a practicum.</label>
                 </div>
             </div>
         </div>
@@ -334,7 +334,7 @@
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
                         <ul class="list-group">
-                            <div class="list-group-item btn teacher" ng-repeat="teacher in teachers" 
+                            <div class="list-group-item btn teacher" ng-repeat="teacher in teachers track by $index" 
                             ng-class="{active : currentTeacher === teacher}" ng-model="teacher" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
                             jqyoui-draggable="{placeholder:'keep', animate:true}"

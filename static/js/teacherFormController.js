@@ -709,18 +709,18 @@ angular.module('POBoxApp').controller('TeacherFormController', function($scope, 
     }
     
     $scope.formIsInvalid = function(){
-        console.log("#################################");
-        console.log("$scope.invalidFirstName: ", $scope.invalidFirstName);
-        console.log("$scope.invalidLastName: ", $scope.invalidLastName);
-        console.log("$scope.invalidEmail: ", $scope.invalidEmail);
-        console.log("$scope.invalidSchool: ", $scope.invalidSchool);
-        console.log("$scope.invalidDivision: ", $scope.invalidDivision);
-        console.log("$scope.invalidGrade: ", $scope.invalidGrade);
-        console.log("$scope.invalidTravel: ", $scope.invalidTravel);
-        console.log("$scope.invalidElementary: ", $scope.validateElementary());
-        console.log("$scope.invalidSecondary: ", $scope.validateSecondary());
-        console.log("$scope.invalidTravelTeacher: ", $scope.validateTravel());
-        console.log("#################################");
+        // console.log("#################################");
+        // console.log("$scope.invalidFirstName: ", $scope.invalidFirstName);
+        // console.log("$scope.invalidLastName: ", $scope.invalidLastName);
+        // console.log("$scope.invalidEmail: ", $scope.invalidEmail);
+        // console.log("$scope.invalidSchool: ", $scope.invalidSchool);
+        // console.log("$scope.invalidDivision: ", $scope.invalidDivision);
+        // console.log("$scope.invalidGrade: ", $scope.invalidGrade);
+        // console.log("$scope.invalidTravel: ", $scope.invalidTravel);
+        // console.log("$scope.invalidElementary: ", $scope.validateElementary());
+        // console.log("$scope.invalidSecondary: ", $scope.validateSecondary());
+        // console.log("$scope.invalidTravelTeacher: ", $scope.validateTravel());
+        // console.log("#################################");
         return( $scope.invalidFirstName || $scope.invalidLastName || $scope.invalidEmail ||  
                 $scope.invalidSchool || $scope.invalidDivision || $scope.invalidGrade || $scope.invalidTravel || 
                 $scope.semesterHosting === undefined || $scope.school === undefined || $scope.schoolDivision === undefined || 
