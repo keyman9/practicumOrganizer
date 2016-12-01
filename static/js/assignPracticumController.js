@@ -347,7 +347,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         a.availability.end.setMinutes(30);
         $scope.editingPracticumAssignments.push(a);
         $scope.practicaErrorMsg.push("");
-        // console.log($scope.editingPracticumAssignments);
+        console.log($scope.editingPracticumAssignments);
     }
     
     $scope.savePracticumAssignment = function(index){
@@ -880,7 +880,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     
      /**************************************************/
      
-    //Validation methods
+    //Validation methods - for practica
     
     $scope.validateDays = function(index, updateMsg){
         var av = $scope.editingPracticumAssignments[index].availability;
@@ -993,24 +993,23 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         
     }
     
-    $scope.validateRiders = function(event, ui, item, updateMsg){
-        var invalid = true;
-        var index = $scope.editingTransportationAssignments.indexOf(item);
-        if ($scope.transportationMode){
-            var riders = item.passengers;
-            // console.log(riders);
-            // console.log($scope.editingTransportationAssignments);
-            for (var i = 0; i < riders.length; i++){
-                if (riders[i] != undefined && !$scope.isEmptyObject(riders[i])){
-                    invalid = false;
-                    break;
+    $scope.validateTeacher = function(index, updateMsg){
+        var invalid = false;
+        if (!$scope.transportationMode){
+            var assignment = $scope.editingPracticumAssignments[index];
+            var teach = assignment.student;
+      
+            if (teach === undefined || $scope.isEmptyObject(teach)){
+                invalid = true;
+                if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") === -1){
+                    $scope.practicaErrorMsg[index] += "You must select a teacher!\n";
                 }
-            }
-        } else {
-            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") != -1){
-                var msg = $scope.practicaErrorMsg[index];
-                msg = msg.replace("You must select a teacher!\n", "");
-                $scope.practicaErrorMsg[index] = msg;
+            } else {
+                if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") != -1){
+                    var msg = $scope.practicaErrorMsg[index];
+                    msg = msg.replace("You must select a teacher!\n", "");
+                    $scope.practicaErrorMsg[index] = msg;
+                }
             }
         }
         return invalid;
@@ -1021,12 +1020,79 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.validateCourse(index, false) || $scope.validateStudent(index, false) || $scope.validateTeacher(index, false));
     }
     
+    /**************************************************/
+    //Validation methods = for transportation
+    
+    $scope.validateDriver = function(event, ui, item, updateMsg){
+        var invalid = false;
+        if ($scope.transportationMode){
+            var index = $scope.editingTransportationAssignments.indexOf(item);
+            var driver = item.driver;
+      
+            if (driver === undefined || $scope.isEmptyObject(driver)){
+                invalid = true;
+                if (updateMsg && $scope.transportationErrorMsg[index].indexOf("You must select a driver!\n") === -1){
+                    $scope.transportationErrorMsg[index] += "You must select a driver!\n";
+                }
+            } else {
+                if (updateMsg && $scope.transportationErrorMsg[index].indexOf("You must select a driver!\n") != -1){
+                    var msg = $scope.transportationErrorMsg[index];
+                    msg = msg.replace("You must select a driver!\n", "");
+                    $scope.transportationErrorMsg[index] = msg;
+                }
+            }
+        
+            if (!invalid && item.passengers.length === 0){
+                for (var i = 0; i < driver.passengers; i++){
+                    var rider = {};
+                    item.passengers.push(rider);
+                }
+            }
+        }
+        return invalid;
+    }
+    
+    $scope.validateRiders = function(event, ui, item, updateMsg){
+        var invalid = true;
+        if ($scope.transportationMode){
+            var index = $scope.editingTransportationAssignments.indexOf(item);
+            var riders = item.passengers;
+            console.log(riders);
+            // console.log($scope.editingTransportationAssignments);
+            for (var i = 0; i < riders.length; i++){
+                if (riders[i] != undefined && !$scope.isEmptyObject(riders[i])){
+                    invalid = false;
+                    break;
+                }
+            }
+            
+            if (invalid){
+                if (updateMsg && $scope.transportationErrorMsg[index].indexOf("You must select at least 1 rider!\n") === -1){
+                    $scope.transportationErrorMsg[index] += "You must select at least 1 rider!\n";
+                }
+            } else {
+                if (updateMsg && $scope.transportationErrorMsg[index].indexOf("You must select at least 1 rider!\n") != -1){
+                    var msg = $scope.transportationErrorMsg[index];
+                    msg = msg.replace("You must select at least 1 rider!\n", "");
+                    $scope.transportationErrorMsg[index] = msg;
+                }
+            }
+        } 
+        
+        return invalid;
+    }
+    
+    $scope.transportationIsInvalid = function(item){
+        return ($scope.validateDriver({}, {}, item, false) || $scope.validateRiders({}, {}, item, false));
+    }
+    
+    
      /**************************************************/
     
     //Miscellaneous helper methods
 
     $scope.isEmptyObject = function(obj){
-        return JSON.stringify(obj) === JSON.stringify({});
+        return angular.toJson(obj) === angular.toJson({});
     }
     
     $scope.print = function(){
@@ -1118,6 +1184,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.initializeTeachers();
     $scope.initializePractica();
     $scope.addPracticumAssignment();
-    $scope.getPracticumBearing()
+    $scope.addTransportationAssignment();
+    $scope.getPracticumBearing();
     $scope.getSchoolDivisions();
 });
