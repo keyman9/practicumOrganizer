@@ -603,6 +603,8 @@ def downloadReport(reportType):
         print("invalid report type")
     return send_from_directory(app.static_folder + "/reports", filename, as_attachment=True, 
     mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    
+    #application/zip
 
 @socketio.on("deleteReport", namespace="/reports")
 def deleteReport():

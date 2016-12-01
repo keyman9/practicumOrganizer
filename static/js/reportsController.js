@@ -74,6 +74,7 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
         $scope.selected = limit;
     }
     
+    // Damnit Sheldon, look here for downloading.
     socket.on("reportCreated", function(reportType){
         if (iframe)
             document.body.removeChild(iframe);

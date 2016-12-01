@@ -67,11 +67,8 @@
     .teacher-drop{
         margin-left: 10px;
     }
-    .ui-droppable{
-        height: 50px !important;
-    }
     .practica-table{
-        height: 400px;
+        height: 4git 00px;
         overflow-y: scroll;
     }
     .practica{
@@ -178,96 +175,6 @@
     </div>
 </script>
 
-<script type="text/ng-template" id="popover.driver.tpl.html">
-     <div class="popover" tabindex="-1">
-        <div class="arrow"></div>
-            <h3 class="popover-title text-center" ng-bind="item.driver.firstName + '  ' + item.driver.lastName" ></h3>
-        <div class="popover-content">
-            <div class="">
-                <table class="table table-responsive text-center">
-                    <tbody>
-                      <tr>
-                        <td ng-bind="item.driver.email"></td>
-                      </tr>
-                      <tr>
-                        <td ng-bind="getTransportationString(item.driver)"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Enrolled In:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="en in item.driver.enrolledClasses">
-                        <td ng-bind="en"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Endorsements:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="en in item.driver.endorsements">
-                        <td ng-bind="en"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Availability:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="av in item.driver.availability">
-                        <td ng-bind="getAvailabilityString(av)"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Previous Practica:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="prac in item.driver.previousPractica">
-                        <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</script>
-
-<script type="text/ng-template" id="popover.rider.tpl.html">
-     <div class="popover" tabindex="-1">
-        <div class="arrow"></div>
-            <h3 class="popover-title text-center" ng-bind="rider.firstName + '  ' + rider.lastName" ></h3>
-        <div class="popover-content">
-            <div class="">
-                <table class="table table-responsive text-center">
-                    <tbody>
-                      <tr>
-                        <td ng-bind="rider.email"></td>
-                      </tr>
-                      <tr>
-                        <td ng-bind="getTransportationString(rider)"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Enrolled In:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="en in rider.enrolledClasses">
-                        <td ng-bind="en"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Endorsements:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="en in rider.endorsements">
-                        <td ng-bind="en"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Availability:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="av in rider.availability">
-                        <td ng-bind="getAvailabilityString(av)"></td>
-                      </tr>
-                      <tr>
-                        <td><span class="popover-heading">Previous Practica:</span></td>
-                      </tr>
-                      <tr class="well" ng-repeat="prac in rider.previousPractica">
-                        <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
-                      </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</script>
-
 <script type="text/ng-template" id="popover.teacher.tpl.html">
     <div class="popover" tabindex="-1">
         <div class="arrow"></div>
@@ -340,10 +247,13 @@
 </script>
 
 <div class="container" ng-controller="AssignPracticumController" id="container">
-    <div class="alert alert-warning alert-dismissible" role="alert" id="deleteFail" ng-hide="!deleteFailure">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{deleteFailureMsg}}' }}
-    </div>
+    
+    
+    <div class="alert alert-warning alert-dismissible" role="alert" id="deleteFail" name="deleteFail" style='display:none'></div>
+    
+    <!--<div class="alert alert-success alert-dismissible" role="alert" id="submitResult" name="submitResult" style='display:none'></div>-->
+    
+    
     <div class="row">
         <div class="col-md-6 right-border">
             <h4 class="text-center">Students</h4><br/>
@@ -368,7 +278,7 @@
                     <div slim-scroll height="300px">
                         <ul class="list-group">
                             <div class="list-group-item btn student" ng-repeat="student in students" 
-                            ng-class="{active : currentStudent === student, driver : student.passengers > 0, rider : !student.hasCar}" ng-model="student" 
+                            ng-class="{active : currentStudent === student}" ng-model="student" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
                             jqyoui-draggable="{placeholder:'keep', animate:true}" data-template-url="popover.student.tpl.html" 
                             container="body" placement="left" auto-close="true" data-html="true"
@@ -493,9 +403,7 @@
                                     <div class="col-md-2">
                                         <br/>
                                         <div>
-                                            <button class="btn btn-danger" ng-click="deleteEditingPracticumAssignment(editingPracticumAssignments.indexOf(item))">
-                                                <i class="glyphicon glyphicon-trash"></i>
-                                            </button>
+                                            <button class="btn btn-danger" ng-click="deleteEditingPracticumAssignment(editingPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
                                         </div>
                                     </div>
                                     <div class="col-md-5 student-drop">
@@ -602,77 +510,25 @@
                     </div>
                 </div>
                 <div class="row" ng-if="transportationMode">
-                    <div class="row">
-                        <div class="col-md-3 right-border">
-                            <h5 class="text-center">Driver</h5>
-                        </div>
-                        <div class="col-md-8">
-                            <h5 class="text-center">Riders</h5>
-                        </div>
+                    <div class="col-md-4 right-border">
+                        <h5>Driver</h5>
                     </div>
-                    <hr/>
-                    <div ng-repeat="item in transportationAssignments">
-                        <div class="row">
-                             <div class="alert alert-danger" role="alert" id="invalidTransportation" ng-if="transportationErrorMsg[transportationAssignments.indexOf(item)].length > 0">
-                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;&nbsp;{{ '{{transportationErrorMsg[transportationAssignments.indexOf(item)]}}' }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-1">
-                                <br/>
-                                <div>
-                                    <button class="btn btn-danger" ng-click="deleteTranportationAssignment(transportationAssignments.indexOf(item))">
-                                        <i class="glyphicon glyphicon-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col-md-2 student-drop">
-                                <br/>
-                                <div class="thumbnail" ng-model="item.driver"
-                                data-drop="true" data-jqyoui-options="{accept:'.driver'}" jqyoui-droppable="{onDrop: 'validateDriver(item,true)'}">
-                                    <div ng-if="!isEmptyObject(item.driver)" class="btn btn-draggable" ng-show="item.driver" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                    ng-model="item.driver" jqyoui-draggable="{animate:true}" data-template-url="popover.driver.tpl.html" 
-                                    container="body" placement="top" auto-close="true" data-html="true" bs-popover>
-                                        <span ng-bind="item.driver.firstName"></span>&nbsp;
-                                        <span ng-bind="item.driver.lastName"></span>
-                                    </div>
-                                    <div ng-if="isEmptyObject(item.driver)" class="btn btn-draggable" ng-show="item.driver" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                    ng-model="item.driver" jqyoui-draggable="{animate:true}">
-                                        <span ng-bind="item.driver.firstName"></span>&nbsp;
-                                        <span ng-bind="item.driver.lastName"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <div class="col-md-3" ng-repeat="rider in item.passengers">
-                                        <br/>
-                                        <div class="thumbnail" ng-model="rider" 
-                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: 'addRider(item, rider)'}">
-                                            <div ng-if="!isEmptyObject(rider)" class="btn btn-draggable" ng-show="rider" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                            ng-model="rider" jqyoui-draggable="{animate:true}" data-template-url="popover.rider.tpl.html" 
-                                            container="body" placement="top" auto-close="true" data-html="true"  bs-popover>
-                                                <span ng-bind="rider.firstName"></span>
-                                                <span ng-bind="rider.lastName"></span>
-                                            </div>
-                                            <div ng-if="isEmptyObject(rider)" class="btn btn-draggable" ng-show="rider" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
-                                            ng-model="rider" jqyoui-draggable="{animate:true}">
-                                                <span ng-bind="rider.firstName"></span>
-                                                <span ng-bind="rider.lastName"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <br/>
-                                <div>
-                                    <button class="btn btn-success" ng-click="saveTransportationAssignment(transportationAssignments.indexOf(item))" ng-disabled="transportationIsInvalid(item)">
-                                        <i class="glyphicon glyphicon-floppy-disk"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-8">
+                        <h5>Riders</h5>
+                    </div>
+                </div>
+                <div class="row" ng-if="practicumMode">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-6">
+                    </div>
+                </div>
+                <div class="row" ng-if="transportationMode">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-8">
                     </div>
                 </div>
             </div>
@@ -693,9 +549,7 @@
                 <tr class="practica" ng-repeat="item in publishedPracticumAssignments"> 
                     <td>
                         <div>
-                            <button class="btn btn-danger" ng-click="deletePublishedPracticumAssignment(publishedPracticumAssignments.indexOf(item))">
-                                <i class="glyphicon glyphicon-trash"></i>
-                            </button>
+                            <button class="btn btn-danger" ng-click="deletePublishedPracticumAssignment(publishedPracticumAssignments.indexOf(item))">&nbsp;-&nbsp;</button>
                         </div>
                     </td>
                     <td ng-bind="item.student.firstName + ' ' + item.student.lastName"></td>
