@@ -198,7 +198,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     };
     
     socket.on('loadPractica', function(results){
-        console.log(results);
+        // console.log(results);
         //for each prac already saved
         for(var i =0; i < results.length; i++){
             var pracMatch = {};
@@ -207,7 +207,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
                 //console.log($scope.allTeachers[j]);
                 if(results[i]['teacherId'] == $scope.allTeachers[j]['id']){
                     pracMatch['teacher'] = $scope.allTeachers[j];
-                    console.log(pracMatch['teacher']);
+                    // console.log(pracMatch['teacher']);
                 }
             }
             //find the student object
@@ -231,7 +231,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
             pracMatch['availability']['wednesday'] = results[i]['wednesday'];
             pracMatch['availability']['thursday'] = results[i]['thursday'];
             pracMatch['availability']['friday'] = results[i]['friday'];
-            console.log(pracMatch);
+            // console.log(pracMatch);
             $scope.publishedPracticumAssignments.push(pracMatch);
         }
         
@@ -239,6 +239,41 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.$apply();
         $scope.changeStudentAssigned();
         $scope.changeTeacherAssigned();
+    });
+    
+    $scope.initializeTransportation = function(){
+        socket.emit('loadTransportation');
+    };
+    
+     socket.on('loadTransportation', function(results){
+         console.log(results);
+         $scope.publishedTransportationAssignments = [];
+         for (var i = 0; i < results.length; i++){
+             var res = results[i]
+             var driverEmail = res[0];
+             var riderEmails = res[1];
+             var driver = {};
+             var riders = [riderEmails.length];
+             for (var j = 0; j < $scope.allStudents.length; j++){
+                 if ($scope.allStudents[j].email === driverEmail){
+                     driver = $scope.allStudents[j];
+                 } else {
+                     for (var k = 0; k < riderEmails.length; k++){
+                        if ($scope.allStudents[j].email === riderEmails[k]){
+                             riders[k] = $scope.allStudents[j];
+                         } 
+                     }
+                 }
+                 
+             }
+             var newTransport = new TransportationAssignment();
+             newTransport.driver = driver;
+             newTransport.passengers = riders;
+             $scope.publishedTransportationAssignments.push(newTransport);
+         }
+        $scope.$apply();
+        console.log($scope.publishedTransportationAssignments);
+
     });
     
     /**************************************************/
@@ -1183,6 +1218,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     $scope.initializeStudents();
     $scope.initializeTeachers();
     $scope.initializePractica();
+    $scope.initializeTransportation();
     $scope.addPracticumAssignment();
     $scope.addTransportationAssignment();
     $scope.getPracticumBearing();

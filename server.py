@@ -314,6 +314,12 @@ def loadPractica():
     practica = load_practica()
     emit('loadPractica', practica)
 
+@socketio.on('loadTransportation', namespace='/practica') 
+def loadTransportation():
+    print("load transportation")
+    transportation = load_transportation()
+    emit('loadTransportation', transportation)
+
 @app.route('/')
 def mainIndex():
     return render_template('index.html', currentPage='home')
@@ -542,20 +548,21 @@ def submitPractica(assignment):
 @socketio.on('submitTransportation', namespace='/practica')
 def submitTransportation(assignment):
     print(assignment)
-    insertTransportationQuery = """INSERT INTO transportation( driverEmail, passengerEmail ) VALUES ( %s, %s )""";
+    insertTransportationQuery = """INSERT INTO transportation( driverEmail, passengerEmail ) VALUES ( %s, %s ) RETURNING passengeremail""";
     deleteTransporationQuery = """DELETE FROM transportation WHERE driverEmail=%s;"""
     
     driverEmail = assignment['driver']['email']
-    print(type(driverEmail))
     error = delete_query_db(deleteTransporationQuery, driverEmail)
-    print("error")
+    if error:
+        print("error")
     
     for rider in assignment['passengers']:
         riderEmail = rider['email']
-        print(type(riderEmail))
         result = write_query_db(insertTransportationQuery, (driverEmail, riderEmail), True)
         if not result:
             print("error inserting transportation: " + driverEmail + ", " + riderEmail + "\n")
+        else: 
+            print("inserted")
     
 
 #################################  
@@ -578,6 +585,10 @@ def deletePracticum(pracId):
 def deleteTransportation(driverEmail):
     deleteTransporationQuery = """DELETE FROM transportation WHERE driverEmail=%s;"""
     error = delete_query_db(deleteTransporationQuery, driverEmail)
+    if error:
+        print("error deleting transportation")
+    else:
+        print("deleted")
     emit("deletedTransportation", error)
     
 ################################# 

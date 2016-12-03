@@ -237,3 +237,11 @@ def load_practica_matches_for_reports():
 
     results = select_query_db(selectPractica)
     return results
+    
+def load_transportation():
+    
+    selectTransportation = """SELECT driverEmail, ARRAY_AGG(passengerEmail) FROM transportation GROUP BY driverEmail"""
+    transport = select_query_db(selectTransportation, ())
+    print (transport)
+ 
+    return transport
