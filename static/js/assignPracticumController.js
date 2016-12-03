@@ -1121,6 +1121,36 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         return ($scope.validateDriver({}, {}, item, false) || $scope.validateRiders({}, {}, item, false));
     }
     
+    $scope.isDriver = function(student){
+        var driver = false;
+        if (student && student.email){
+            var transportationAssignments = $scope.publishedTransportationAssignments;
+            for (var i = 0; i < transportationAssignments.length; i++){
+                if (transportationAssignments[i].driver.email === student.email){
+                    driver = true;
+                    break;
+                }
+            }
+        }
+        return driver;
+    }
+    
+    $scope.isRider = function(student){
+        var rider = false;
+        if (student && student.email){
+            var transportationAssignments = $scope.publishedTransportationAssignments;
+            for (var i = 0; i < transportationAssignments.length; i++){
+                for (var j = 0; j < transportationAssignments[i].passengers.length; j++){
+                    if (transportationAssignments[i].passengers[j].email === student.email){
+                        rider = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return rider;
+    }
+    
     
      /**************************************************/
     
@@ -1172,6 +1202,16 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         console.log($scope.publishedTransportationAssignments);
         if ($scope.editingTransportationAssignments.length < 1)
             $scope.addTransportationAssignment();
+       
+        // var driver = transport.driver           
+        // var studentIndex = $scope.students.indexOf(driver);
+        // console.log("studentIndex: ", studentIndex);
+     
+        // for (var i = 0; i < publishTransport.passengers.length; i++){
+        //     var pass = transport.passengers[i]
+        //     studentIndex = $scope.students.indexOf(pass);
+        //     console.log("studentIndex: ", studentIndex);
+        // }
     }
     
     $scope.editTransportation = function(index){

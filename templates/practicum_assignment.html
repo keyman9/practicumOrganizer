@@ -369,9 +369,9 @@
                 </div>
                 <div class="col-md-6">
                     <div slim-scroll height="300px">
-                        <ul class="list-group">
-                            <div class="list-group-item btn student" ng-repeat="student in students track by $index" 
-                            ng-class="{active : currentStudent === student, driver : student.passengers > 0, rider : !student.hasCar}" ng-model="student" 
+                        <ul class="list-group" id="studentList">
+                            <div class="list-group-item btn student" id="student{{ '{{$index}}' }}" ng-repeat="student in students track by $index" 
+                            ng-class="{active : currentStudent === student, driver : (student.passengers > 0 && !isDriver(student)), rider : (!student.hasCar && !isRider(student))}" ng-model="student" 
                             data-drag="true" data-jqyoui-options="{appendTo: 'body', containment: 'window', scroll: false, helper: 'clone'}" 
                             jqyoui-draggable="{placeholder:'keep', animate:true}" data-template-url="popover.student.tpl.html" 
                             container="body" placement="left" auto-close="true" data-html="true"
@@ -654,7 +654,7 @@
                                     <div class="col-md-3" ng-repeat="rider in item.passengers">
                                         <br/>
                                         <div class="thumbnail" ng-model="item.passengers[$index]" 
-                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: ''}">
+                                            data-drop="true" data-jqyoui-options="{accept:'.rider'}" jqyoui-droppable="{onDrop: 'validateRiders(item, updateMsg)'}">
                                             <div ng-if="!isEmptyObject(rider)" class="btn btn-draggable" ng-show="rider" data-drag="false" data-jqyoui-options="{revert: 'invalid'}" 
                                             ng-model="rider" jqyoui-draggable="{animate:true}" data-template-url="popover.rider.tpl.html" 
                                             container="body" placement="top" auto-close="true" data-html="true"  bs-popover>
