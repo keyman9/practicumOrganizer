@@ -1001,9 +1001,9 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         var assignment = $scope.editingPracticumAssignments[index];
         var stu = assignment.student;
         var invalid = false;
-        var index = $scope.editingTransportationAssignments.indexOf(item);
         if ($scope.transportationMode){
-            var driver = item.driver;
+            var driver = assignment.driver;
+            console.log(driver);
       
             if (driver === undefined || $scope.isEmptyObject(driver)){
                 invalid = true;

@@ -57,6 +57,8 @@ insertClass = """INSERT INTO elementarySchedule(course, startTime, endTime, teac
                                             VALUES (%s,%s,%s,%s,%s,%s)"""
 selectTeacher = """SELECT teacherid FROM teachers WHERE email = %s"""
 updateTeacher = """UPDATE teachers SET firstName = %s,lastName = %s,hostSpring = %s,hostFall = %s,grade = %s,schoolid = %s ,divisionid = %s WHERE email = %s RETURNING teacherid"""
+deleteElementary = """DELETE FROM elementarySchedule WHERE teacherID=%s""";
+deleteMiddle= """DELETE FROM middleSchoolSchedule WHERE teacherID=%s""";
 @socketio.on('submit', namespace='/teacher')
 def submitTeacher(data):
     #print(data)
@@ -83,6 +85,13 @@ def submitTeacher(data):
         #print(teacherId)
         if teacherId:
             teacherPresent = True
+            error = delete_query_db(deleteElementary, teacherId)
+            if error:
+                print("error deleting elementary schedule")
+            error = delete_query_db(deleteMiddle, teacherId)
+            if error:
+                print("error deleting middle school schedule")
+                
     except Exception as e:
         print(e)
             
@@ -554,7 +563,7 @@ def submitTransportation(assignment):
     driverEmail = assignment['driver']['email']
     error = delete_query_db(deleteTransporationQuery, driverEmail)
     if error:
-        print("error")
+        print("error deleting transportation")
     
     for rider in assignment['passengers']:
         riderEmail = rider['email']

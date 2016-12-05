@@ -79,19 +79,38 @@ def delete_query_db(query, data):
     
 def submit_student(data):
     
-    studentTable = "INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"
-    endorseTable = "INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"
-    meetingInsert = "INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"
+    studentTable = """INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"""
+    endorseTable = """INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"""
+    meetingInsert = """INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"""
     meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
-    prevPracTable = "INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"
-    enrolledCourseTable = "INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"
-    availableInsert = "INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"
+    prevPracTable = """INSERT INTO previousPractica(school,grade,course,studentEmail) VALUES (%s, %s, %s, %s)"""
+    enrolledCourseTable = """INSERT INTO enrolledCourses(courseName,studentEmail) VALUES (%s, %s)"""
+    availableInsert = """INSERT INTO availabletimes (starttime, endtime, meetingid, studentemail) VALUES (%s, %s, %s, %s)"""
+    deletePreviousPrac = """DELETE FROM previousPractica WHERE studentEmail=%s""";
+    deleteEnrolled = """DELETE FROM enrolledCourses WHERE studentEmail=%s""";
+    deleteEndorsements = """DELETE FROM endorsements WHERE studentEmail=%s""";
+    deleteAvailability = """DELETE FROM availableTimes WHERE studentEmail=%s""";
     
     print(data)
     #print(data['email'])
     studentData = [data['email'], data['firstName'], data['lastName'], data['hasCar'], int(data['passengers'])]
     print(studentData)
     
+    studentEmail = data['email']
+    error = delete_query_db(deletePreviousPrac, studentEmail)
+    if error:
+        print("error deleting previous practica")
+    error = delete_query_db(deleteEnrolled, studentEmail)
+    if error:
+        print("error deleting enrolled courses")
+    error = delete_query_db(deleteEndorsements, studentEmail)
+    if error:
+        print("error deleting endorsements")
+    error = delete_query_db(deleteAvailability, studentEmail)
+    if error:
+        print("error deleting availability")
+
+
     write_query_db(studentTable, studentData)
     
     #endorsement Table

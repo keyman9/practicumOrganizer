@@ -50,7 +50,7 @@ CREATE TABLE previousPractica(
 );
 
 GRANT SELECT, INSERT ON previousPractica TO practicum_normal;
-GRANT SELECT, INSERT ON previousPractica TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON previousPractica TO practicum_admin;
 
 GRANT ALL ON previousPractica_id_seq TO practicum_normal;
 GRANT ALL ON previousPractica_id_seq TO practicum_admin;
@@ -64,7 +64,7 @@ CREATE TABLE enrolledCourses(
 );
 
 GRANT SELECT, INSERT ON enrolledCourses TO practicum_normal;
-GRANT SELECT, INSERT ON enrolledCourses TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON enrolledCourses TO practicum_admin;
 
 ---Endorsements---
 DROP TABLE IF EXISTS endorsement;
