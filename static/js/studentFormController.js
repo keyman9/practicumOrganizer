@@ -612,6 +612,10 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
         $scope.goToTop();
     }
     
+    $scope.filterTravel = function(element) {
+      return element === "Travels" ? false : true;
+    };
+    
     /**************************************************/
     
     $scope.resetForm();

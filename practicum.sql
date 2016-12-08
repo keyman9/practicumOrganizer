@@ -96,6 +96,8 @@ GRANT SELECT, INSERT ON meetingDays TO practicum_admin;
 GRANT ALL ON meetingdays_meetingid_seq TO practicum_normal;
 GRANT ALL ON meetingdays_meetingid_seq TO practicum_admin;
 
+INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (TRUE, TRUE, TRUE, TRUE, TRUE)
+
 ---Available Times---
 DROP TABLE IF EXISTS availableTimes;
 CREATE TABLE availableTimes(
@@ -304,6 +306,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Walker-Grant Middle School',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('James Monroe High School', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Travels', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fredericksburg'));
 
 --Spotsylvania--
 INSERT INTO schools(schoolName,divisionId) VALUES ('Battlefield Elementary School', 
@@ -363,6 +367,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Massaponax High School',
 INSERT INTO schools(schoolName,divisionId) VALUES ('Riverbend High School', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
 INSERT INTO schools(schoolName,divisionId) VALUES ('Spotsylvania High School', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
+INSERT INTO schools(schoolName,divisionId) VALUES ('Travels', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Spotsylvania')); 
     
 --Stafford--
@@ -424,6 +430,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Stafford Middle School',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('T. Benton Gayle Middle School', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Travels', 
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Stafford'));
     
 --Fauquier--
 INSERT INTO schools(schoolName,divisionId) VALUES ('Bradley Elementary School', 
@@ -465,6 +473,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Southeastern Alternative Mid
 INSERT INTO schools(schoolName,divisionId) VALUES ('Taylor Middle School', 
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Warrenton Middle School',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Travels',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Fauquier'));
 
 --Prince William--
@@ -648,6 +658,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Woodbridge High School',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Woodbridge Middle School',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Travels',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Prince William'));
  
     
 --Non-Public--    
@@ -661,6 +673,8 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Temple Baptist',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Faith Baptist',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
+ INSERT INTO schools(schoolName,divisionId) VALUES ('Travels',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Non-Public'));
     
 --Montessori--    
 INSERT INTO schools(schoolName,divisionId) VALUES ('Children''s House of Old Town',
@@ -669,11 +683,15 @@ INSERT INTO schools(schoolName,divisionId) VALUES ('Lighthouse Academy of Freder
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Montessori'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Odyssey Montessori',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Montessori'));
+ INSERT INTO schools(schoolName,divisionId) VALUES ('Travels',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Montessori'));
     
 --Other--
 INSERT INTO schools(schoolName,divisionId) VALUES ('Head Start',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 INSERT INTO schools(schoolName,divisionId) VALUES ('Friends of the Rappahannock',
+ (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
+INSERT INTO schools(schoolName,divisionId) VALUES ('Travels',
  (SELECT divisionId FROM schoolDivisions WHERE divisionName = 'Other'));
 
 --Practicum Bearing Courses--

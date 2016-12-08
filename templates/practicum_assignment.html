@@ -285,7 +285,7 @@
                       <tr>
                         <td ng-bind="teacher.schoolDivision + ': ' + teacher.school"></td>
                       </tr>
-                      <tr  class="well" ng-if="teacher.grade">
+                      <tr  class="well" ng-if="teacher.grade && teacher.grade!='Secondary'">
                         <td ng-bind="'Grade: ' + teacher.grade"></td>
                       </tr>
                       <tr>
@@ -296,6 +296,9 @@
                       </tr>
                       <tr class="well" ng-if="teacher.secondarySchedule.length > 0" ng-repeat="class in teacher.secondarySchedule">
                         <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                      <tr class="well" ng-if="teacher.secondarySchedule.length < 1 && teacher.elementarySchedule.length < 1">
+                        <td>N/A</td>
                       </tr>
                     </tbody>
                 </table>
@@ -320,7 +323,7 @@
                       <tr>
                         <td ng-bind="item.teacher.schoolDivision + ': ' + item.teacher.school"></td>
                       </tr>
-                      <tr  class="well" ng-if="item.teacher.grade">
+                      <tr  class="well" ng-if="item.teacher.grade && teacher.grade!='Secondary'">
                         <td ng-bind="'Grade: ' + item.teacher.grade"></td>
                       </tr>
                       <tr>
@@ -331,6 +334,9 @@
                       </tr>
                       <tr class="well" ng-if="item.teacher.secondarySchedule.length > 0" ng-repeat="class in item.teacher.secondarySchedule">
                         <td ng-bind="getScheduleString(class)"></td>
+                      </tr>
+                      <tr class="well" ng-if="item.teacher.secondarySchedule.length < 1 && item.teacher.elementarySchedule.length < 1">
+                        <td>N/A</td>
                       </tr>
                     </tbody>
                 </table>

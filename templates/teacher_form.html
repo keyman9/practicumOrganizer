@@ -95,7 +95,7 @@
                     <div class="col-md-4">
                         <span>School</span><span ng-if="school===undefined || invalidSchool || school===''"><small class="error">&nbsp;&nbsp;*</small></span>
                         <select class="form-control" id="school" name="school" ng-model="school" ng-change="changeSchool(school)" required>
-                            <option ng-repeat="sch in getSchools() | orderBy:sch">{{ '{{sch}}' }}</option>
+                            <option ng-repeat="sch in getSchools() | orderBy:sch | filter: filterTravel">{{ '{{sch}}' }}</option>
                             <option>Other</option>
                             <span class="error" ng-if="invalidSchool"><em>Invalid School</em></span> 
                         </select>

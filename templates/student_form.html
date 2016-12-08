@@ -214,7 +214,7 @@
                     <div class="col-md-3">
                         <span>School</span>
                         <select class="form-control" id="school" name="school" ng-model="item.school" ng-change="changeSchool(item)" required>
-                            <option ng-repeat="school in getSchools(previousPractica.indexOf(item)) | orderBy:school">{{ '{{school}}' }}</option>
+                            <option ng-repeat="school in getSchools(previousPractica.indexOf(item)) | orderBy:school | filter: filterTravel">{{ '{{school}}' }}</option>
                             <option>Other</option>
                         </select>
                     </div>

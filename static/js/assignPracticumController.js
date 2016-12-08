@@ -191,6 +191,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         $scope.allTeachers = results;
         $scope.$apply();
         $scope.changeTeacherAssigned();
+        console.log($scope.teachers);
     });
     
     $scope.initializePractica = function(){
