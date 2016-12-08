@@ -663,6 +663,8 @@ def createReport(reportType, limit):
         # shutil.make_archive(zipName, 'zip', zipPath)
         # shutil.rmtree(zipPath, ignore_errors=True)
         ########################################
+    elif reportType == "transportation":
+        print("transportation report requested")
     else:
         print("invalid report type")
     emit("reportCreated", reportType)
