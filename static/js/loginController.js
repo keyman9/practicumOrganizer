@@ -126,5 +126,11 @@ angular.module('POBoxApp').controller('LoginController', function($scope, $windo
         messageBox.fadeIn().delay(3000).fadeOut(600);
     
     });
+    //http://stackoverflow.com/questions/12381563/how-to-stop-browser-back-button-using-javascript
+    $window.history.pushState(null, document.title, location.href);
+    $window.addEventListener('popstate', function (event)
+    {
+      history.pushState(null, document.title, location.href);
+    });
     
 });
