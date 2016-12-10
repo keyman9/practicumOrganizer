@@ -982,8 +982,9 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         var assignment = $scope.editingPracticumAssignments[index];
         var course = assignment.course;
         var invalid = false;
+        console.log(course);
   
-        if ((course && course==="") || (course && course === "Other" && assignment.other === undefined)){
+        if ((!course) || (course && course==="") || (course && course === "Other" && assignment.other === undefined)){
             invalid = true;
             if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must enter a course!\n") === -1){
                 $scope.practicaErrorMsg[index] += "You must enter a course!\n";
@@ -999,24 +1000,14 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
     }
     
     $scope.validateStudent = function(index, updateMsg){
+        var invalid = false;
         var assignment = $scope.editingPracticumAssignments[index];
         var stu = assignment.student;
-        var invalid = false;
-        if ($scope.transportationMode){
-            var driver = assignment.driver;
-            console.log(driver);
-      
-            if (driver === undefined || $scope.isEmptyObject(driver)){
-                invalid = true;
-                if (updateMsg && $scope.transportationErrorMsg[index].indexOf("You must select a driver!\n") === -1){
-                    $scope.transportationErrorMsg[index] += "You must select a driver!\n";
-                }
-            } else {
-                if (updateMsg && $scope.transportationErrorMsg[index].indexOf("You must select a driver!\n") != -1){
-                    var msg = $scope.transportationErrorMsg[index];
-                    msg = msg.replace("You must select a driver!\n", "");
-                    $scope.transportationErrorMsg[index] = msg;
-                }
+  
+        if (stu === undefined || $scope.isEmptyObject(stu)){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a student!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must select a student!\n";
             }
         } else {
             if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a student!\n") != -1){
@@ -1026,26 +1017,23 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
             }
         }
         return invalid;
-        
     }
     
     $scope.validateTeacher = function(index, updateMsg){
         var invalid = false;
-        if (!$scope.transportationMode){
-            var assignment = $scope.editingPracticumAssignments[index];
-            var teach = assignment.student;
-      
-            if (teach === undefined || $scope.isEmptyObject(teach)){
-                invalid = true;
-                if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") === -1){
-                    $scope.practicaErrorMsg[index] += "You must select a teacher!\n";
-                }
-            } else {
-                if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") != -1){
-                    var msg = $scope.practicaErrorMsg[index];
-                    msg = msg.replace("You must select a teacher!\n", "");
-                    $scope.practicaErrorMsg[index] = msg;
-                }
+        var assignment = $scope.editingPracticumAssignments[index];
+        var teach = assignment.teacher;
+  
+        if (teach === undefined || $scope.isEmptyObject(teach)){
+            invalid = true;
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") === -1){
+                $scope.practicaErrorMsg[index] += "You must select a teacher!\n";
+            }
+        } else {
+            if (updateMsg && $scope.practicaErrorMsg[index].indexOf("You must select a teacher!\n") != -1){
+                var msg = $scope.practicaErrorMsg[index];
+                msg = msg.replace("You must select a teacher!\n", "");
+                $scope.practicaErrorMsg[index] = msg;
             }
         }
         return invalid;
