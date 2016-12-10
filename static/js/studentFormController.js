@@ -164,10 +164,10 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
             // console.log($scope.availability[i]);
             var av = $scope.availability[i];
             if (Object.prototype.toString.call(av.start) === "[object Date]"){
-                av.startTime = av.start.toLocaleTimeString();
+                av.startTime = getTimeString(av.start);
             }
             if (Object.prototype.toString.call(av.end) === "[object Date]"){
-                av.endTime = av.end.toLocaleTimeString();
+                av.endTime = getTimeString(av.end);
             }
             
             delete $scope.availability[i].start;
@@ -569,6 +569,28 @@ angular.module('POBoxApp').controller('StudentFormController', function($scope, 
     /**************************************************/
     
     //Miscellaneous methods
+    
+var getTimeString = function(date){
+        var h = date.getHours();
+        var m = date.getMinutes();
+        var mer = "";
+        if (h < 12){
+            mer = "AM";
+        } else {
+            mer = "PM";
+        }
+        if (h > 12){
+            h = h - 12;
+        } else if (h === 0){
+            h = 12;
+        }
+        m = String(m);
+        if (m.length < 2){
+            m = "0" + m;
+        }
+        var timeString = String(h) + ":" + m + mer;
+        return timeString;
+    }
 
     $scope.goToTop = function() {
         // $location.hash('top');

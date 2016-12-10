@@ -127,6 +127,9 @@
                       <tr class="well" ng-repeat="prac in student.previousPractica">
                         <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
                       </tr>
+                      <tr class="well" ng-if="student.previousPractica.length < 1">
+                        <td>N/A</td>
+                      </tr>
                     </tbody>
                 </table>
             </div>
@@ -170,6 +173,9 @@
                       </tr>
                       <tr class="well" ng-repeat="prac in item.student.previousPractica">
                         <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
+                      </tr>
+                      <tr class="well" ng-if="item.student.previousPractica.length < 1">
+                        <td>N/A</td>
                       </tr>
                     </tbody>
                 </table>
@@ -216,6 +222,9 @@
                       <tr class="well" ng-repeat="prac in item.driver.previousPractica">
                         <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
                       </tr>
+                      <tr class="well" ng-if="item.driver.previousPractica.length < 1">
+                        <td>N/A</td>
+                      </tr>
                     </tbody>
                 </table>
             </div>
@@ -260,6 +269,9 @@
                       </tr>
                       <tr class="well" ng-repeat="prac in rider.previousPractica">
                         <td ng-bind="prac.school + ' - ' + prac.grade + prac.course"></td>
+                      </tr>
+                      <tr class="well" ng-if="rider.previousPractica.length < 1">
+                        <td>N/A</td>
                       </tr>
                     </tbody>
                 </table>

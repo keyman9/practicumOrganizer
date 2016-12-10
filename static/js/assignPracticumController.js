@@ -566,8 +566,10 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         if (course){
             if(course.daytype)
                 str += "[" + course.daytype + " Days";
-            if (course.block)
-                str += ", Block " + course.block + "] ";
+            if (course.block && course.block < 9)
+                str += ", Block " + course.block;
+            if(course.daytype)
+                str += "] ";
             if (course.startTime)
                 str += course.startTime;
             if (course.endTime)

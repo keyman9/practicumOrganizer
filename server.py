@@ -221,7 +221,14 @@ def submitTeacher(data):
                     #print("planning/secondary")
                     #print(blockInfo)
                     for period in data['secondarySchedule'][timeSlot]:
-                        write_query_db(insertSecondaryCourse,(blockNumber,timeSlot,period['startTime'],period['endTime'],teacherId,schoolId,period['dayType']))
+                        course = timeSlot
+                        if timeSlot == 'secondaryLunch':
+                            course = 'Lunch'
+                        elif timeSlot == 'planning':
+                            course = "Planning"
+                        if 'dayType' not in period:
+                            period['dayType'] = "Standard"
+                        write_query_db(insertSecondaryCourse,(blockNumber,course,period['startTime'],period['endTime'],teacherId,schoolId,period['dayType']))
                         # try:
                         #     db = connect_to_db()
                         #     cur = db.cursor()

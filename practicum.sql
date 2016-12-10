@@ -24,8 +24,8 @@ CREATE TABLE students (
   UNIQUE(email)
 );
 
-GRANT SELECT, INSERT ON students TO practicum_normal;
-GRANT SELECT, INSERT ON students TO practicum_admin;
+GRANT SELECT, INSERT, UPDATE ON students TO practicum_normal;
+GRANT SELECT, INSERT, UPDATE ON students TO practicum_admin;
 
 ---Transportation Arrangements---
 DROP TABLE IF EXISTS transportation;
@@ -76,7 +76,7 @@ CREATE TABLE endorsements(
 );
 
 GRANT SELECT, INSERT ON endorsements TO practicum_normal;
-GRANT SELECT, INSERT ON endorsements TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON endorsements TO practicum_admin;
 
 ---Meeting Days---
 DROP TABLE IF EXISTS meetingDays;
@@ -96,8 +96,6 @@ GRANT SELECT, INSERT ON meetingDays TO practicum_admin;
 GRANT ALL ON meetingdays_meetingid_seq TO practicum_normal;
 GRANT ALL ON meetingdays_meetingid_seq TO practicum_admin;
 
-INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (TRUE, TRUE, TRUE, TRUE, TRUE)
-
 ---Available Times---
 DROP TABLE IF EXISTS availableTimes;
 CREATE TABLE availableTimes(
@@ -110,7 +108,7 @@ CREATE TABLE availableTimes(
 );
 
 GRANT SELECT, INSERT ON availableTimes TO practicum_normal;
-GRANT SELECT, INSERT ON availableTimes TO practicum_admin;
+GRANT SELECT, INSERT, DELETE ON availableTimes TO practicum_admin;
 
 GRANT ALL ON availableTimes_meetingid_seq TO practicum_normal;
 GRANT ALL ON availableTimes_meetingid_seq TO practicum_admin;
@@ -124,7 +122,7 @@ CREATE TABLE practicumCourses(
 );
 
 GRANT SELECT ON practicumCourses to practicum_normal;
-GRANT SELECT,INSERT ON practicumCourses to practicum_admin;
+GRANT SELECT, INSERT ON practicumCourses to practicum_admin;
 
 GRANT ALL ON practicumCourses_courseid_seq TO practicum_normal;
 GRANT ALL ON practicumCourses_courseid_seq TO practicum_admin;

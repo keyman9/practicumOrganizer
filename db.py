@@ -80,6 +80,8 @@ def delete_query_db(query, data):
 def submit_student(data):
     
     studentTable = """INSERT INTO students(email, firstName, lastName, hasCar, passengers) VALUES (%s, %s, %s, %s, %s)"""
+    studentSelect = """SELECT email FROM students WHERE email=%s"""
+    studentUpdate = """UPDATE students SET firstName=%s, lastName=%s, hasCar=%s, passengers=%s WHERE email=%s"""
     endorseTable = """INSERT INTO endorsements(endorsementName, studentemail) VALUES (%s, %s)"""
     meetingInsert = """INSERT INTO meetingdays(monday, tuesday, wednesday, thursday, friday) VALUES (%s, %s, %s, %s, %s) RETURNING meetingid"""
     meetingSelect = """SELECT meetingId from meetingDays where monday = '%s' AND tuesday = '%s' AND wednesday = '%s' AND thursday = '%s' AND friday = '%s'"""
@@ -110,9 +112,13 @@ def submit_student(data):
     if error:
         print("error deleting availability")
 
-
-    write_query_db(studentTable, studentData)
-    
+    studentExists = select_query_db(studentSelect, (data['email'],), True)
+    if studentExists:
+        write_query_db(studentUpdate, (data['firstName'], data['lastName'], data['hasCar'], int(data['passengers']), data['email']))
+    else:       
+        write_query_db(studentTable, studentData)
+        
+        
     #endorsement Table
     for endorsement in data['endorsements']:
         endorsementData = [endorsement, data['email']]
