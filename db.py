@@ -270,3 +270,41 @@ def load_transportation():
     print (transport)
  
     return transport
+
+def dropSemester(semester):
+    hasError = False
+    query = ""
+    reloadSqlFile = ""
+    #set variables for query and reloading
+    if semester == 'spring':
+        reloadSqlFile = "practicum.sql"
+        query = """DROP DATABASE practicum"""
+    elif semester == 'fall':
+        reloadSqlFile = "fall.sql"
+        query = """DROP TABLES IF EXISTS enrolledCourses,endorsements,availableTimes,previousPractica, \
+               transportation,students"""
+               
+    #drop necessary tables or database          
+    db = connect_to_db_admin()
+    cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    try:
+        mog = cur.mogrify(query)
+        cur.execute(query)
+        db.commit()
+    except Exception as e:
+        print(e)
+        hasError = True
+        db.rollback()
+    
+    #reload db tables or database
+    try:
+        cur.execute(open(reloadSqlFile,"r").read())
+        db.commit()
+    except Exception as e:
+        print(e)
+        hasError = True
+        db.rollback()
+    
+    cur.close()
+    db.close()
+    return hasError

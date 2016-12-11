@@ -63,10 +63,10 @@
                     <li class="nav-item col-xs-2">
                         <a class="navbar-brand nav-link" href="/">Home</a>
                     </li>
-                    <li class="nav-item  col-xs-2 col-xs-offset-1">
+                    <li class="nav-item  col-xs-2">
                         <a class="navbar-brand nav-link" href="/practica">Assign</a>
                     </li>
-                    <li class="nav-item dropdown col-xs-6 col-xs-offset-1">
+                    <li class="nav-item dropdown col-xs-4">
                         <a class="navbar-brand nav-link dropdown-toggle" data-toggle="dropdown" ng-click="prepForReports()">Create Reports
                         <span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -77,6 +77,16 @@
                             <li uib-dropdown><a class="dropdown-item" data-toggle="modal" data-target="#createReportsModal" ng-click="setReportType('course')">By Course </a>
                             </li>
                             <li uib-dropdown><a class="dropdown-item" ng-click="createReport('transportation', 'none')">Transportation</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown col-xs-4">
+                        <a class="navbar-brand nav-link" data-toggle="dropdown" ng-click="prepForReports()">Archive Semester Reports
+                        <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" ng-click"showDialog('fall')" ng-model="fall">Fall Semester</a>
+                            </li>
+                            <li><a class="dropdown-item" ng-click"showDialog('spring')" ng-model="spring">Spring Semester</a>
                             </li>
                         </ul>
                     </li>

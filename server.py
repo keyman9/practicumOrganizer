@@ -701,6 +701,8 @@ def downloadReport(reportType):
     
     #application/zip
 
+
+
 @socketio.on("deleteReport", namespace="/reports")
 def deleteReport():
     directory = os.path.dirname(__file__)
