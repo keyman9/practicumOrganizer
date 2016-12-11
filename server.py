@@ -672,6 +672,8 @@ def createReport(reportType, limit):
         ########################################
     elif reportType == "transportation":
         print("transportation report requested")
+        filename = os.path.join(directory, 'static', 'reports', 'transportationreport.xlsx')
+        rp.create_transportation_report(filename)
     else:
         print("invalid report type")
     emit("reportCreated", reportType)
@@ -688,6 +690,9 @@ def downloadReport(reportType):
         
     elif reportType == "course":
         filename = "coursereport.xlsx"
+    
+    elif reportType == "transportation":
+        filename = "transportationreport.xlsx"
         
     else:
         print("invalid report type")
@@ -707,6 +712,9 @@ def deleteReport():
         os.remove(os.path.join(directory, 'static', 'reports', 'schoolreport.xlsx'))
         
     if os.path.isfile(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx')):
+        os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
+    
+    if os.path.isfile(os.path.join(directory, 'static', 'reports', 'transportationreport.xlsx')):
         os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
     
 if __name__ == '__main__':

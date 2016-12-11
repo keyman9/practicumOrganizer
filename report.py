@@ -65,13 +65,13 @@ def create_course_report(limit, filename):
     
     # Set Worksheet Column Width
     if hasCourseCol:
-        worksheet.set_column('A:A', 10, wrapCourseCol)
-        worksheet.set_column('B:B', 15, wrapDefaultCol)
-        worksheet.set_column('C:C', 15, wrapDefaultCol)
-        worksheet.set_column('D:D', 35, wrapDefaultCol)
-        worksheet.set_column('E:E', 30, wrapDefaultCol)
-        worksheet.set_column('F:F', 20, wrapDefaultCol)
-        worksheet.set_column('G:G', 35, wrapDefaultCol)
+        worksheet.set_column('A:A', 10)
+        worksheet.set_column('B:B', 15)
+        worksheet.set_column('C:C', 15)
+        worksheet.set_column('D:D', 35)
+        worksheet.set_column('E:E', 30)
+        worksheet.set_column('F:F', 20)
+        worksheet.set_column('G:G', 35)
         
         # Set up the Header information
         worksheet.write('A1', 'Course', wrapHeaderRow)
@@ -82,14 +82,13 @@ def create_course_report(limit, filename):
         worksheet.write('F1', 'Practicum Course', wrapHeaderRow)
         worksheet.write('G1', 'Practicum Day/Time', wrapHeaderRow)
         
-        
     else:
-        worksheet.set_column('A:A', 15, wrapDefaultCol)
-        worksheet.set_column('B:B', 15, wrapDefaultCol)
-        worksheet.set_column('C:C', 35, wrapDefaultCol)
-        worksheet.set_column('D:D', 30, wrapDefaultCol)
-        worksheet.set_column('E:E', 20, wrapDefaultCol)
-        worksheet.set_column('F:F', 35, wrapDefaultCol)
+        worksheet.set_column('A:A', 15)
+        worksheet.set_column('B:B', 15)
+        worksheet.set_column('C:C', 35)
+        worksheet.set_column('D:D', 30)
+        worksheet.set_column('E:E', 20)
+        worksheet.set_column('F:F', 35)
         
         # Set up the Header information
         worksheet.write('A1', 'Last Name', wrapHeaderRow)
@@ -278,6 +277,69 @@ def create_schoolDivision_report(limit, filename):
         
     workbook.close()
     
+def create_transportation_report(filename):
+    
+    transportationMatches = select_transportation_matches()
+    
+    
+    
+    driverCol = []
+    passenger1Col = []
+    passenger2Col = []
+    passenger3Col = []
+    passenger4Col = []
+    
+    sortedlist = sorted(transportationMatches , key=lambda elem: "%s, %s" % (elem['driver']['lastname'], elem['driver']['firstname']))
+    print(sortedlist)
+    
+    # Create the file and add a worksheet
+    workbook  = xlsxwriter.Workbook(filename)
+    worksheet = workbook.add_worksheet()
+    
+    # Cell Format dictionaries
+    formatDefaultCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center'}
+    formatHeaderRow = {'bold': True, 'underline': True, 'align': 'center', 'border': 2}
+    formatDriverCol = {'text_wrap': True, 'valign': 'vcenter', 'align': 'center', 'italic': True}
+    
+    # Create formats for the cells
+    wrapHeaderRow = workbook.add_format(formatHeaderRow)
+    wrapDriverCol = workbook.add_format(formatDriverCol)
+    wrapDefaultCol = workbook.add_format(formatDefaultCol)
+    
+    # Set Worksheet Column Width
+   
+    worksheet.set_column('A:A', 15)
+    worksheet.set_column('B:B', 15)
+    worksheet.set_column('C:C', 15)
+    worksheet.set_column('D:D', 15)
+    worksheet.set_column('E:E', 15)
+    
+    # Set up the Header information
+    worksheet.write('A1', 'Driver', wrapHeaderRow)
+    worksheet.write('B1', 'Passenger 1', wrapHeaderRow)
+    worksheet.write('C1', 'Passenger 2', wrapHeaderRow)
+    worksheet.write('D1', 'Passenger 3', wrapHeaderRow)
+    worksheet.write('E1', 'Passenger 4', wrapHeaderRow)
+
+    #Start at the Second row to not overwrite Header info
+    row = 1
+    
+    for match in sortedlist:
+        col = 0
+        
+        driverName = '{}, {}'.format(match['driver']['lastname'], match['driver']['firstname'])
+        worksheet.write(row, col, driverName, wrapDriverCol) # Write Driver's Name
+        col += 1
+        for passenger in match['passengers']:
+            passengerName = '{}, {}'.format(passenger['lastname'], passenger['firstname'])
+            worksheet.write(row, col, passengerName, wrapDefaultCol) # Write Passenger's Name
+            col += 1
+
+        row += 1
+    
+    workbook.close()    
+
+    
 def write_to_workbook_by_school(schools, worksheet, row, col, formats):
     selectSchoolID = "SELECT schoolid FROM schools where schoolname = %s"
     
@@ -368,3 +430,20 @@ def name_zip_file(directory):
     zipPath = os.path.join(directory, 'static', 'archived_reports', zipName)
     create_directory_reports(zipPath)
     return (zipName, zipPath)
+    
+def select_transportation_matches():
+    selectTransportationMatches = "SELECT driveremail, ARRAY_AGG(passengeremail) as passengers FROM transportation WHERE driveremail IN (SELECT driveremail FROM transportation) GROUP BY driveremail"
+    transportationMatches = select_query_db(selectTransportationMatches)
+    selectStudentName = "SELECT firstname, lastname FROM students where email = %s"
+    matches = []
+    
+    for match in transportationMatches:
+        row = {}
+        driverName = select_query_db(selectStudentName, (match['driveremail'], ), True)
+        row['driver'] = driverName
+        row['passengers'] = []
+        for passenger in match['passengers']:
+            passengerName = select_query_db(selectStudentName, (passenger, ), True)
+            row['passengers'].append(passengerName)
+        matches.append(row)
+    return matches
