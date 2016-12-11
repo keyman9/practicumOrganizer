@@ -91,4 +91,15 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
         socket.emit("deleteReport");
     }
     
+    $scope.setConfirmType = function(semester){
+        console.log(semester)
+        if(semester === 'fall'){
+            $('#confirmFallArchiveModal').modal('show');
+        } else if (semester === 'spring'){
+            $('#confirmSpringArchiveModal').modal('show');
+        }
+        $scope.semester = semester;
+    }
+    
+    
 });
