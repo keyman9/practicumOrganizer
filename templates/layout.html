@@ -25,6 +25,10 @@
         overflow-y: auto;
     }
     
+    .archive-modal-body{
+        height: 400px;
+        overflow-y: auto;
+    }
 </style>
 <meta name="viewport" content="width=device-width">
 
@@ -84,9 +88,9 @@
                         <a class="navbar-brand nav-link" data-toggle="dropdown" ng-click="prepForReports()">Archive Semester Reports
                         <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" ng-click"showDialog('fall')" ng-model="fall">Fall Semester</a>
+                            <li><a class="dropdown-item" data-toggle="modal" data-target="#confirmArchiveModal" ng-model="fall" ng-click"setConfirmType('fall')">Fall</a>
                             </li>
-                            <li><a class="dropdown-item" ng-click"showDialog('spring')" ng-model="spring">Spring Semester</a>
+                            <li><a class="dropdown-item" data-toggle="modal" data-target="#confirmArchiveModal" ng-model="spring" ng-click="setConfirmType('spring')">Spring</a>
                             </li>
                         </ul>
                     </li>
@@ -148,7 +152,27 @@
             </div>
         </div>
     </div>
+    
+    <div id="confirmArchiveModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" ng-click="deleteReports()">&times;</button>
+                <h4 class="modal-title" ng-if="semester === 'fall'">Archive Fall Semester? </h4>
+                <h4 class="modal-title" ng-if="semester === 'spring'">Archive Spring Semester? </h4>
+              </div>
+              <div class="modal-body archive-modal-body">
+                <p>WARNING! You will lose all data from this semester by archiving this report.</p>
+                <p>Are you sure want want to proceed?</p>
+                <input type="button" class="btn btn-warning" value="Cancel" ng-click="deleteReports()">
+                <input type="button" class="btn btn-primary" ng-if="semester === 'fall'" style="float:right;" value="Archive" ng-click="archiveFall()">
+                <input type="button" class="btn btn-primary" ng-if="semester === 'spring'" style="float:right;" value="Archive " ng-click="archiveSpring()">
+               </div>
+            </div>
+        </div>
     </div>
+    </div>
+    
     {% endif %}
     
     
