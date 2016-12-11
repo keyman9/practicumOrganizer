@@ -25,10 +25,6 @@
         overflow-y: auto;
     }
     
-    .archive-modal-body{
-        height: 400px;
-        overflow-y: auto;
-    }
 </style>
 <meta name="viewport" content="width=device-width">
 
@@ -85,7 +81,7 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown col-xs-4">
-                        <a class="navbar-brand nav-link" data-toggle="dropdown" ng-click="prepForReports()">Archive Semester Reports
+                        <a class="navbar-brand nav-link" data-toggle="dropdown">Archive Semester Reports
                         <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" data-toggle="modal" data-target="#confirmArchiveModal" ng-model="fall" ng-click"setConfirmType('fall')">Fall</a>
@@ -157,16 +153,16 @@
         <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" ng-click="deleteReports()">&times;</button>
-                <h4 class="modal-title" ng-if="semester === 'fall'">Archive Fall Semester? </h4>
-                <h4 class="modal-title" ng-if="semester === 'spring'">Archive Spring Semester? </h4>
+                <button type="button" class="close" data-dismiss="modal" ng-click="resetSemester()">&times;</button>
+                <h4 class="modal-title" ng-if="semester == 'fall'">Archive Fall Semester? </h4>
+                <h4 class="modal-title" ng-if="semester == 'spring'">Archive Spring Semester? </h4>
               </div>
               <div class="modal-body archive-modal-body">
                 <p>WARNING! You will lose all data from this semester by archiving this report.</p>
                 <p>Are you sure want want to proceed?</p>
-                <input type="button" class="btn btn-warning" value="Cancel" ng-click="deleteReports()">
-                <input type="button" class="btn btn-primary" ng-if="semester === 'fall'" style="float:right;" value="Archive" ng-click="archiveFall()">
-                <input type="button" class="btn btn-primary" ng-if="semester === 'spring'" style="float:right;" value="Archive " ng-click="archiveSpring()">
+                <input type="button" class="btn btn-danger" value="Cancel" ng-click="resetSemester()">
+                <input type="button" class="btn btn-warning" ng-if="semester == 'fall'" style="float:right;" value="Archive" ng-click="archiveFall()">
+                <input type="button" class="btn btn-warning" ng-if="semester == 'spring'" style="float:right;" value="Archive " ng-click="archiveSpring()">
                </div>
             </div>
         </div>

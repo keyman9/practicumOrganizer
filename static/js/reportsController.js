@@ -88,14 +88,7 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
     });
     
     $scope.deleteReports = function(){
-        $scope.semester = undefined;
         socket.emit("deleteReport");
     }
-    
-    $scope.setConfirmType = function(semester){
-        $scope.semester = semester;
-    }
-    
-    
     
 });

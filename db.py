@@ -1,6 +1,7 @@
 import psycopg2
 import student as stu
 import teacher as teach
+import report as rep
 
 def connect_to_db():
     return psycopg2.connect('dbname=practicum user=practicum_normal password=password host=localhost')
@@ -271,7 +272,12 @@ def load_transportation():
  
     return transport
 
-def dropSemester(semester):
+def ArchiveSemester(semester):
+    
+    #archive the database
+    rep.batch_reports()
+    
+    #drop the necessary database elements
     hasError = False
     query = ""
     reloadSqlFile = ""
