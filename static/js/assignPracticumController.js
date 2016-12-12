@@ -530,7 +530,7 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
         return host;
     };
     
-    $scope.getScheduleString = function(course){
+    $scope.getScheduleString = function(schoolLevel, course){
         var str = "";
         if (course){
             if(course.daytype)
@@ -539,6 +539,21 @@ angular.module('POBoxApp').controller('AssignPracticumController', function($sco
                 str += ", Block " + course.block;
             if(course.daytype)
                 str += "] ";
+            if (schoolLevel === "elementary"){
+                var days = "";
+                if (course.monday)
+                    days += "M";
+                if (course.tuesday)
+                    days += "T";
+                if (course.wednesday)
+                    days += "W";
+                if (course.thursday)
+                    days += "Th";
+                if (course.friday)
+                    days += "F";
+                if (days != "MTWThF")
+                    str += "(" + days + ") "
+            }
             if (course.startTime)
                 str += course.startTime;
             if (course.endTime)

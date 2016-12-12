@@ -304,10 +304,10 @@
                         <td><span class="popover-heading">Schedule:</span></td>
                       </tr>
                       <tr class="well" ng-if="teacher.elementarySchedule.length > 0" ng-repeat="class in teacher.elementarySchedule">
-                        <td ng-bind="getScheduleString(class)"></td>
+                        <td ng-bind="getScheduleString('elementary', class)"></td>
                       </tr>
                       <tr class="well" ng-if="teacher.secondarySchedule.length > 0" ng-repeat="class in teacher.secondarySchedule">
-                        <td ng-bind="getScheduleString(class)"></td>
+                        <td ng-bind="getScheduleString('secondary', class)"></td>
                       </tr>
                       <tr class="well" ng-if="teacher.secondarySchedule.length < 1 && teacher.elementarySchedule.length < 1">
                         <td>N/A</td>
@@ -342,10 +342,10 @@
                         <td><span class="popover-heading">Schedule:</span></td>
                       </tr>
                       <tr class="well" ng-if="item.teacher.elementarySchedule.length > 0" ng-repeat="class in item.teacher.elementarySchedule">
-                        <td ng-bind="getScheduleString(class)"></td>
+                        <td ng-bind="getScheduleString('elementary', class)"></td>
                       </tr>
                       <tr class="well" ng-if="item.teacher.secondarySchedule.length > 0" ng-repeat="class in item.teacher.secondarySchedule">
-                        <td ng-bind="getScheduleString(class)"></td>
+                        <td ng-bind="getScheduleString('secondary', class)"></td>
                       </tr>
                       <tr class="well" ng-if="item.teacher.secondarySchedule.length < 1 && item.teacher.elementarySchedule.length < 1">
                         <td>N/A</td>
