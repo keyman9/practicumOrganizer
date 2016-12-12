@@ -1,38 +1,7 @@
 'use strict';
 angular.module('POBoxApp').controller('AssignPracticumController', function($scope, $window, $popover){
     var socket = io.connect('https://' + document.domain + ':' + location.port + '/practica')
-    
-    // var teacher = {'firstName': 'Minerva', 
-    //     'lastName': 'McGonagall', 
-    //     'email': 'mcgonagall@hogwarts.uk',
-    //     'id': 1,
-    //     'school': 'Hogwarts',
-    //     'schoolDivision': 'UK',
-    //     'grade': 5, 
-    //     'hostFall': true, 
-    //     'hostSpring': false,
-    //     'elementarySchedule': [
-    //         {'course': 'Intro to Transfiguration', 'startTime': '10:00AM', 'endTime': '11:00AM'}, 
-    //         {'course': 'Transfiguration 201', 'startTime': '12:00PM', 'endTime': '1:00PM'},  
-    //         {'course': 'Advanced Transfiguration', 'startTime': '2:00PM', 'endTime': '3:00PM'}
-    //     ]};
-        
-    // var teacher1 = {'firstName': 'Severus', 
-    //     'lastName': 'Snape', 
-    //     'email': 'snape@hogwarts.uk',
-    //     'id': 2,
-    //     'school': 'Hogwarts',
-    //     'schoolDivision': 'UK',
-    //     'grade': undefined, 
-    //     'hostFall': true, 
-    //     'hostSpring': true,
-    //     'secondarySchedule': [
-    //         {'dayType': 'A/X', 'block': '1', 'course': 'Intro to Potions', 'startTime': '09:00AM', 'endTime': '11:00AM'}, 
-    //         {'dayType': 'B/Y', 'block': '5', 'course': 'Potions 201', 'startTime': '12:00PM', 'endTime': '1:00PM'},  
-    //         {'dayType': 'A/X', 'block': '2', 'course': 'Advanced Potions', 'startTime': '2:00PM', 'endTime': '3:00PM'}
-    //     ]};
-    
-    
+
     $scope.endorsements = ["N/A", "Elementary Education pK-6", "English", "Foreign Language- French", "Foreign Language- German", 
     "Foreign Language- Latin", "Foreign Language- Spanish", "History & Social Sciences", "Mathematics", 
     "Music preK-12: Instrumental", "Music preK-12: Vocal/ Choral", "Science: Biology", "Science: Chemistry",
