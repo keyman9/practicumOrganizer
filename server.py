@@ -718,6 +718,13 @@ def deleteReport():
     
     if os.path.isfile(os.path.join(directory, 'static', 'reports', 'transportationreport.xlsx')):
         os.remove(os.path.join(directory, 'static', 'reports', 'divisionreport.xlsx'))
-    
+        
+@socketio.on('archSem', namespace="/reports")
+def archSem(sem):
+    if archiveSemester(sem):
+        emit('semesterArchived', {'semester': sem, 'success': 'true'})
+    else:
+        emit('semesterArchived', {'semester':sem, 'success': 'false'})
+
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug=True)

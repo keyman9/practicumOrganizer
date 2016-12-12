@@ -160,7 +160,7 @@
                 <p>WARNING! You will lose all data from this semester by archiving this report.</p>
                 <p>Are you sure want want to proceed?</p>
                 <input type="button" class="btn btn-warning" value="Cancel" data-dismiss="modal">
-                <input type="button" class="btn btn-primary"  style="float:right;" value="Archive " ng-click="archiveSpring()">
+                <input type="button" class="btn btn-primary"  style="float:right;" value="Archive " ng-click="archSem('spring')">
                </div>
             </div>
         </div>
@@ -177,12 +177,13 @@
                 <p>WARNING! You will lose all data from this semester by archiving this report.</p>
                 <p>Are you sure want want to proceed?</p>
                 <input type="button" class="btn btn-warning" value="Cancel" data-dismiss="modal">
-                <input type="button" class="btn btn-primary" style="float:right;" value="Archive" ng-click="archiveFall()">
+                <input type="button" class="btn btn-primary" style="float:right;" value="Archive" ng-click="archSem('fall')">
                </div>
             </div>
         </div>
     </div>
-    
+    <div class="alert alert-success alert-dismissible" role="alert" id="archiveSucess" name="archiveSuccess" style='display:none'>
+    </div>
     
     
     </div>
