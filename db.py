@@ -45,6 +45,7 @@ def write_query_db(query, data, returnOne=False):
     try:
         
         mog = cur.mogrify(query, data)
+        print(mog)
         cur.execute(mog)
         db.commit()
         if returnOne == True:
