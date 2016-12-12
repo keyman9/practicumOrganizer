@@ -283,6 +283,7 @@ def archiveSemester(semester):
     hasError = False
     query = ""
     reloadSqlFile = ""
+    msg = ""
     #set variables for query and reloading
     if semester == 'spring':
         reloadSqlFile = "spring.sql"
@@ -300,6 +301,7 @@ def archiveSemester(semester):
         db.commit()
     except Exception as e:
         print(e)
+        msg = e
         hasError = True
         db.rollback()
     
@@ -313,26 +315,11 @@ def archiveSemester(semester):
                     cur.execute(stripped)
                     db.commit()
     except Exception as e:
+        msg = e
         print(e)
         hasError = True
         db.rollback()
-# if semester == 'fall':
-# try:
-# mog = cur.execute(open(reloadSqlFile,"r").read())
-# cur.execute(mog)
-# db.commit()
-# except Exception as e:
-# print(e)
-# hasError = True
-# elif semester == 'spring':
-# try:
-# cur.
-# #os.system("psql -d practicum -U practicum_admin -f practicum.sql")
-# #os.system("password")
-# except Exception as e:
-# print(e)
-# hasError = True
 
     cur.close()
     db.close()
-    return hasError
+    return {'failure': hasError, 'message': msg}

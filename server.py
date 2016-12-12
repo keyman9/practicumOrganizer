@@ -721,10 +721,14 @@ def deleteReport():
         
 @socketio.on('archSem', namespace="/reports")
 def archSem(sem):
-    if archiveSemester(sem):
-        emit('semesterArchived', {'semester': sem, 'success': 'true'})
+    successfulArchive = {}
+    successfulArchive = archiveSemester(sem)
+    if successfulArchive['failure'] == False:
+        print(successfulArchive['message'])
+        emit('semesterArchived', {'semester': sem, 'success': True })
     else:
-        emit('semesterArchived', {'semester':sem, 'success': 'false'})
+        print(successfulArchive['message'])
+        emit('semesterArchived', {'semester':sem, 'success': False})
 
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug=True)
