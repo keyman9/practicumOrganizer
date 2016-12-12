@@ -2,6 +2,7 @@ import psycopg2
 import student as stu
 import teacher as teach
 import report as rep
+import os as os
 
 def connect_to_db():
     return psycopg2.connect('dbname=practicum user=practicum_normal password=password host=localhost')
@@ -284,14 +285,13 @@ def archiveSemester(semester):
     reloadSqlFile = ""
     #set variables for query and reloading
     if semester == 'spring':
-        reloadSqlFile = "practicum.sql"
-        query = """DROP DATABASE practicum"""
+        reloadSqlFile = "spring.sql"
+        query = "\\c postgres"
     elif semester == 'fall':
         reloadSqlFile = "fall.sql"
-        query = """DROP TABLES IF EXISTS enrolledCourses,endorsements,availableTimes,previousPractica, \
-               transportation,students"""
-               
-    #drop necessary tables or database          
+        query = """DROP TABLE IF EXISTS practicumArrangment,enrolledCourses,endorsements,previousPractica, \
+               transportation,students cascade"""
+    #drop necessary tables or database
     db = connect_to_db_admin()
     cur = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
@@ -305,13 +305,34 @@ def archiveSemester(semester):
     
     #reload db tables or database
     try:
-        cur.execute(open(reloadSqlFile,"r").read())
-        db.commit()
+        with open(reloadSqlFile, "r") as s: 
+            for line in s:
+                stripped = line.rstrip()
+                if stripped and stripped[0] != '-':
+                    print(stripped)
+                    cur.execute(stripped)
+                    db.commit()
     except Exception as e:
         print(e)
         hasError = True
         db.rollback()
-    
+# if semester == 'fall':
+# try:
+# mog = cur.execute(open(reloadSqlFile,"r").read())
+# cur.execute(mog)
+# db.commit()
+# except Exception as e:
+# print(e)
+# hasError = True
+# elif semester == 'spring':
+# try:
+# cur.
+# #os.system("psql -d practicum -U practicum_admin -f practicum.sql")
+# #os.system("password")
+# except Exception as e:
+# print(e)
+# hasError = True
+
     cur.close()
     db.close()
     return hasError
