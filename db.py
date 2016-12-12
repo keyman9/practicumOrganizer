@@ -272,7 +272,7 @@ def load_transportation():
  
     return transport
 
-def ArchiveSemester(semester):
+def archiveSemester(semester):
     
     #archive the database
     rep.batch_reports()
