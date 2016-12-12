@@ -101,6 +101,15 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
         $scope.semester = semester;
     }
     
+    $scope.archSem = function(sem){
+        console.log(sem);
+        if(sem === 'fall'){
+            socket.emit("archSem", sem);
+        } else if(sem === 'spring'){
+            socket.emit("archSem", sem);
+        }
+    }
+    
     socket.on("semesterArchived", function(semSuccess){
         console.log(semSuccess);
         var confirmSemester = $('#archiveSucess');

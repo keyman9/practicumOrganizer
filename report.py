@@ -1,4 +1,4 @@
-from db import *
+import db
 import pandas as pd
 import os
 import xlsxwriter
@@ -29,9 +29,9 @@ def format_availability_string(availability):
 
 def create_course_report(limit, filename):
     
-    results = load_practica_matches_for_reports()
+    results = db.load_practica_matches_for_reports()
     selectStudentCourses = "SELECT * FROM enrolledcourses WHERE studentemail IN (SELECT email FROM students)"
-    studentCourses = select_query_db(selectStudentCourses)
+    studentCourses = db.select_query_db(selectStudentCourses)
     
     hasCourseCol = True
     if limit == 'none':
@@ -130,9 +130,9 @@ def create_course_report(limit, filename):
 def create_school_report(limit, filename):
     
     selectSchoolID = "SELECT schoolid FROM schools where schoolname = %s"
-    schoolID = select_query_db(selectSchoolID, (limit, ), True)[0]
+    schoolID = db.select_query_db(selectSchoolID, (limit, ), True)[0]
     
-    results = load_practica_matches_for_reports()
+    results = db.load_practica_matches_for_reports()
     sortedlist = sorted(results , key=lambda elem: "%s, %s" % (elem['stulastname'], elem['stufirstname']))
     
     # Create the file and add a worksheet
@@ -196,7 +196,7 @@ def create_schoolDivision_report(limit, filename):
     selectSchoolDivisions = "SELECT schools.schoolName FROM schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId\
         WHERE schoolDivisions.divisionName = %s"
         
-    schoolsInDivision = select_query_db(selectSchoolDivisions, (limit, ))
+    schoolsInDivision = db.select_query_db(selectSchoolDivisions, (limit, ))
     
     elemSchools = []
     middleSchools = []
@@ -344,8 +344,8 @@ def write_to_workbook_by_school(schools, worksheet, row, col, formats):
     selectSchoolID = "SELECT schoolid FROM schools where schoolname = %s"
     
     for school in schools:
-        schoolID = select_query_db(selectSchoolID, (school, ), True)[0]
-        results = load_practica_matches_for_reports()
+        schoolID = db.select_query_db(selectSchoolID, (school, ), True)[0]
+        results = db.load_practica_matches_for_reports()
         sortedlist = sorted(results, key=lambda elem: "%s, %s" % (elem['stulastname'], elem['stufirstname']))
         
         for match in sortedlist:
@@ -376,7 +376,7 @@ def write_to_workbook_by_school(schools, worksheet, row, col, formats):
 def batch_reports():
     
     selectPracticumCourses = "select coursename from practicumcourses"
-    practicumCourses = select_query_db(selectPracticumCourses)
+    practicumCourses = db.select_query_db(selectPracticumCourses)
     directory = os.path.dirname(__file__)
     
     zipName, zipPath = name_zip_file(directory)
@@ -395,7 +395,7 @@ def batch_reports():
         schoolDivisions JOIN schools ON schoolDivisions.divisionId = schools.divisionId \
         GROUP BY schoolDivisions.divisionName ORDER BY schoolDivisions.divisionName"
     
-    schoolDivisions = select_query_db(selectSchoolDivisions)
+    schoolDivisions = db.select_query_db(selectSchoolDivisions)
     
     # Create the division_reports directory for the zipfile
     divisionReportPath = os.path.join(zipPath, 'division_reports')
@@ -433,17 +433,17 @@ def name_zip_file(directory):
     
 def select_transportation_matches():
     selectTransportationMatches = "SELECT driveremail, ARRAY_AGG(passengeremail) as passengers FROM transportation WHERE driveremail IN (SELECT driveremail FROM transportation) GROUP BY driveremail"
-    transportationMatches = select_query_db(selectTransportationMatches)
+    transportationMatches = db.select_query_db(selectTransportationMatches)
     selectStudentName = "SELECT firstname, lastname FROM students where email = %s"
     matches = []
     
     for match in transportationMatches:
         row = {}
-        driverName = select_query_db(selectStudentName, (match['driveremail'], ), True)
+        driverName = db.select_query_db(selectStudentName, (match['driveremail'], ), True)
         row['driver'] = driverName
         row['passengers'] = []
         for passenger in match['passengers']:
-            passengerName = select_query_db(selectStudentName, (passenger, ), True)
+            passengerName = db.select_query_db(selectStudentName, (passenger, ), True)
             row['passengers'].append(passengerName)
         matches.append(row)
     return matches

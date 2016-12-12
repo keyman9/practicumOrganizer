@@ -8,11 +8,12 @@ DROP ROLE IF EXISTS practicum_admin;
 CREATE ROLE practicum_normal WITH PASSWORD 'password' LOGIN;
 CREATE ROLE practicum_admin WITH PASSWORD 'password' LOGIN;
 
+
 CREATE EXTENSION pgcrypto;
 
 ---Student Table---
 
-DROP TABLE IF EXISTS students;
+DROP TABLE IF EXISTS students cascade;
 CREATE TABLE students (
   email varchar(60) NOT NULL,
   firstName varchar(60) NOT NULL default '',
@@ -38,7 +39,7 @@ GRANT SELECT, INSERT ON transportation TO practicum_normal;
 GRANT SELECT, INSERT, DELETE ON transportation TO practicum_admin;
 
 ---Previous Practica---
-DROP TABLE IF EXISTS previousPractica;
+DROP TABLE IF EXISTS previousPractica cascade;
 CREATE TABLE previousPractica(
   id serial,
   school varchar(60) NOT NULL default '',
@@ -56,18 +57,17 @@ GRANT ALL ON previousPractica_id_seq TO practicum_normal;
 GRANT ALL ON previousPractica_id_seq TO practicum_admin;
 
 ---Enrolled Courses---
-DROP TABLE IF EXISTS enrolledCourses;
+DROP TABLE IF EXISTS enrolledCourses cascade;
 CREATE TABLE enrolledCourses(
   courseName varchar(60) NOT NULL default '',
-  studentEmail varchar(60) NOT NULL references students(email),
-  PRIMARY KEY (courseName,studentEmail)
+  studentEmail varchar(60) NOT NULL references students(email)
 );
 
 GRANT SELECT, INSERT ON enrolledCourses TO practicum_normal;
 GRANT SELECT, INSERT, DELETE ON enrolledCourses TO practicum_admin;
 
 ---Endorsements---
-DROP TABLE IF EXISTS endorsement;
+DROP TABLE IF EXISTS endorsement cascade;
 CREATE TABLE endorsements(
   endorsementName varchar(60) NOT NULL default '',
   studentEmail varchar(60),
@@ -97,7 +97,7 @@ GRANT ALL ON meetingdays_meetingid_seq TO practicum_normal;
 GRANT ALL ON meetingdays_meetingid_seq TO practicum_admin;
 
 ---Available Times---
-DROP TABLE IF EXISTS availableTimes;
+DROP TABLE IF EXISTS availableTimes cascade;
 CREATE TABLE availableTimes(
   startTime varchar(40),
   endTime varchar(40),
@@ -240,7 +240,7 @@ GRANT ALL ON middleschoolschedule_teacherid_seq TO practicum_normal;
 GRANT ALL ON middleschoolschedule_teacherid_seq TO practicum_admin;
 
 ---Practicum Arrangement---
-DROP TABLE IF EXISTS practicumArrangement;
+DROP TABLE IF EXISTS practicumArrangement cascade;
 CREATE TABLE practicumArrangement(
   practicum serial,
   startTime varchar(40),
@@ -734,3 +734,5 @@ INSERT INTO practicumCourses(courseName) VALUES ('EDSE 521');
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 539');
 INSERT INTO practicumCourses(courseName) VALUES ('EDSE 541');
 INSERT INTO practicumCourses(courseName) VALUES ('TESL 515');
+
+GRANT postgres TO practicum_admin;
