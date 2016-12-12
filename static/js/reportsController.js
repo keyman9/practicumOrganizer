@@ -112,7 +112,7 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
     
     socket.on("semesterArchived", function(semSuccess){
         console.log(semSuccess);
-        var confirmSemester = $('#archiveSucess');
+        var confirmSemester = $('#archiveSuccess');
         var semester = ''
         var confirmMessage = ''
         if(semSuccess.sem === 'fall'){
@@ -120,18 +120,22 @@ angular.module('POBoxApp').controller('ReportsController', function($scope, $win
         } else if(semSuccess.sem === 'spring'){
             semester = "Spring ";
         }
-        if(semester.success === 'true'){
-            confirmMessage = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon-exclamation-sign" aria-hidden="true"></span>' + semester + "was successfully archived!";
+        if(semSuccess.success === 'true'){
+            console.log("true");
+            confirmMessage = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon-exclamation-sign" aria-hidden="true"></span>' + $scope.semester + "was successfully archived!";
             confirmSemester.empty();
             confirmSemester.append(confirmMessage);
             confirmSemester.fadeIn().delay(3000).fadeOut(600);
-        } else if(semester.success === 'false'){
+            console.log(confirmMessage);
+        } else if(semSuccess.success === 'false'){
+            console.log("false");
             confirmSemester.removeClass('alert-success');
             confirmSemester.addClass('alert-danger');
-            confirmMessage = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> &nbsp;&nbsp;' + semester + "was unable to archive. Something went wrong.";
+            confirmMessage = '<button type="button" class="close" data-dismiss="alert">&times;</button> <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span> &nbsp;&nbsp;' + $scope.semester + "was unable to archive. Something went wrong.";
             confirmSemester.empty();
             confirmSemester.append(confirmMessage);
             confirmSemester.fadeIn().delay(3000).fadeOut(600);
         }
+        $scope.$apply();
     });
 });

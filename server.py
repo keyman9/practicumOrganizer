@@ -725,10 +725,13 @@ def archSem(sem):
     successfulArchive = archiveSemester(sem)
     if successfulArchive['failure'] == False:
         print(successfulArchive['message'])
-        emit('semesterArchived', {'semester': sem, 'success': True })
+        print("emitting from server success")
+        print({'semester': sem, 'success': "true"})
+        emit('semesterArchived', {'semester': sem, 'success': "true" })
     else:
         print(successfulArchive['message'])
-        emit('semesterArchived', {'semester':sem, 'success': False})
+        print("emitting from server failure")
+        emit('semesterArchived', {'semester':sem, 'success': "false"})
 
 if __name__ == '__main__':
     socketio.run(app, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)), debug=True)
